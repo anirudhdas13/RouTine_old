@@ -1389,7 +1389,7 @@
   }
   function confirmDelTask(id){
     closeSwipe(id);const t=tasks.find(x=>x.id===id);if(!t)return;
-    showConfirm(`Delete "${t.name}"?`,'This cannot be undone.',()=>{if(activeTimerId===id)stopTimer();cancelNotif(id);tasks=tasks.filter(x=>x.id!==id);saveAll();render();showToast('Task deleted');
+    showConfirm(`Delete "${t.name}"?`,'This cannot be undone.',()=>{if(activeTimerId===id)stopTimer();cancelNotif(id);tasks=tasks.filter(x=>x.id!==id);saveAll();render();showToast('Task deleted');});
   }
   function openEditTask(id){
     closeSwipe(id);const t=tasks.find(x=>x.id===id);if(!t)return;
