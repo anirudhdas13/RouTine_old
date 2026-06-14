@@ -1119,6 +1119,52 @@
     dot.className=running?'active':paused?'paused':'';
   }
 
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState!=='visible')return;
+
+    // Sync inline task timer
+    if(activeTimerId&&!timerPaused){
+      try{
+        const s=JSON.parse(localStorage.getItem(K.timer)||'null');
+        if(s&&s.activeTimerId===activeTimerId){
+          timerSec=s.timerSec+Math.floor((Date.now()-s.savedAt)/1000);
+          if(timerTotal>0&&timerSec>=timerTotal){
+            const t=tasks.find(x=>x.id===activeTimerId);
+            stopTimer();notifyTimerDone(t?t.name:'');
+            showToast('Time up'+(t?': '+t.name:''));render();
+          }else{tickInlineTimer();}
+        }
+      }catch(e){}
+    }
+
+    // Sync standalone timer
+    if(stRunning&&!stPaused){
+      try{
+        const s=JSON.parse(localStorage.getItem(K.st)||'null');
+        if(s){
+          const elapsed=Math.floor((Date.now()-s.savedAt)/1000);
+          if(stCountdown){
+            stSec=Math.max(0,s.stSec-elapsed);
+            document.getElementById('st-display').textContent=fmtTimerLong(stSec);
+            if(stSec<=0){
+              stSec=0;stRunning=false;stPaused=false;
+              if(stIv){clearInterval(stIv);stIv=null;}
+              document.getElementById('st-start').textContent='Start';
+              document.getElementById('st-set').style.display='flex';
+              try{localStorage.removeItem(K.st);}catch(e){}
+              notifyTimerDone('Timer');showToast('Timer done!');updateTimerDot();
+            }
+          }else{
+            stSec=s.stSec+elapsed;
+            document.getElementById('st-display').textContent=fmtTimerLong(stSec);
+          }
+        }
+      }catch(e){}
+    }
+
+    rescheduleLocalNotifs();
+  });
+
   /* ═══════════════════════════════════════════════════════
      PWA & NOTIFICATIONS
      ═══════════════════════════════════════════════════════ */
@@ -1142,10 +1188,11 @@
   }
 
   async function scheduleNotif(id,title,datetime){
-    if(!('TimestampTrigger' in window))return;
-    if(!await requestNotifPermission())return;
     const ts=new Date(datetime).getTime();
     if(ts<=Date.now())return;
+    scheduleLocalTimeout(id,title,ts);          // ← works on iOS while app is open
+    if(!('TimestampTrigger' in window))return;  // ← Android Chrome background only
+    if(!await requestNotifPermission())return;
     try{
       const reg=await navigator.serviceWorker.ready;
       await reg.showNotification(title,{
@@ -1156,12 +1203,42 @@
   }
 
   async function cancelNotif(id){
+    cancelLocalTimeout(id);
     if(!('serviceWorker' in navigator))return;
     try{
       const reg=await navigator.serviceWorker.ready;
       const ns=await reg.getNotifications({tag:`notif-${id}`});
       ns.forEach(n=>n.close());
     }catch(e){}
+  }
+
+  const localTimeouts={};
+
+  function scheduleLocalTimeout(id,title,timestamp){
+    const delay=timestamp-Date.now();
+    if(delay<=0)return;
+    if(localTimeouts[id])clearTimeout(localTimeouts[id]);
+    localTimeouts[id]=setTimeout(async()=>{
+      delete localTimeouts[id];
+      await notifyTimerDone(title);
+      showToast(`Reminder: ${title}`);
+    },delay);
+  }
+
+  function cancelLocalTimeout(id){
+    if(localTimeouts[id]){clearTimeout(localTimeouts[id]);delete localTimeouts[id];}
+  }
+
+  function rescheduleLocalNotifs(){
+    Object.keys(localTimeouts).forEach(id=>{clearTimeout(localTimeouts[id]);delete localTimeouts[id];});
+    tasks.forEach(t=>{
+      if(!t.done&&t.date&&t.time)
+        scheduleLocalTimeout(t.id,t.name,new Date(t.date+'T'+t.time).getTime());
+    });
+    reminders.forEach(r=>{
+      if(r.date&&r.time)
+        scheduleLocalTimeout(r.id,r.name,new Date(r.date+'T'+r.time).getTime());
+    });
   }
 
   function updateNotifStatus(){
@@ -1740,7 +1817,7 @@
 
   setTimeout(()=>{document.getElementById('splash').classList.add('out');setTimeout(()=>{document.getElementById('splash').style.display='none';},850);},4000);
 
-  loadAll();loadTimer();loadStTimer();applyTheme();setDateUI();updateClock();setView('tasks');fetchWeather();
+  loadAll();loadTimer();loadStTimer();applyTheme();setDateUI();updateClock();setView('tasks');fetchWeather();rescheduleLocalNotifs();
   if(bgImage){const p=document.getElementById('bg-preview');p.src=bgImage;p.style.display='block';document.getElementById('clear-bg-row').style.display='flex';document.getElementById('bg-opacity-row').style.display='flex';const pct=Math.round((cfg.bgOpacity||0.4)*100);document.getElementById('bg-opacity-slider').value=pct;document.getElementById('bg-opacity-val').textContent=pct+'%';}
 </script>
 </body>
