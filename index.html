@@ -477,7 +477,7 @@
     .st-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 
     /* ── SIDE MENU ── */
-    .menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.38);z-index:300;opacity:0;pointer-events:none;transition:opacity 0.25s}
+    .menu-overlay{position:fixed;inset:0;background:linear-gradient(to bottom,transparent var(--sat),rgba(0,0,0,0.38) var(--sat));z-index:300;opacity:0;pointer-events:none;transition:opacity 0.25s}
     .menu-overlay.open{opacity:1;pointer-events:all}
     .side-menu{position:fixed;top:0;left:0;bottom:0;width:clamp(15rem,72vw,19rem);background:var(--surface);z-index:301;transform:translateX(-100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;padding-top:var(--sat);}
     .side-menu.open{transform:translateX(0)}
@@ -570,7 +570,7 @@
     body.has-bg.dark .cal-selected-lbl{background:rgba(36,36,34,0);}
 
     /* ── MONTH PICKER ── */
-    .mp-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:400;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity 0.2s}
+    .mp-overlay{position:fixed;inset:0;background:linear-gradient(to bottom,transparent var(--sat),rgba(0,0,0,0.45) var(--sat));z-index:400;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity 0.2s}
     .mp-overlay.open{opacity:1;pointer-events:all}
     .mp-card{background:var(--surface);border-radius:var(--r);padding:1.1rem;width:100%;max-width:18rem}
     .mp-title{font-size:0.88rem;font-weight:500;color:var(--text);margin-bottom:0.8rem;text-align:center}
@@ -1237,6 +1237,8 @@
   let captionTargetImg=null;
 
   let selectedImg=null;
+  let dragId=null,dragGhost=null,dragOffY=0,dragListEl=null;
+  let taskOrderIds=[];
 
   function selectNoteImage(img,e){
     if(e)e.stopPropagation();
@@ -2184,7 +2186,6 @@
     else tasks.push({id:taskId,...d,done:false,created:Date.now(),completedAt:null});
     if(d.date&&d.time){cancelNotif(taskId);scheduleNotif(taskId,d.name,d.date+'T'+d.time);}
     saveAll();closeModal('task-modal');render();showToast(editTaskId?'Task updated':'Task added');editTaskId=null;refreshCalIfActive();
-    setTimeout(render,150);
   });
   document.getElementById('task-name').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('task-save').click();});
 
@@ -2438,7 +2439,7 @@
     document.getElementById('view-'+v).style.display='block';
     const isHome=v==='tasks'||v==='reminders';
     document.getElementById('salutation').style.display = isHome ? 'block' : 'none';
-    document.getElementById('date-strip').style.display=isHome?'block':'none';
+    document.getElementById('date-strip').style.display=isHome?'flex':'none';
     document.getElementById('progress-wrap').style.display=(v==='tasks')?'block':'none';
     document.getElementById('tabs-wrap').style.display=isHome?'flex':'none';
     if(isHome){
@@ -2539,8 +2540,6 @@
   /* ═══════════════════════════════════════════════════════
    DRAG-TO-REORDER
    ═══════════════════════════════════════════════════════ */
-  let dragId=null,dragGhost=null,dragOffY=0,dragListEl=null;
-  let taskOrderIds=[];
 
   function loadDragOrder(){
     try{const s=localStorage.getItem('rt_order_v1');if(s)taskOrderIds=JSON.parse(s);}catch(e){}
