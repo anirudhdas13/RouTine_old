@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#f7f6f2" id="theme-meta">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <title>RouTine v2</title>
+  <title>RouTine</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script>
     (function(){
@@ -207,6 +207,7 @@
       display:flex;
       flex-direction:column;
       align-items:center;
+      position:relative;
       justify-content:center;
       cursor:pointer;
     }
@@ -222,6 +223,11 @@
     .weather-icon{font-size:1.8rem;margin-bottom:0.1rem}
     .weather-temp{font-size:1.2rem;font-weight:300;color:var(--text);font-family:var(--mono)}
     .weather-desc{font-size:0.62rem;color:var(--text3);text-transform:capitalize;margin-top:0.05rem;text-align:center;line-height:1.2}
+    .weather-refresh-btn{position:absolute;bottom:0.28rem;right:0.32rem;width:1.1rem;height:1.1rem;border:none;background:transparent;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;opacity:0.55;transition:opacity var(--tr);flex-shrink:0}
+    .weather-refresh-btn:active{opacity:1}
+    .weather-refresh-btn svg{width:0.65rem;height:0.65rem}
+    @keyframes spin-cw{to{transform:rotate(360deg)}}
+    .weather-refresh-btn.spinning svg{animation:spin-cw 0.75s linear infinite}
 
     /* ── PROGRESS ── */
     .progress-wrap{padding-bottom:0.55rem;}
@@ -304,8 +310,9 @@
     .sw-btn svg{width:1.4rem;height:1.4rem;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
     .sw-btn span{font-size:0.55rem;color:#fff;font-family:var(--font)}
     .sw-timer{background:#3a7a52}.sw-edit{background:#5a6a8a}.sw-copy{background:#3a5a7a}.sw-delete{background:#8b3a3a}
-    .task-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:0.7rem 0.85rem;cursor:pointer;position:relative;overflow:hidden;will-change:transform;z-index:2;transition:box-shadow var(--tr);}
-    .task-card.active-timer{border-color:var(--accent)}
+    .task-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:0.7rem 0.85rem;cursor:pointer;position:relative;overflow:hidden;will-change:transform;z-index:2;transition:box-shadow var(--tr);height:3.8rem;}
+    .task-card.active-timer{border-color:var(--accent);height:auto}
+    .task-card.expanded{height:auto}
     .task-card.done{opacity:0.42}
     .task-card.done .task-name{text-decoration:line-through}
     .priority-bar{position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:var(--r) 0 0 var(--r)}
@@ -319,8 +326,8 @@
     .task-check.checked::after{content:'✓';font-size:0.6rem;color:#fff;font-weight:500}
     .task-body{flex:1;min-width:0}
     .task-emoji{font-size:0.95rem;margin-right:0.25rem}
-    .task-name{font-size:0.92rem;font-weight:400;color:var(--text);line-height:1.35;margin-bottom:0.18rem}
-    .task-meta{display:flex;gap:0.35rem;align-items:center;flex-wrap:wrap;margin-top:0.12rem}
+    .task-name{font-size:0.92rem;font-weight:400;color:var(--text);line-height:1.35;margin-bottom:0.18rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .task-meta{display:flex;gap:0.35rem;align-items:center;flex-wrap:nowrap;overflow:hidden;margin-top:0.12rem}
     .meta-pill{font-size:0.62rem;padding:0.1rem 0.45rem;border-radius:2rem;font-family:var(--mono);background:var(--surface2);color:var(--text2)}
     .meta-time{font-size:0.62rem;color:var(--text3);font-family:var(--mono)}
     .p-badge{font-size:0.58rem;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;padding:0.1rem 0.4rem;border-radius:2rem}
@@ -333,7 +340,7 @@
     .drag-handle{
       display:flex;align-items:center;justify-content:center;
       width:1.3rem;flex-shrink:0;cursor:grab;padding:0.15rem 0;
-      color:var(--border);touch-action:none;opacity:0.7;
+      color:#2d5a3d;touch-action:none;opacity:1;
     }
     .drag-handle svg{width:0.72rem;height:0.72rem}
     .drag-handle:active{color:var(--text3);opacity:1}
@@ -355,13 +362,6 @@
       font-size:0.9rem;color:var(--text);font-family:var(--font);
       white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
       max-width:90vw;
-    }
-    .order-reset-badge{
-      font-size:0.55rem;color:var(--accent);cursor:pointer;
-      text-transform:uppercase;letter-spacing:0.04em;
-      padding:0.1rem 0.35rem;border-radius:2rem;
-      border:0.5px solid var(--accent);margin-left:0.3rem;
-      font-family:var(--mono);vertical-align:middle;
     }
 
     /* ── SUBTASKS ── */
@@ -446,6 +446,13 @@
     .modal-overlay.open{opacity:1;pointer-events:all}
     .modal{width:100%;max-width:540px;background:var(--surface);border-radius:1.1rem 1.1rem 0 0;padding:1.2rem 1.1rem calc(1.5rem + var(--sab));transform:translateY(1.2rem);transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);max-height:92dvh;overflow-y:auto;}
     .modal-overlay.open .modal{transform:translateY(0)}
+    .modal-flex{padding:0!important;overflow:hidden!important;display:flex;flex-direction:column}
+    .modal-flex .modal-title{padding:1.2rem 1.1rem 0.9rem;margin-bottom:0;flex-shrink:0;border-bottom:0.5px solid var(--border2)}
+    .modal-body{flex:1;overflow-y:auto;padding:0.75rem 1.1rem 0.25rem;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior:contain}
+    .modal-body::-webkit-scrollbar{display:none}
+    .modal-footer{flex-shrink:0;padding:0.5rem 1.1rem calc(1.5rem + var(--sab))}
+    .modal-footer .form-actions{margin-top:0}
+    #export-modal,#import-result-modal{z-index:500}
     .modal-title{font-size:1rem;font-weight:500;margin-bottom:0.9rem;color:var(--text)}
     .form-group{margin-bottom:0.75rem}
     .form-label{font-size:0.65rem;color:var(--text3);margin-bottom:0.28rem;display:block;letter-spacing:0.02em}
@@ -614,11 +621,13 @@
     .list-view-acts{display:flex;gap:0.45rem}
     .list-icon-btn{width:1.8rem;height:1.8rem;border-radius:50%;border:0.5px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:var(--text2);transition:background var(--tr)}
     .list-icon-btn:hover{background:var(--surface2)}
-    .list-item-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:0.7rem 0.85rem;margin-bottom:0.5rem;display:flex;align-items:flex-start;gap:0.55rem;position:relative;overflow:hidden}
-    .li-check{width:1.1rem;height:1.1rem;border-radius:0.3rem;border:1.5px solid var(--border);flex-shrink:0;margin-top:0.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--tr)}
+    .list-item-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);position:relative;overflow:hidden}
+    .li-check{width:1.1rem;height:1.1rem;border-radius:0.3rem;border:1.5px solid var(--border);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--tr);margin-top:0.12rem}
     .li-check:hover{border-color:var(--accent)}
-    .li-check.checked{background:var(--accent);border-color:var(--accent)}
-    .li-check.checked::after{content:'✓';font-size:0.6rem;color:#fff;font-weight:500}
+    .li-check[data-state="checked"]{background:var(--accent);border-color:var(--accent)}
+    .li-check[data-state="checked"]::after{content:'✓';font-size:0.6rem;color:#fff;font-weight:500}
+    .li-check[data-state="crossed"]{background:var(--ph);border-color:var(--ph)}
+    .li-check[data-state="crossed"]::after{content:'✕';font-size:0.6rem;color:#fff;font-weight:500}
 
     /* ── BLANK PAGE ── */
     .blank-page{padding:2.5rem var(--px);text-align:center;color:var(--text3)}
@@ -644,6 +653,12 @@
     .note-editor h2{font-size:1.15rem;font-weight:500;margin:0.45rem 0 0.15rem;line-height:1.3}
     .note-editor ul,.note-editor ol{padding-left:1.4rem;margin:0.3rem 0}
     .note-editor li{margin-bottom:0.15rem}
+    .note-cl-item{display:block;position:relative;padding-left:1.7rem;min-height:1.4rem;margin:0.12rem 0;line-height:1.6;word-break:break-word}
+    .note-cl-box{position:absolute;left:0;top:0.26rem;width:1rem;height:1rem;border-radius:0.25rem;border:1.5px solid var(--border);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all var(--tr);background:transparent;-webkit-user-select:none;user-select:none}
+    .note-cl-box[data-state="checked"]{background:var(--accent);border-color:var(--accent)}
+    .note-cl-box[data-state="checked"]::after{content:'✓';font-size:0.55rem;color:#fff;font-weight:500}
+    .note-cl-box[data-state="crossed"]{background:var(--ph);border-color:var(--ph)}
+    .note-cl-box[data-state="crossed"]::after{content:'✕';font-size:0.55rem;color:#fff;font-weight:500}
     .note-editor img{max-width:100%;height:auto;border-radius:var(--rs);margin:0.4rem 0;display:block}
     .note-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:0.65rem 0.85rem;margin-bottom:0.5rem;cursor:pointer;transition:background var(--tr)}
     .note-card:active{background:var(--surface2)}
@@ -751,12 +766,17 @@
         width:1.75rem;height:1.75rem;border-radius:50%;
         border:1.5px solid rgba(255,255,255,0.55);
         background:rgba(255,255,255,0.15);
-        color:#fff;font-size:1.25rem;line-height:1;
+        color:#fff;
         cursor:pointer;flex-shrink:0;
         display:flex;align-items:center;justify-content:center;
         transition:background var(--tr);
     }
     .day-nav-add:hover,.day-nav-add:active{background:rgba(255,255,255,0.28);}
+    .export-opt{display:flex;align-items:center;gap:0.7rem;padding:0.6rem 0;border-bottom:0.5px solid var(--border2);font-size:0.88rem;color:var(--text);cursor:pointer;-webkit-user-select:none;user-select:none}
+    .export-opt:last-child{border-bottom:none}
+    .export-opt input[type=checkbox]{width:1.1rem;height:1.1rem;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+    .day-nav-add svg{width:0.78rem;height:0.78rem}
+    .day-nav-btn svg{width:0.88rem;height:0.88rem}
 
     /* ── Sub-section headers (Pending / Completed) ── */
     .sub-nav-bar{
@@ -806,6 +826,70 @@
             -webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;
         }
         #task-zone::-webkit-scrollbar{display:none}
+
+    /* ── LISTS OVERVIEW PAGE ── */
+    .lists-page-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:0.65rem 0.85rem;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.55rem;cursor:pointer;transition:background var(--tr)}
+    .lists-page-card:active{background:var(--surface2)}
+    body.has-bg .lists-page-card{background:rgba(255,255,255,0);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-color:rgba(255,255,255,0.3)}
+    body.has-bg.dark .lists-page-card{background:rgba(28,28,26,0);border-color:rgba(255,255,255,0.12)}
+    .lists-page-name{flex:1;font-size:0.92rem;color:var(--text)}
+    .lists-page-count{font-size:0.65rem;color:var(--text3);font-family:var(--mono);background:var(--surface2);padding:0.1rem 0.45rem;border-radius:2rem;flex-shrink:0}
+    .lists-page-actions{display:flex;gap:0.2rem;align-items:center}
+    .pin-btn{width:1.7rem;height:1.7rem;border-radius:50%;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:color var(--tr);flex-shrink:0}
+    .pin-btn:hover{color:var(--text2)}
+    .pin-btn.pinned{color:var(--accent)}
+    .pin-btn svg{width:0.9rem;height:0.9rem}
+    /* ── LIST DETAIL — FIXED LAYOUT ── */
+    #view-list{flex:1;flex-direction:column;overflow:hidden;min-height:0}
+    #list-view-top{flex-shrink:0}
+    .list-view-top-inner{max-width:540px;margin:0 auto;padding:0.5rem var(--px) 0.3rem}
+    #list-items-zone{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
+    #list-items-zone::-webkit-scrollbar{display:none}
+    /* ── LIST ITEM DRAG ── */
+    .list-item-wrap{margin-bottom:0.5rem;border-radius:var(--r)}
+    .list-item-wrap.is-dragging .list-item-card{opacity:0.3;border-color:var(--accent)}
+    .list-item-wrap.drop-above{box-shadow:0 -3px 0 0 var(--accent);border-radius:var(--r)}
+    .list-item-wrap.drop-below{box-shadow:0 3px 0 0 var(--accent);border-radius:var(--r)}
+    .li-drag-handle{display:flex;align-items:center;justify-content:center;width:1.3rem;flex-shrink:0;cursor:grab;padding:0.15rem 0;color:var(--accent);touch-action:none}
+    .li-drag-handle svg{width:0.72rem;height:0.72rem}
+    /* ── LIST ITEM CARD INTERNALS ── */
+    .li-card-row{display:flex;align-items:flex-start;gap:0.45rem;padding:0.65rem 0.85rem}
+    .li-chevron{width:1.4rem;height:1.4rem;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:0.72rem;cursor:pointer;flex-shrink:0;transition:transform var(--tr)}
+    .list-item-card.expanded .li-chevron{transform:rotate(180deg)}
+    .li-notes-expand{display:none;padding:0.3rem 0.85rem 0.5rem 3.35rem;font-size:0.78rem;color:var(--text3);border-top:0.5px solid var(--border2);line-height:1.45}
+    .list-item-card.expanded .li-notes-expand{display:block}
+
+    /* ── LIST ITEM TAG GROUPS ── */
+    .li-tag-group{margin-bottom:0.35rem}
+    .li-tag-hdr{display:flex;align-items:center;gap:0.4rem;padding:0.35rem 0.65rem;background:var(--accent-l);border-radius:var(--rs);margin-bottom:0.25rem;-webkit-user-select:none;user-select:none}
+    .li-tag-drag-handle{display:flex;align-items:center;justify-content:center;width:1rem;flex-shrink:0;cursor:grab;color:var(--accent);touch-action:none;padding:0.1rem}
+    .li-tag-drag-handle svg{width:0.65rem;height:0.65rem}
+    .li-tag-label{flex:1;font-size:0.72rem;font-weight:500;color:var(--accent);font-family:var(--mono);cursor:pointer}
+    .li-tag-count{font-size:0.62rem;color:var(--accent);font-family:var(--mono);background:rgba(0,0,0,0.06);padding:0.08rem 0.35rem;border-radius:2rem}
+    .li-tag-chevron{font-size:0.65rem;color:var(--accent);transition:transform var(--tr);flex-shrink:0;cursor:pointer;padding:0.1rem}
+    .li-tag-group.collapsed .li-tag-chevron{transform:rotate(-90deg)}
+    .li-tag-body{padding-bottom:0.15rem}
+    .li-tag-group.collapsed .li-tag-body{display:none}
+    .li-tag-group.is-dragging{opacity:0.3}
+    .li-tag-group.tag-drop-above{box-shadow:0 -3px 0 0 var(--accent);border-radius:var(--r)}
+    .li-tag-group.tag-drop-below{box-shadow:0 3px 0 0 var(--accent);border-radius:var(--r)}
+    .li-subitems-wrap{padding:0.25rem 0 0.1rem 0.2rem}
+    .li-subitem-item{display:flex;align-items:center;gap:0.45rem;padding:0.18rem 0}
+
+    /* ── REMINDERS TAB ── */
+    #view-reminders{flex:1;flex-direction:column;overflow:hidden;min-height:0}
+    #rem-zone{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
+    #rem-zone::-webkit-scrollbar{display:none}
+
+    #view-calendar{flex:1;flex-direction:column;overflow:hidden;min-height:0}
+    #cal-fixed-top{flex-shrink:0}
+    .cal-top-inner{max-width:540px;margin:0 auto;padding:0.4rem var(--px) 0.3rem}
+    #cal-items-zone{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
+    #cal-items-zone::-webkit-scrollbar{display:none}
+    .cal-items-inner{max-width:540px;margin:0 auto;padding:0.5rem var(--px) calc(1.5rem + var(--sab))}
+    .cal-add-dropdown{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.12);margin-top:0.35rem}
+    .cal-drop-btn{display:flex;align-items:center;gap:0.6rem;width:100%;padding:0.7rem 0.85rem;border:none;background:transparent;color:var(--text);font-size:0.88rem;font-family:var(--font);cursor:pointer;transition:background var(--tr)}
+    .cal-drop-btn:active{background:var(--surface2)}
   </style>
 </head>
 <body>
@@ -819,7 +903,7 @@
 <div class="side-menu" id="side-menu">
   <div class="menu-header">
     <div class="menu-logo">Rou<b>Tine</b></div>
-    <div class="menu-version">v2</div>
+    <div class="menu-version">v2.3</div>
   </div>
   <div class="menu-nav">
     <div class="menu-item active" id="mn-today" onclick="setView('tasks');closeMenu()">
@@ -829,9 +913,11 @@
       <span class="menu-icon"><svg viewBox="0 0 18 18"><rect x="2" y="3" width="14" height="13" rx="2"/><path d="M2 7h14M6 3V1M12 3V1"/><circle cx="9" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></span>Calendar
     </div>
     <div class="menu-sep"></div>
-    <div class="menu-section-lbl">Lists</div>
+    <div class="menu-item" id="mn-lists" onclick="setView('lists');closeMenu()">
+      <span class="menu-icon"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="2" width="14" height="4" rx="1"/><rect x="2" y="9" width="14" height="4" rx="1"/><path d="M2 16h8"/></svg></span>Lists
+    </div>
+    <div class="menu-section-lbl" id="pinned-lists-lbl" style="display:none">Pinned</div>
     <div id="menu-lists-wrap"></div>
-    <div class="add-list-row" id="add-list-btn"><span style="font-size:1rem;margin-right:0.1rem">+</span> New list</div>
     <div class="menu-sep"></div>
     <div class="menu-item" id="mn-hashtags" onclick="setView('hashtags');renderHashtags();closeMenu()">
       <span class="menu-icon" style="font-size:1rem;font-weight:600;font-family:var(--mono)">#</span>Hashtags
@@ -886,6 +972,9 @@
       <div class="weather-icon" id="weather-icon">--</div>
       <div class="weather-temp" id="weather-temp">--°</div>
       <div class="weather-desc" id="weather-desc">Tap to set</div>
+      <button class="weather-refresh-btn" id="weather-refresh-btn" title="Refresh weather" style="display:none">
+        <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a6 6 0 1 0 1.5-4M3 5v4h4"/></svg>
+      </button>
     </div>
   </div>
 
@@ -897,7 +986,7 @@
   <div id="tasks-header" style="display:none;">
     <div class="tasks-header-inner">
       <div class="day-nav-bar">
-        <button class="day-nav-add" id="day-add-btn">+</button>
+        <button class="day-nav-add" id="day-add-btn"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg></button>
         <div class="day-nav-controls">
           <button class="day-nav-btn" id="day-prev">‹</button>
           <span class="day-nav-label" id="day-nav-label">Today</span>
@@ -916,6 +1005,7 @@
 
   <div id="view-tasks" style="display:none">
     <div class="day-nav-bar" id="section-nav-bar">
+      <button class="day-nav-btn" id="sort-cycle-btn" title="Cycle sort order"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 5h12M3 9h12M3 13h12"/></svg></button>
       <div class="day-nav-controls">
         <button class="day-nav-btn" id="section-prev">‹</button>
         <span class="day-nav-label" id="section-label">Pending</span>
@@ -939,27 +1029,63 @@
     </div>
   </div>
 
-  <div class="scroll-area" id="scroll-area">
-    <div class="scroll-inner">
-
-      <div id="view-reminders" style="display:none">
-        <div class="section">
-          <div class="section-hdr">
-            <div class="section-title">Today</div>
-            <div class="section-count" id="rem-count">0</div>
-          </div>
-          <div id="reminder-list"></div>
-          <div class="empty-state" id="rem-empty" style="display:none">
-            <div class="empty-icon"><svg width="2.2rem" height="2.2rem" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.35"><path d="M10 20V13a8 8 0 0116 0v7l3 4H7l3-4zM16 30a3 3 0 006 0"/></svg></div>
-            <div class="empty-text">No reminders yet. Tap below to add one.</div>
-          </div>
-        </div>
-        <button class="add-inline-btn" id="add-rem-inline-btn">
-          <div class="add-inline-plus">+</div>Add a reminder
+  <div id="view-list" style="display:none">
+    <div id="list-view-top">
+      <div class="list-view-top-inner">
+        <div class="list-view-hdr" id="list-view-hdr"></div>
+        <button class="add-inline-btn" id="add-li-inline-btn" style="margin-top:0.3rem">
+          <div class="add-inline-plus">+</div>Add item
         </button>
       </div>
+    </div>
+    <div id="list-items-zone">
+      <div class="zone-inner">
+        <div id="list-items-wrap"></div>
+        <div class="empty-state" id="list-empty" style="display:none">
+          <div class="empty-icon"><svg width="2.2rem" height="2.2rem" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.35"><rect x="5" y="4" width="26" height="28" rx="3"/><path d="M11 12h14M11 18h14M11 24h8"/></svg></div>
+          <div class="empty-text">Nothing here yet.</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-      <div id="view-calendar" style="display:none">
+
+  <div id="lists-header" style="display:none">
+    <div class="tasks-header-inner" style="padding-bottom:0.5rem">
+      <button class="add-inline-btn" id="add-list-btn">
+        <div class="add-inline-plus">+</div>New List
+      </button>
+    </div>
+  </div>
+
+  <div id="rem-header" style="display:none">
+    <div class="tasks-header-inner">
+      <div class="day-nav-bar">
+        <button class="day-nav-add" id="rem-add-btn"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg></button>
+        <div class="day-nav-controls">
+          <button class="day-nav-btn" id="rem-prev">‹</button>
+          <span class="day-nav-label" id="rem-section-label">Today</span>
+          <button class="day-nav-btn" id="rem-next">›</button>
+        </div>
+        <span class="day-nav-count" id="rem-count">0</span>
+      </div>
+    </div>
+  </div>
+  <div id="view-reminders" style="display:none">
+    <div id="rem-zone">
+      <div class="zone-inner">
+        <div id="reminder-list"></div>
+        <div class="empty-state" id="rem-empty" style="display:none">
+          <div class="empty-icon"><svg width="2.2rem" height="2.2rem" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.35"><path d="M10 20V13a8 8 0 0116 0v7l3 4H7l3-4zM16 30a3 3 0 006 0"/></svg></div>
+          <div class="empty-text">No reminders yet. Tap + to add one.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-calendar" style="display:none">
+    <div id="cal-fixed-top">
+      <div class="cal-top-inner">
         <div class="cal-header">
           <button class="cal-nav" id="cal-prev">‹</button>
           <button class="cal-month-btn" id="cal-month-btn"></button>
@@ -967,27 +1093,33 @@
         </div>
         <div class="cal-grid" id="cal-grid"></div>
         <div id="cal-selected-lbl" class="cal-selected-lbl" style="display:none"></div>
-        <div id="cal-items"></div>
-        <button class="add-inline-btn" id="add-from-cal-btn" style="display:none">
-          <div class="add-inline-plus">+</div>Add task for this day
-        </button>
-        <button class="add-inline-btn" id="add-rem-from-cal-btn" style="display:none">
-          <div class="add-inline-plus">+</div>Add reminder for this day
-        </button>
-      </div>
-
-      <div id="view-list" style="display:none">
-        <div class="list-view-hdr" id="list-view-hdr"></div>
-        <div class="section">
-          <div id="list-items-wrap"></div>
-          <div class="empty-state" id="list-empty" style="display:none">
-            <div class="empty-icon"><svg width="2.2rem" height="2.2rem" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.35"><rect x="5" y="4" width="26" height="28" rx="3"/><path d="M11 12h14M11 18h14M11 24h8"/></svg></div>
-            <div class="empty-text">Nothing here yet.</div>
+        <div id="cal-add-wrap" style="display:none;position:relative">
+          <button class="add-inline-btn" id="cal-add-btn" onclick="toggleCalDropdown()">
+            <div class="add-inline-plus">+</div>Add to this day
+          </button>
+          <div id="cal-add-dropdown" class="cal-add-dropdown" style="display:none">
+            <button class="cal-drop-btn" onclick="closeCalDropdown();openAddTask(calSelected)">
+              <svg viewBox="0 0 18 18" width="1rem" height="1rem" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="14" height="13" rx="2"/><path d="M2 7h14M6 3V1M12 3V1"/></svg>Task
+            </button>
+            <button class="cal-drop-btn" onclick="closeCalDropdown();openAddReminder(calSelected)">
+              <svg viewBox="0 0 18 18" width="1rem" height="1rem" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13V8a5 5 0 0110 0v5l1.5 2h-13L4 13zM7 15.5a2 2 0 004 0"/></svg>Reminder
+            </button>
           </div>
         </div>
-        <button class="add-inline-btn" id="add-li-inline-btn" style="display:none">
-          <div class="add-inline-plus">+</div>Add item
-        </button>
+      </div>
+    </div>
+    <div id="cal-items-zone">
+      <div class="cal-items-inner">
+        <div id="cal-items"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-area" id="scroll-area">
+    <div class="scroll-inner">
+
+      <div id="view-lists" style="display:none">
+        <div id="lists-page-content"></div>
       </div>
 
       <div id="view-hashtags" style="display:none"><div id="hashtags-content"></div></div>
@@ -1038,6 +1170,7 @@
     <div class="note-tool-sep"></div>
     <button class="note-tool-btn" onclick="noteCmd('insertUnorderedList')">• List</button>
     <button class="note-tool-btn" onclick="noteCmd('insertOrderedList')">1. List</button>
+    <button class="note-tool-btn" onclick="insertNoteChecklist()">☑ List</button>
     <div class="note-tool-sep"></div>
     <button class="note-tool-btn" id="ntool-color" onclick="toggleNoteColorPicker('text',this)" style="font-weight:700;color:#e74c3c">A</button>
     <button class="note-tool-btn" id="ntool-hl" onclick="toggleNoteColorPicker('highlight',this)" style="background:#fef08a;color:#92400e">HL</button>
@@ -1054,36 +1187,40 @@
 
 <!-- Modals -->
 <div class="modal-overlay" id="task-modal">
-  <div class="modal">
+  <div class="modal modal-flex">
     <div class="modal-title" id="task-modal-title">New task</div>
-    <div class="form-group">
-      <label class="form-label">Name & icon</label>
-      <div class="emoji-row">
-        <input class="form-input emoji-input" id="task-emoji" type="text" placeholder="😀" maxlength="2">
-        <input class="form-input" id="task-name" type="text" style="flex:1" placeholder="">
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Name & icon</label>
+        <div class="emoji-row">
+          <input class="form-input emoji-input" id="task-emoji" type="text" placeholder="😀" maxlength="2">
+          <input class="form-input" id="task-name" type="text" style="flex:1" placeholder="">
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Priority <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label><select class="priority-select" id="task-priority"><option value="">No priority</option><option value="low">Low</option><option value="med">Medium</option><option value="high">High</option></select></div>
+      <div class="form-group"><label class="form-label">Hashtags <span style="color:var(--text3);font-size:0.65rem">(optional, space-separated)</span></label><input class="form-input" id="task-tags" type="text" placeholder="#focus #work"></div>
+      <div class="form-group">
+        <label class="form-label">Date & Time <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label>
+        <button class="time-toggle-btn" id="time-toggle-btn" type="button"><span id="time-toggle-lbl">Add date & time...</span><span id="time-arrow">▾</span></button>
+        <div class="time-fields" id="time-fields">
+          <div><div class="form-label" style="margin-top:0.35rem">Date</div><input class="form-input" id="task-date" type="date"></div>
+          <div><div class="form-label" style="margin-top:0.35rem">Time</div><input class="form-input" id="task-time" type="time"></div>
+          <div><div class="form-label" style="margin-top:0.35rem">Duration (min)</div><input class="form-input" id="task-dur" type="number" placeholder="30" min="1" max="480" inputmode="numeric" pattern="[0-9]*"></div>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Notes <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label><input class="form-input" id="task-notes" type="text" placeholder="Add a note..."></div>
+      <div class="form-group">
+        <label class="form-label">Subtasks <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label>
+        <div class="subtask-add-row">
+          <input class="form-input" id="subtask-input" type="text" placeholder="Add a subtask..." style="flex:1">
+          <button type="button" id="subtask-add-btn" class="btn btn-primary" style="flex:none;padding:0.6rem 0.9rem">+</button>
+        </div>
+        <div id="modal-subtask-list"></div>
       </div>
     </div>
-    <div class="form-group"><label class="form-label">Priority <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label><select class="priority-select" id="task-priority"><option value="">No priority</option><option value="low">Low</option><option value="med">Medium</option><option value="high">High</option></select></div>
-    <div class="form-group"><label class="form-label">Hashtags <span style="color:var(--text3);font-size:0.65rem">(optional, space-separated)</span></label><input class="form-input" id="task-tags" type="text" placeholder="#focus #work"></div>
-    <div class="form-group">
-      <label class="form-label">Date & Time <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label>
-      <button class="time-toggle-btn" id="time-toggle-btn" type="button"><span id="time-toggle-lbl">Add date & time...</span><span id="time-arrow">▾</span></button>
-      <div class="time-fields" id="time-fields">
-        <div><div class="form-label" style="margin-top:0.35rem">Date</div><input class="form-input" id="task-date" type="date"></div>
-        <div><div class="form-label" style="margin-top:0.35rem">Time</div><input class="form-input" id="task-time" type="time"></div>
-        <div><div class="form-label" style="margin-top:0.35rem">Duration (min)</div><input class="form-input" id="task-dur" type="number" placeholder="30" min="1" max="480" inputmode="numeric" pattern="[0-9]*"></div>
-      </div>
+    <div class="modal-footer">
+      <div class="form-actions"><button class="btn btn-primary" id="task-save">Add task</button></div>
     </div>
-    <div class="form-group"><label class="form-label">Notes <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label><input class="form-input" id="task-notes" type="text" placeholder="Add a note..."></div>
-    <div class="form-group">
-      <label class="form-label">Subtasks <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label>
-      <div class="subtask-add-row">
-        <input class="form-input" id="subtask-input" type="text" placeholder="Add a subtask..." style="flex:1">
-        <button type="button" id="subtask-add-btn" class="btn btn-primary" style="flex:none;padding:0.6rem 0.9rem">+</button>
-      </div>
-      <div id="modal-subtask-list"></div>
-    </div>
-    <div class="form-actions"><button class="btn btn-primary" id="task-save">Add task</button></div>
   </div>
 </div>
 
@@ -1115,18 +1252,31 @@
 </div>
 
 <div class="modal-overlay" id="li-modal">
-  <div class="modal">
+  <div class="modal modal-flex">
     <div class="modal-title" id="li-modal-title">Add item</div>
-    <div class="form-group">
-      <label class="form-label">Item name & icon</label>
-      <div class="emoji-row">
-        <input class="form-input emoji-input" id="li-emoji" type="text" placeholder="📌" maxlength="2">
-        <input class="form-input" id="li-name" type="text" style="flex:1" placeholder="e.g. Milk">
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Item name & icon</label>
+        <div class="emoji-row">
+          <input class="form-input emoji-input" id="li-emoji" type="text" placeholder="📌" maxlength="2">
+          <input class="form-input" id="li-name" type="text" style="flex:1" placeholder="e.g. Milk">
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Priority <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label><select class="priority-select" id="li-priority"><option value="">No priority</option><option value="low">Low</option><option value="med">Medium</option><option value="high">High</option></select></div>
+      <div class="form-group"><label class="form-label">Hashtags <span style="color:var(--text3);font-size:0.65rem">(optional, space-separated)</span></label><input class="form-input" id="li-tags" type="text" placeholder="#shopping #urgent"></div>
+      <div class="form-group"><label class="form-label">Notes <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label><input class="form-input" id="li-notes" type="text" placeholder="Add a note..."></div>
+      <div class="form-group">
+        <label class="form-label">Subitems <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label>
+        <div class="subtask-add-row">
+          <input class="form-input" id="li-subitem-input" type="text" placeholder="Add a subitem..." style="flex:1">
+          <button type="button" id="li-subitem-add-btn" class="btn btn-primary" style="flex:none;padding:0.6rem 0.9rem">+</button>
+        </div>
+        <div id="modal-li-subitem-list"></div>
       </div>
     </div>
-    <div class="form-group"><label class="form-label">Priority <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label><select class="priority-select" id="li-priority"><option value="">No priority</option><option value="low">Low</option><option value="med">Medium</option><option value="high">High</option></select></div>
-    <div class="form-group"><label class="form-label">Notes <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label><input class="form-input" id="li-notes" type="text" placeholder="Add a note..."></div>
-    <div class="form-actions"><button class="btn btn-primary" id="li-save">Add item</button></div>
+    <div class="modal-footer">
+      <div class="form-actions"><button class="btn btn-primary" id="li-save">Add item</button></div>
+    </div>
   </div>
 </div>
 
@@ -1240,6 +1390,7 @@
           <div><div class="settings-row-label">Background image</div><div class="settings-row-sub">Glass effect on cards, solid backing on labels</div></div>
           <label class="upload-btn" for="bg-file-input">Upload</label>
           <input type="file" id="bg-file-input" accept="image/*">
+          <input type="file" id="import-file-input" accept=".json" style="display:none">
         </div>
         <img id="bg-preview" class="bg-preview" alt="">
         <div class="settings-row" id="clear-bg-row" style="display:none">
@@ -1274,6 +1425,17 @@
         <div class="settings-row">
           <div class="settings-row-label">Clear all reminders</div>
           <button class="upload-btn" id="clear-rems-btn" style="color:var(--ph)">Clear</button>
+        </div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-title">Data</div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Export data</div><div class="settings-row-sub">Save a backup file to your device</div></div>
+          <button class="upload-btn" id="export-open-btn">Export</button>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Import data</div><div class="settings-row-sub">Restore from a RouTine backup file</div></div>
+          <label class="upload-btn" for="import-file-input">Import</label>
         </div>
       </div>
       <div class="settings-section">
@@ -1345,12 +1507,48 @@
   </div>
 </div>
 
+<!-- Export modal -->
+<div class="modal-overlay" id="export-modal">
+  <div class="modal">
+    <div class="modal-title">Export Data</div>
+    <div class="form-group">
+      <label class="form-label">Select data to export</label>
+      <div>
+        <label class="export-opt"><input type="checkbox" id="exp-tasks" checked>Tasks <span style="font-size:0.72rem;color:var(--text3)">(all dates, subtasks, hashtags, order)</span></label>
+        <label class="export-opt"><input type="checkbox" id="exp-reminders" checked>Reminders</label>
+        <label class="export-opt"><input type="checkbox" id="exp-lists" checked>Lists</label>
+        <label class="export-opt"><input type="checkbox" id="exp-hashtags" checked>Hashtags <span style="font-size:0.72rem;color:var(--text3)">(tag index)</span></label>
+        <label class="export-opt"><input type="checkbox" id="exp-notes" checked>Notes</label>
+        <label class="export-opt"><input type="checkbox" id="exp-settings" checked>Settings</label>
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal('export-modal')">Cancel</button>
+      <button class="btn btn-primary" id="export-confirm-btn">Export</button>
+    </div>
+  </div>
+</div>
+
+<!-- Import result modal -->
+<div class="modal-overlay" id="import-result-modal">
+  <div class="modal">
+    <div class="modal-title">Import Complete</div>
+    <p id="import-result-text" style="font-size:0.88rem;color:var(--text2);line-height:1.65;margin-bottom:1.2rem"></p>
+    <div class="form-actions">
+      <button class="btn btn-primary" onclick="closeModal('import-result-modal')">Done</button>
+    </div>
+  </div>
+</div>
+
 <script>
   /* ═══════════════════════════════════════════════════════
      STORAGE KEYS & GLOBAL STATE
      ═══════════════════════════════════════════════════════ */
   const K={tasks:'rt_tasks_v5',rems:'rt_rems_v3',lists:'rt_lists_v4',cfg:'rt_cfg_v6',bg:'rt_bg_v1',timer:'rt_timer_v1',st:'rt_st_v1',notes:'rt_notes_v1'};
   let showingDone=false;
+  let remSection='today';
+  let settingsCloseTime=0;
+  let weatherLastFetch=0,weatherHasError=false,weatherLastKey='',weatherLastLoc='';
   let taskViewDate=todayStr();
   let tasks=[],reminders=[],lists=[],listItems={},bgImage=null;
   let cfg={dark:false,autoDark:true,showDone:true,manualOverride:false,use24h:false,bgOpacity:0.65,weatherApiKey:'',weatherLocation:'',name:''};
@@ -1358,7 +1556,7 @@
   let activeTimerId=null,timerSec=0,timerPaused=false,timerTotal=0,timerIv=null;
   let stRunning=false,stPaused=false,stSec=0,stIv=null,stCountdown=false;
   let editTaskId=null,editRemId=null,editListId=null,editLIId=null,moveTaskId=null;
-  let copyTaskId=null,copyCalYear=new Date().getFullYear(),copyCalMonth=new Date().getMonth();
+  let copyTaskId=null,copyRemId=null,copyCalYear=new Date().getFullYear(),copyCalMonth=new Date().getMonth();
   let copySelectedDates=new Set();
   let modalSubtasks=[];
   let calYear=new Date().getFullYear(),calMonth=new Date().getMonth(),calSelected=null;
@@ -1369,9 +1567,17 @@
   let notes=[],noteGroups=[],currentNoteId=null,noteAutoSaveTimer=null,editNoteGroupId=null,noteColorPickerMode=null;
   let captionTargetImg=null;
 
+  let listTagOrders={};   // {listId:['#tag1','#tag2',...]}
+  let listTagCollapsed={}; // {listId:{'#tag1':false}}
+  let liTagDragGroup=null,liTagDragGhost=null,liTagDragOffY=0;
+  let modalLISubitems=[];
+
   let selectedImg=null;
   let dragId=null,dragGhost=null,dragOffY=0,dragListEl=null;
+  let dragScrollIv=null,dragScrollDir=0;
+  let liDragId=null,liDragGhost=null,liDragOffY=0;
   let taskOrderIds=[];
+  let taskSortMode='added'; // 'added' | 'time' | 'manual'
 
   function selectNoteImage(img,e){
     if(e)e.stopPropagation();
@@ -1762,6 +1968,31 @@
     document.getElementById('note-color-popup').classList.remove('open');
   }
 
+  function insertNoteChecklist(){
+    const editor=document.getElementById('note-editor');
+    editor.focus();
+    const sel=window.getSelection();
+    if(sel&&sel.rangeCount){
+      const range=sel.getRangeAt(0);
+      const node=range.commonAncestorContainer;
+      const item=(node.nodeType===1?node:node.parentElement)?.closest('.note-cl-item');
+      if(item){
+        const r=document.createRange();
+        r.setStartAfter(item);r.collapse(true);
+        sel.removeAllRanges();sel.addRange(r);
+      }
+    }
+    document.execCommand('insertHTML',false,
+      '<div class="note-cl-item"><span class="note-cl-box" contenteditable="false"></span>\u200B</div>'
+    );
+    saveCurrentNote();
+  }
+  function toggleNoteCheck(el){
+    const s=el.getAttribute('data-state')||'';
+    el.setAttribute('data-state',s===''?'checked':s==='checked'?'crossed':'');
+    saveCurrentNote();
+  }
+
   // Image
   function insertNoteImage(){document.getElementById('note-img-input').click();}
   document.getElementById('note-img-input').addEventListener('change',e=>{
@@ -1785,10 +2016,16 @@
     clearTimeout(noteAutoSaveTimer);noteAutoSaveTimer=setTimeout(saveCurrentNote,800);
   });
   document.getElementById('note-editor').addEventListener('click',e=>{
+    const box=e.target.closest('.note-cl-box');
+    if(box){toggleNoteCheck(box);return;}
     if(e.target.tagName==='IMG'){selectNoteImage(e.target,e);}
     else{deselectNoteImage();}
     updateNoteToolbar();
   });
+  document.getElementById('note-editor').addEventListener('touchstart',e=>{
+    const box=e.target.closest('.note-cl-box');
+    if(box){e.preventDefault();e.stopPropagation();toggleNoteCheck(box);}
+  },{passive:false});
   document.getElementById('notes-back-btn').addEventListener('click',backToNotes);
   document.getElementById('notes-del-btn').addEventListener('click',delCurrentNote);
   document.getElementById('add-note-btn').addEventListener('click',()=>createNote(null));
@@ -1819,6 +2056,20 @@
     modalSubtasks.push({id:uid(),name,done:false});
     inp.value='';renderModalSubtasks();inp.focus();
   }
+
+  function renderModalLISubitems(){
+    document.getElementById('modal-li-subitem-list').innerHTML=modalLISubitems.map(s=>`
+      <div class="modal-subtask-item"><span style="flex:1">${s.name}</span><button class="del-btn" onclick="removeModalLISubitem('${s.id}')">✕</button></div>`).join('');
+  }
+  function addModalLISubitem(){
+    const inp=document.getElementById('li-subitem-input');
+    const name=inp.value.trim();if(!name)return;
+    modalLISubitems.push({id:uid(),name,done:false});
+    inp.value='';renderModalLISubitems();inp.focus();
+  }
+  function removeModalLISubitem(id){modalLISubitems=modalLISubitems.filter(s=>s.id!==id);renderModalLISubitems();}
+  document.getElementById('li-subitem-add-btn').addEventListener('click',addModalLISubitem);
+  document.getElementById('li-subitem-input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addModalLISubitem();}});
 
   function removeModalSubtask(id){
     modalSubtasks=modalSubtasks.filter(s=>s.id!==id);renderModalSubtasks();
@@ -2072,13 +2323,16 @@
      WEATHER FUNCTIONS
      ═══════════════════════════════════════════════════════ */
   async function fetchWeather(){
+    const refreshBtn=document.getElementById('weather-refresh-btn');
     if(!cfg.weatherApiKey||!cfg.weatherLocation){
       document.getElementById('weather-icon').textContent='--';
       document.getElementById('weather-temp').textContent='--°';
       document.getElementById('weather-desc').textContent='Tap to set';
+      weatherHasError=false;
+      if(refreshBtn)refreshBtn.style.display='none';
       return;
     }
-
+    if(refreshBtn)refreshBtn.style.display='flex';
     try{
       const isCoord=/^-?\d+\.?\d*,-?\d+\.?\d*$/.test(cfg.weatherLocation.trim());
       let url;
@@ -2088,7 +2342,6 @@
       }else{
         url=`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(cfg.weatherLocation)}&units=metric&appid=${cfg.weatherApiKey}`;
       }
-
       const res=await fetch(url);
       if(!res.ok){
         if(res.status===401)throw new Error('Invalid API key');
@@ -2096,19 +2349,23 @@
         throw new Error('Error '+res.status);
       }
       const data=await res.json();
-
       const iconMap={'01d':'☀️','01n':'🌙','02d':'⛅','02n':'☁️','03d':'☁️','03n':'☁️','04d':'☁️','04n':'☁️','09d':'🌧️','09n':'🌧️','10d':'🌦️','10n':'🌧️','11d':'⛈️','11n':'⛈️','13d':'❄️','13n':'❄️','50d':'🌫️','50n':'🌫️'};
       const icon=iconMap[data.weather[0].icon]||'🌤️';
-
       document.getElementById('weather-icon').textContent=icon;
       document.getElementById('weather-temp').textContent=Math.round(data.main.temp)+'°';
       document.getElementById('weather-desc').textContent=data.weather[0].description;
-      }catch(e){
-        console.error('Weather fetch error:',e);
-        document.getElementById('weather-icon').textContent='⚠️';
-        document.getElementById('weather-temp').textContent='--°';
-        document.getElementById('weather-desc').textContent=e instanceof TypeError?'Network error. Couldn\'t load weather':e.message||'Could not load';
-      }
+      weatherLastFetch=Date.now();
+      weatherLastKey=cfg.weatherApiKey;
+      weatherLastLoc=cfg.weatherLocation;
+      weatherHasError=false;
+    }catch(e){
+      console.error('Weather fetch error:',e);
+      document.getElementById('weather-icon').textContent='⚠️';
+      document.getElementById('weather-temp').textContent='--°';
+      document.getElementById('weather-desc').textContent=e instanceof TypeError?'Network error. Couldn\'t load weather':e.message||'Could not load';
+      weatherHasError=true;
+      weatherLastFetch=Date.now();
+    }
   }
 
   // Weather widget click opens settings
@@ -2120,6 +2377,23 @@
 
   // Fetch weather every 5 minutes
   setInterval(fetchWeather,300000);
+
+  function refreshWeather(){
+    const keyChanged=cfg.weatherApiKey!==weatherLastKey;
+    const locChanged=cfg.weatherLocation!==weatherLastLoc;
+    const isStale=Date.now()-weatherLastFetch>600000;
+    if(keyChanged||locChanged||weatherHasError||isStale){
+      const btn=document.getElementById('weather-refresh-btn');
+      if(btn)btn.classList.add('spinning');
+      fetchWeather().finally(()=>{const b=document.getElementById('weather-refresh-btn');if(b)b.classList.remove('spinning');});
+    }else{
+      showToast('Weather is up to date');
+    }
+  }
+  document.getElementById('weather-refresh-btn').addEventListener('click',e=>{
+    e.stopPropagation();
+    refreshWeather();
+  });
 
   function updateSalutation(){
     const hr=new Date().getHours();
@@ -2181,7 +2455,7 @@
     }
   }
 
-  function taskCardHTML(t,isDone,hideTags){
+  function taskCardHTML(t,isDone,hideTags,calView){
     const isActive=t.id===activeTimerId;
     const pc=pClass(t.priority),pl=pLabel(t.priority);
     const tags=(t.tags||[]).filter(tag=>!hideTags||!hideTags.includes(tag));
@@ -2201,10 +2475,19 @@
       </div>`:'';
     return`<div class="task-card-wrap" id="wrap-${t.id}">
       <div class="swipe-actions" id="sw-${t.id}" style="width:0;overflow:hidden;transition:width 0.25s cubic-bezier(0.4,0,0.2,1)">
+        ${calView?`
+        <button class="sw-btn sw-edit" style="width:${swW/3}px" onclick="openEditTask('${t.id}')"><svg viewBox="0 0 18 18"><path d="M11 4l3 3L7 14H4v-3L11 4z"/></svg><span>Edit</span></button>
+        <button class="sw-btn sw-copy" style="width:${swW/3}px" onclick="openCopyTask('${t.id}')"><svg viewBox="0 0 18 18"><rect x="6" y="5" width="8" height="10" rx="1.5"/><path d="M4 13V3h8"/></svg><span>Copy</span></button>
+        <button class="sw-btn sw-delete" style="width:${swW/3}px;border-radius:0 var(--r) var(--r) 0" onclick="confirmDelTask('${t.id}')"><svg viewBox="0 0 18 18"><path d="M4 6h10M5 6l1 9h6l1-9M7 9v4M11 9v4M7 6V4h4v2"/></svg><span>Delete</span></button>
+        `:isDone?`
+        <button class="sw-btn sw-copy" style="width:${swW/2}px" onclick="openCopyTask('${t.id}')"><svg viewBox="0 0 18 18"><rect x="6" y="5" width="8" height="10" rx="1.5"/><path d="M4 13V3h8"/></svg><span>Copy</span></button>
+        <button class="sw-btn sw-delete" style="width:${swW/2}px;border-radius:0 var(--r) var(--r) 0" onclick="confirmDelTask('${t.id}')"><svg viewBox="0 0 18 18"><path d="M4 6h10M5 6l1 9h6l1-9M7 9v4M11 9v4M7 6V4h4v2"/></svg><span>Delete</span></button>
+        `:`
         <button class="sw-btn sw-timer" style="width:${swW/4}px" onclick="startTimerTask('${t.id}')"><svg viewBox="0 0 18 18"><circle cx="9" cy="10" r="6"/><path d="M9 7v3l2 1.5M7 1h4"/></svg><span>Timer</span></button>
         <button class="sw-btn sw-edit"  style="width:${swW/4}px" onclick="openEditTask('${t.id}')"><svg viewBox="0 0 18 18"><path d="M11 4l3 3L7 14H4v-3L11 4z"/></svg><span>Edit</span></button>
         <button class="sw-btn sw-copy" style="width:${swW/4}px" onclick="openCopyTask('${t.id}')"><svg viewBox="0 0 18 18"><rect x="6" y="5" width="8" height="10" rx="1.5"/><path d="M4 13V3h8"/></svg><span>Copy</span></button>
         <button class="sw-btn sw-delete" style="width:${swW/4}px;border-radius:0 var(--r) var(--r) 0" onclick="confirmDelTask('${t.id}')"><svg viewBox="0 0 18 18"><path d="M4 6h10M5 6l1 9h6l1-9M7 9v4M11 9v4M7 6V4h4v2"/></svg><span>Delete</span></button>
+        `}
       </div>
       <div class="task-card${isActive?' active-timer':''}${isDone?' done':''}${pc?' '+pc:''}" id="card-${t.id}" data-tx="0"
         ontouchstart="swTouchStart(event,'${t.id}')" ontouchmove="swTouchMove(event,'${t.id}')" ontouchend="swTouchEnd(event,'${t.id}')"
@@ -2240,11 +2523,8 @@
     lbl.classList.toggle('offday',!isToday);
     const sorted=getOrderedPending();
     const done=tasks.filter(t=>t.done&&(t.date===taskViewDate||(isToday&&!t.date)));
-    const hasOrder=taskOrderIds.some(id=>sorted.some(t=>t.id===id));
-    document.getElementById('pending-count').innerHTML=
-      sorted.length+(hasOrder?
-      `<span class="order-reset-badge" onclick="resetTaskOrder()" title="Back to time sort">↕ Manual</span>`:'');
     const allForDay=tasks.filter(t=>t.date===taskViewDate||(isToday&&!t.date));
+    document.getElementById('pending-count').textContent=allForDay.length;
     const doneT=allForDay.filter(t=>t.done).length;
     const total=allForDay.length;
     const pw=document.getElementById('progress-wrap');
@@ -2255,6 +2535,13 @@
     // Section nav bar
     document.getElementById('section-label').textContent=showingDone?'Completed':'Pending';
     document.getElementById('section-count').textContent=showingDone?done.length:sorted.length;
+    const sortSVG={
+      added:'<svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 5h12M3 9h12M3 13h12"/></svg>',
+      time:'<svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="10" r="6"/><path d="M9 7v3l2 1.5"/></svg>',
+      manual:'<svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 2v14M5 6l4-4 4 4M5 12l4 4 4-4"/></svg>'
+    };
+    const sortBtn=document.getElementById('sort-cycle-btn');
+    if(sortBtn){sortBtn.innerHTML=sortSVG[taskSortMode];sortBtn.style.opacity=showingDone?'0.3':'1';sortBtn.style.pointerEvents=showingDone?'none':'auto';}
     const dim=!hasDone?'0.35':'';
     const pe=!hasDone?'none':'auto';
     ['section-prev','section-next'].forEach(id=>{
@@ -2307,6 +2594,7 @@
   function openCopyTask(id){
       closeSwipe(id);
       copyTaskId=id;
+      copyRemId=null;
       copySelectedDates=new Set();
       copyCalYear=new Date().getFullYear();
       copyCalMonth=new Date().getMonth();
@@ -2315,6 +2603,16 @@
       if(src)document.getElementById('copy-modal-title').textContent=`Copy "${src.name}"`;
       renderCopyCalendar();
       openModal('copy-modal');
+  }
+
+  function openCopyReminder(id){
+    copyRemId=id;copyTaskId=null;
+    copySelectedDates=new Set();
+    copyCalYear=new Date().getFullYear();copyCalMonth=new Date().getMonth();
+    document.getElementById('copy-time').value='';
+    const src=reminders.find(r=>r.id===id);
+    if(src)document.getElementById('copy-modal-title').textContent=`Copy "${src.name}"`;
+    renderCopyCalendar();openModal('copy-modal');
   }
 
   function renderCopyCalendar(){
@@ -2394,26 +2692,30 @@
       renderCopyCalendar();
   });
   document.getElementById('copy-save').addEventListener('click',()=>{
-      if(!copyTaskId||copySelectedDates.size===0)return;
-      const src=tasks.find(t=>t.id===copyTaskId);if(!src)return;
+      if(copySelectedDates.size===0)return;
       const timeOverride=document.getElementById('copy-time').value||null;
-      copySelectedDates.forEach(date=>{
-          const newTask={
-              id:uid(),name:src.name,emoji:src.emoji||null,
-              priority:src.priority||null,tags:[...(src.tags||[])],
-              date,
-              time:timeOverride!==null?timeOverride:(src.time||null),
-              duration:src.duration||null,notes:src.notes||null,
-              subtasks:(src.subtasks||[]).map(s=>({id:uid(),name:s.name,done:false})),
-              done:false,created:Date.now(),completedAt:null
-          };
-          tasks.push(newTask);
-          if(newTask.date&&newTask.time)scheduleNotif(newTask.id,newTask.name,newTask.date+'T'+newTask.time);
-      });
       const n=copySelectedDates.size;
-      saveAll();closeModal('copy-modal');render();refreshCalIfActive();
-      showToast(`Copied to ${n} date${n>1?'s':''}`);
-      copyTaskId=null;copySelectedDates=new Set();
+      if(copyTaskId){
+          const src=tasks.find(t=>t.id===copyTaskId);if(!src)return;
+          copySelectedDates.forEach(date=>{
+              const newTask={id:uid(),name:src.name,emoji:src.emoji||null,priority:src.priority||null,tags:[...(src.tags||[])],date,time:timeOverride!==null?timeOverride:(src.time||null),duration:src.duration||null,notes:src.notes||null,subtasks:(src.subtasks||[]).map(s=>({id:uid(),name:s.name,done:false})),done:false,created:Date.now(),completedAt:null};
+              tasks.push(newTask);
+              if(newTask.date&&newTask.time)scheduleNotif(newTask.id,newTask.name,newTask.date+'T'+newTask.time);
+          });
+          saveAll();closeModal('copy-modal');render();refreshCalIfActive();
+          showToast(`Copied to ${n} date${n>1?'s':''}`);
+          copyTaskId=null;copySelectedDates=new Set();
+      }else if(copyRemId){
+          const src=reminders.find(r=>r.id===copyRemId);if(!src)return;
+          copySelectedDates.forEach(date=>{
+              const newRem={id:uid(),name:src.name,date,time:timeOverride!==null?timeOverride:(src.time||null),notes:src.notes||null,created:Date.now()};
+              reminders.push(newRem);
+              if(newRem.date&&newRem.time)scheduleNotif(newRem.id,newRem.name,newRem.date+'T'+newRem.time);
+          });
+          saveAll();closeModal('copy-modal');renderReminders();refreshCalIfActive();
+          showToast(`Copied to ${n} date${n>1?'s':''}`);
+          copyRemId=null;copySelectedDates=new Set();
+      }
   });
 
   function openAddTask(prefillDate){
@@ -2447,29 +2749,58 @@
   });
   document.getElementById('task-name').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('task-save').click();});
 
+  function remCardHTML(r){
+    return`<div class="reminder-card"><div class="rem-row">
+      <div class="rem-body"><div class="rem-name">${r.name}</div><div class="rem-meta">${r.date?fmtDate(r.date):''}${r.date&&r.time?' · ':''}${r.time?fmtTime(r.time):''}${r.notes?' — '+r.notes:''}</div></div>
+      <button class="del-btn" onclick="openCopyReminder('${r.id}')"><svg viewBox="0 0 18 18" width="0.9rem" height="0.9rem" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="6" y="5" width="8" height="10" rx="1.5"/><path d="M4 13V3h8"/></svg></button>
+      <button class="del-btn" onclick="openEditReminder('${r.id}')">✎</button>
+      <button class="del-btn" onclick="delReminder('${r.id}')">✕</button>
+    </div></div>`;
+  }
+  function switchRemSection(){
+    const today=todayStr();
+    const other=remSection==='today'
+      ?reminders.filter(r=>r.date&&r.date>today)
+      :reminders.filter(r=>!r.date||r.date===today);
+    if(!other.length)return;
+    remSection=remSection==='today'?'upcoming':'today';
+    const z=document.getElementById('rem-zone');if(z)z.scrollTop=0;
+    renderReminders();
+  }
   function renderReminders(){
     const today=todayStr();
-    const sorted=[...reminders]
+    const todayRems=[...reminders]
       .filter(r=>!r.date||r.date===today)
-      .sort((a,b)=>{const da=(a.date||'9999')+' '+(a.time||'00:00');const db=(b.date||'9999')+' '+(b.time||'00:00');return da.localeCompare(db);});
-    const upcoming=reminders.filter(r=>r.date&&r.date>today);
-    document.getElementById('rem-count').textContent=sorted.length;
-    document.getElementById('rem-empty').style.display=sorted.length===0&&!upcoming.length?'flex':'none';
-    document.getElementById('reminder-list').innerHTML=[
-      ...sorted.map(r=>`
-        <div class="reminder-card"><div class="rem-row">
-          <div class="rem-body"><div class="rem-name">${r.name}</div><div class="rem-meta">${r.date?fmtDate(r.date):''}${r.date&&r.time?' · ':''}${r.time?fmtTime(r.time):''}${r.notes?' — '+r.notes:''}</div></div>
-          <button class="del-btn" onclick="openEditReminder('${r.id}')">✎</button>
-          <button class="del-btn" onclick="delReminder('${r.id}')">✕</button>
-        </div></div>`),
-      upcoming.length?`<div class="section-hdr" style="margin-top:0.6rem"><div class="section-title">Upcoming</div><div class="section-count">${upcoming.length}</div></div>`:'',
-      ...upcoming.sort((a,b)=>a.date.localeCompare(b.date)).map(r=>`
-        <div class="reminder-card"><div class="rem-row">
-          <div class="rem-body"><div class="rem-name">${r.name}</div><div class="rem-meta">${r.date?fmtDate(r.date):''}${r.date&&r.time?' · ':''}${r.time?fmtTime(r.time):''}${r.notes?' — '+r.notes:''}</div></div>
-          <button class="del-btn" onclick="openEditReminder('${r.id}')">✎</button>
-          <button class="del-btn" onclick="delReminder('${r.id}')">✕</button>
-        </div></div>`)
-    ].join('');
+      .sort((a,b)=>(a.time||'00:00').localeCompare(b.time||'00:00'));
+    const upcomingRems=[...reminders]
+      .filter(r=>r.date&&r.date>today)
+      .sort((a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||''));
+    const current=remSection==='today'?todayRems:upcomingRems;
+    const other=remSection==='today'?upcomingRems:todayRems;
+    const lblEl=document.getElementById('rem-section-label');
+    if(lblEl){lblEl.textContent=remSection==='today'?'Today':'Upcoming';lblEl.classList.toggle('offday',remSection!=='today');}
+    const countEl=document.getElementById('rem-count');
+    if(countEl)countEl.textContent=current.length;
+    const hasOther=other.length>0;
+    ['rem-prev','rem-next'].forEach(id=>{
+      const b=document.getElementById(id);
+      if(b){b.style.opacity=hasOther?'1':'0.35';b.style.pointerEvents=hasOther?'auto':'none';}
+    });
+    document.getElementById('rem-empty').style.display=current.length===0?'flex':'none';
+    let html='';
+    if(remSection==='upcoming'){
+      const byDate={};
+      upcomingRems.forEach(r=>{if(!byDate[r.date])byDate[r.date]=[];byDate[r.date].push(r);});
+      Object.keys(byDate).sort().forEach(date=>{
+        const d=new Date(date+'T12:00:00');
+        const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        html+=`<div class="section-hdr"><div class="section-title">${days[d.getDay()]}, ${fmtDate(date)}</div></div>`;
+        byDate[date].forEach(r=>{html+=remCardHTML(r);});
+      });
+    }else{
+      html=current.map(r=>remCardHTML(r)).join('');
+    }
+    document.getElementById('reminder-list').innerHTML=html;
   }
   function delReminder(id){cancelNotif(id);reminders=reminders.filter(r=>r.id!==id);saveAll();renderReminders();refreshCalIfActive();}
   function openAddReminder(prefillDate){
@@ -2506,7 +2837,7 @@
       const newRem={id:uid(),name,date,time,notes,created:Date.now()};
       reminders.push(newRem);
       if(newRem.date&&newRem.time)scheduleNotif(newRem.id,newRem.name,newRem.date+'T'+newRem.time);
-      saveAll();closeModal('rem-modal');renderReminders();showToast('Reminder added');
+     saveAll();closeModal('rem-modal');renderReminders();refreshCalIfActive();showToast('Reminder added');
     }
   });
 
@@ -2516,11 +2847,15 @@
   document.getElementById('day-nav-label').addEventListener('click',()=>{if(taskViewDate!==todayStr()){taskViewDate=todayStr();showingDone=false;render();}});
   document.getElementById('section-prev').addEventListener('click',switchSection);
   document.getElementById('section-next').addEventListener('click',switchSection);
+  document.getElementById('sort-cycle-btn').addEventListener('click',cycleSortMode);
   document.getElementById('subtask-add-btn').addEventListener('click',addModalSubtask);
   document.getElementById('subtask-input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addModalSubtask();}});
-  document.getElementById('add-rem-inline-btn').addEventListener('click',()=>openAddReminder());
-  document.getElementById('add-from-cal-btn').addEventListener('click',()=>openAddTask(calSelected));
-  document.getElementById('add-rem-from-cal-btn').addEventListener('click',()=>openAddReminder(calSelected));
+  document.getElementById('rem-add-btn').addEventListener('click',()=>openAddReminder(remSection==='upcoming'?addDays(todayStr(),1):null));
+  document.getElementById('rem-prev').addEventListener('click',switchRemSection);
+  document.getElementById('rem-next').addEventListener('click',switchRemSection);
+  document.getElementById('rem-section-label').addEventListener('click',()=>{
+    if(remSection!=='today'){remSection='today';renderReminders();}
+  });
   document.getElementById('add-li-inline-btn').addEventListener('click',()=>openAddLI());
   document.getElementById('add-btn').addEventListener('click',()=>{
     if(currentView==='tasks')openAddTask();
@@ -2530,68 +2865,187 @@
   });
 
   function renderMenuLists(){
-    document.getElementById('menu-lists-wrap').innerHTML=lists.map(l=>`
+    const pinned=lists.filter(l=>l.pinned).slice(0,3);
+    const lbl=document.getElementById('pinned-lists-lbl');
+    if(lbl)lbl.style.display=pinned.length?'block':'none';
+    document.getElementById('menu-lists-wrap').innerHTML=pinned.map(l=>`
       <div class="list-menu-row">
         <span style="font-size:0.95rem">${l.emoji||'📋'}</span>
-        <span class="lmr-name" onclick="openListView('${l.id}')">${l.name}</span>
-        <div class="lmr-actions">
-          <button class="lmr-btn" onclick="editList('${l.id}')">✎</button>
-          <button class="lmr-btn" onclick="confirmDelList('${l.id}')" style="color:var(--ph)">✕</button>
-        </div>
+        <span class="lmr-name" onclick="openListView('${l.id}');closeMenu()">${l.name}</span>
       </div>`).join('');
   }
+
+  function renderListsPage(){
+    const div=document.getElementById('lists-page-content');if(!div)return;
+    if(!lists.length){
+      div.innerHTML=`<div class="empty-state" style="display:flex;margin-bottom:0.5rem"><div class="empty-text">No lists yet. Tap below to create one.</div></div>`;
+      return;
+    }
+    const pin=p=>`<svg viewBox="0 0 18 18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" fill="none"><circle cx="9" cy="5.5" r="3.2" fill="${p?'currentColor':'none'}"/><line x1="9" y1="8.7" x2="9" y2="16"/></svg>`;
+    div.innerHTML=lists.map(l=>{
+      const count=(listItems[l.id]||[]).length,p=!!l.pinned;
+      return`<div class="lists-page-card" onclick="openListView('${l.id}')">
+        <span style="font-size:1.2rem;flex-shrink:0">${l.emoji||'📋'}</span>
+        <span class="lists-page-name">${l.name}</span>
+        <span class="lists-page-count">${count}</span>
+        <div class="lists-page-actions" onclick="event.stopPropagation()">
+          <button class="pin-btn${p?' pinned':''}" onclick="toggleListPin('${l.id}',event)" title="${p?'Unpin':'Pin'}">${pin(p)}</button>
+          <button class="list-icon-btn" onclick="editList('${l.id}')">✎</button>
+          <button class="list-icon-btn" onclick="confirmDelList('${l.id}')" style="color:var(--ph)">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  function toggleListPin(id,e){
+    if(e){e.stopPropagation();e.preventDefault();}
+    const l=lists.find(x=>x.id===id);if(!l)return;
+    if(!l.pinned&&lists.filter(x=>x.pinned).length>=3){showToast('Max 3 lists can be pinned');return;}
+    l.pinned=!l.pinned;saveAll();renderMenuLists();renderListsPage();
+    showToast(l.pinned?`"${l.name}" pinned`:`"${l.name}" unpinned`);
+  }
+
   function openAddList(){editListId=null;document.getElementById('list-modal-title').textContent='New list';document.getElementById('list-save').textContent='Create list';document.getElementById('list-emoji').value='';document.getElementById('list-name').value='';openModal('list-modal');}
   function editList(id){editListId=id;const l=lists.find(x=>x.id===id);if(!l)return;document.getElementById('list-modal-title').textContent='Edit list';document.getElementById('list-save').textContent='Save';document.getElementById('list-emoji').value=l.emoji||'';document.getElementById('list-name').value=l.name;closeMenu();openModal('list-modal');}
   function confirmDelList(id){
     const l=lists.find(x=>x.id===id);if(!l)return;
-    showConfirm(`Delete "${l.name}"?`,'All items will be removed.',()=>{lists=lists.filter(x=>x.id!==id);delete listItems[id];saveAll();renderMenuLists();if(currentListId===id){currentListId=null;setView('tasks');}showToast('List deleted');});
+    showConfirm(`Delete "${l.name}"?`,'All items will be removed.',()=>{lists=lists.filter(x=>x.id!==id);delete listItems[id];saveAll();renderMenuLists();renderListsPage();if(currentListId===id){currentListId=null;setView('lists');}showToast('List deleted');});
   }
   document.getElementById('list-save').addEventListener('click',()=>{
     const name=document.getElementById('list-name').value.trim();if(!name){document.getElementById('list-name').focus();return;}
     const emoji=document.getElementById('list-emoji').value.trim()||null;
-    if(editListId){const l=lists.find(x=>x.id===editListId);if(l){l.name=name;l.emoji=emoji;}saveAll();closeModal('list-modal');renderMenuLists();if(currentListId===editListId)renderListHdr();showToast('List updated');editListId=null;}
-    else{const id=uid();lists.push({id,name,emoji,created:Date.now()});listItems[id]=[];saveAll();closeModal('list-modal');renderMenuLists();openListView(id);closeMenu();showToast('List created');}
+    if(editListId){const l=lists.find(x=>x.id===editListId);if(l){l.name=name;l.emoji=emoji;}saveAll();closeModal('list-modal');renderMenuLists();renderListsPage();if(currentListId===editListId)renderListHdr();showToast('List updated');editListId=null;
+    }else{
+      const id=uid();lists.push({id,name,emoji,pinned:false,created:Date.now()});listItems[id]=[];
+      saveAll();closeModal('list-modal');renderMenuLists();renderListsPage();openListView(id);showToast('List created');
+    }
   });
   function openListView(id){
     currentListId=id;setView('list');closeMenu();renderListHdr();renderListItems();
-    document.getElementById('add-li-inline-btn').style.display='flex';
   }
   function renderListHdr(){
     const l=lists.find(x=>x.id===currentListId);if(!l)return;
     document.getElementById('list-view-hdr').innerHTML=`
-      <div class="list-view-left"><div class="list-view-emoji">${l.emoji||'📋'}</div><div class="list-view-title">${l.name}</div></div>
+      <div class="list-view-left">
+        <button class="notes-back-btn" onclick="setView('lists')" style="margin-right:0.4rem">← Lists</button>
+        <div class="list-view-emoji">${l.emoji||'📋'}</div>
+        <div class="list-view-title">${l.name}</div>
+      </div>
       <div class="list-view-acts">
         <button class="list-icon-btn" onclick="editList('${l.id}')">✎</button>
         <button class="list-icon-btn" onclick="confirmDelList('${l.id}')" style="color:var(--ph)">✕</button>
       </div>`;
   }
+  function renderLICard(item){
+    const cs=item.checkState||'';
+    const hasExpand=!!(item.notes||(item.subitems&&item.subitems.length));
+    const subitemsHTML=item.subitems&&item.subitems.length?`<div class="li-subitems-wrap">${item.subitems.map(s=>`
+      <div class="li-subitem-item">
+        <div class="li-check" data-state="${s.checkState!=null?s.checkState:s.done?'checked':''}" onclick="toggleLISubitem('${item.id}','${s.id}',event)" style="margin-top:0;flex-shrink:0"></div>
+        <span class="subtask-name">${s.name}</span>
+      </div>`).join('')}</div>`:'';
+    return`<div class="list-item-wrap" id="liwrap-${item.id}">
+      <div class="list-item-card${item.priority?' p-'+item.priority:''}" id="licard-${item.id}">
+        <div class="priority-bar"></div>
+        <div class="li-card-row">
+          <div class="li-drag-handle" ontouchstart="liDragHandleTouch(event,'${item.id}')">
+            <svg viewBox="0 0 12 22" fill="currentColor"><circle cx="3.5" cy="3" r="1.5"/><circle cx="8.5" cy="3" r="1.5"/><circle cx="3.5" cy="8" r="1.5"/><circle cx="8.5" cy="8" r="1.5"/><circle cx="3.5" cy="13" r="1.5"/><circle cx="8.5" cy="13" r="1.5"/><circle cx="3.5" cy="18" r="1.5"/><circle cx="8.5" cy="18" r="1.5"/></svg>
+          </div>
+          <div class="li-check" data-state="${cs}" onclick="toggleLI('${item.id}')"></div>
+          <div class="task-body" style="flex:1;min-width:0">
+            <div class="task-name">${item.emoji?`<span class="task-emoji">${item.emoji}</span>`:''}${item.name}</div>
+            ${item.priority?`<div class="task-meta"><span class="p-badge">${pLabel(item.priority)}</span></div>`:''}
+          </div>
+          <button class="del-btn" onclick="openEditLI('${item.id}')">✎</button>
+          <button class="del-btn" onclick="confirmDelLI('${item.id}')">✕</button>
+          ${hasExpand?`<div class="li-chevron" onclick="toggleLIExpand('${item.id}',event)">▾</div>`:''}
+        </div>
+        ${hasExpand?`<div class="li-notes-expand">${item.notes?`<div style="font-size:0.78rem;color:var(--text3);margin-bottom:${item.subitems&&item.subitems.length?'0.35rem':'0'}">${item.notes}</div>`:''}${subitemsHTML}</div>`:''}
+      </div>
+    </div>`;
+  }
   function renderListItems(){
     if(!currentListId)return;
     const items=listItems[currentListId]||[];
     document.getElementById('list-empty').style.display=items.length===0?'flex':'none';
-    document.getElementById('list-items-wrap').innerHTML=items.map(item=>`
-      <div class="list-item-card${item.priority?' p-'+item.priority:''}">
-        <div class="priority-bar"></div>
-        <div class="li-check${item.done?' checked':''}" onclick="toggleLI('${item.id}')"></div>
-        <div class="task-body" style="flex:1">
-          <div class="task-name">${item.emoji?`<span class="task-emoji">${item.emoji}</span>`:''}${item.name}</div>
-          <div class="task-meta">
-            ${item.priority?`<span class="p-badge">${pLabel(item.priority)}</span>`:''}
-            ${item.notes?`<span class="meta-time">${item.notes}</span>`:''}
-          </div>
+    if(!items.length){document.getElementById('list-items-wrap').innerHTML='';return;}
+    const tagSet=new Set();
+    items.forEach(item=>{if(item.tags&&item.tags.length)tagSet.add(item.tags[0]);});
+    if(!tagSet.size){document.getElementById('list-items-wrap').innerHTML=items.map(renderLICard).join('');return;}
+    const saved=listTagOrders[currentListId]||[];
+    const ordered=saved.filter(t=>tagSet.has(t));
+    tagSet.forEach(t=>{if(!ordered.includes(t))ordered.push(t);});
+    listTagOrders[currentListId]=ordered;
+    const col=listTagCollapsed[currentListId]||{};
+    let html='';
+    ordered.forEach(tag=>{
+      const group=items.filter(i=>(i.tags||[]).length&&i.tags[0]===tag);
+      if(!group.length)return;
+      const safe=tag.replace(/[^a-z0-9]/g,'_'),isCol=!!col[tag];
+      html+=`<div class="li-tag-group${isCol?' collapsed':''}" id="ligrp-${safe}" data-tag="${tag}">
+        <div class="li-tag-hdr">
+          <div class="li-tag-drag-handle" ontouchstart="liTagDragStart(event,'${tag}')"><svg viewBox="0 0 12 22" fill="currentColor"><circle cx="3.5" cy="3" r="1.5"/><circle cx="8.5" cy="3" r="1.5"/><circle cx="3.5" cy="8" r="1.5"/><circle cx="8.5" cy="8" r="1.5"/><circle cx="3.5" cy="13" r="1.5"/><circle cx="8.5" cy="13" r="1.5"/><circle cx="3.5" cy="18" r="1.5"/><circle cx="8.5" cy="18" r="1.5"/></svg></div>
+          <span class="li-tag-label" onclick="toggleLITagGroup(event,'${tag}')">${tag}</span>
+          <span class="li-tag-count">${group.length}</span>
+          <div class="li-tag-chevron" onclick="toggleLITagGroup(event,'${tag}')">▾</div>
         </div>
-        <button class="del-btn" onclick="openEditLI('${item.id}')">✎</button>
-        <button class="del-btn" onclick="confirmDelLI('${item.id}')">✕</button>
-      </div>`).join('');
+        <div class="li-tag-body">${group.map(renderLICard).join('')}</div>
+      </div>`;
+    });
+    const untagged=items.filter(i=>!(i.tags&&i.tags.length));
+    if(untagged.length){
+      const isCol=!!col['__untagged__'];
+      html+=`<div class="li-tag-group${isCol?' collapsed':''}" id="ligrp-untagged" data-tag="__untagged__">
+        <div class="li-tag-hdr" style="background:var(--surface2)">
+          <div class="li-tag-drag-handle" style="visibility:hidden"><svg viewBox="0 0 12 22" fill="currentColor"><circle cx="3.5" cy="3" r="1.5"/></svg></div>
+          <span class="li-tag-label" style="color:var(--text3)" onclick="toggleLITagGroup(event,'__untagged__')">Other</span>
+          <span class="li-tag-count" style="color:var(--text3)">${untagged.length}</span>
+          <div class="li-tag-chevron" style="color:var(--text3)" onclick="toggleLITagGroup(event,'__untagged__')">▾</div>
+        </div>
+        <div class="li-tag-body">${untagged.map(renderLICard).join('')}</div>
+      </div>`;
+    }
+    document.getElementById('list-items-wrap').innerHTML=html;
   }
-  function toggleLI(id){const items=listItems[currentListId]||[];const it=items.find(x=>x.id===id);if(it){it.done=!it.done;saveAll();renderListItems();}}
+  function toggleLI(id){
+    const items=listItems[currentListId]||[];const it=items.find(x=>x.id===id);
+    if(it){const s=it.checkState||'';it.checkState=s===''?'checked':s==='checked'?'crossed':'';it.done=it.checkState!=='';saveAll();renderListItems();}
+  }
+  function toggleLIExpand(id,e){
+    if(e)e.stopPropagation();
+    const card=document.getElementById('licard-'+id);
+    if(card)card.classList.toggle('expanded');
+  }
+  function toggleLITagGroup(e,tag){
+    if(e)e.stopPropagation();
+    if(!listTagCollapsed[currentListId])listTagCollapsed[currentListId]={};
+    listTagCollapsed[currentListId][tag]=!listTagCollapsed[currentListId][tag];
+    saveListTagState();
+    const safe=tag==='__untagged__'?'untagged':tag.replace(/[^a-z0-9]/g,'_');
+    const grp=document.getElementById('ligrp-'+safe);
+    if(grp)grp.classList.toggle('collapsed',!!listTagCollapsed[currentListId][tag]);
+  }
+  function toggleLISubitem(itemId,subId,e){
+    if(e)e.stopPropagation();
+    const item=(listItems[currentListId]||[]).find(x=>x.id===itemId);
+    if(!item||!item.subitems)return;
+    const sub=item.subitems.find(s=>s.id===subId);
+    if(!sub)return;
+    const s=sub.checkState||'';
+    sub.checkState=s===''?'checked':s==='checked'?'crossed':'';
+    sub.done=sub.checkState!=='';
+    saveAll();
+    // Update only this element — avoids rebuilding and collapsing the card
+    e.target.setAttribute('data-state',sub.checkState);
+  }
+
   function confirmDelLI(id){showConfirm('Remove item?','This cannot be undone.',()=>{listItems[currentListId]=(listItems[currentListId]||[]).filter(x=>x.id!==id);saveAll();renderListItems();showToast('Item removed');});}
   function openAddLI(){
     editLIId=null;
     document.getElementById('li-modal-title').textContent='Add item';
     document.getElementById('li-save').textContent='Add item';
-    ['li-emoji','li-name','li-notes'].forEach(id=>document.getElementById(id).value='');
+    ['li-emoji','li-name','li-notes','li-tags'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('li-priority').value='';
+    modalLISubitems=[];renderModalLISubitems();
     openModal('li-modal');
   }
   function openEditLI(id){
@@ -2603,23 +3057,22 @@
     document.getElementById('li-emoji').value=item.emoji||'';
     document.getElementById('li-name').value=item.name;
     document.getElementById('li-priority').value=item.priority||'';
+    document.getElementById('li-tags').value=(item.tags||[]).join(' ');
     document.getElementById('li-notes').value=item.notes||'';
+    modalLISubitems=(item.subitems||[]).map(s=>({...s}));
+    renderModalLISubitems();
     openModal('li-modal');
   }
   document.getElementById('li-save').addEventListener('click',()=>{
     const name=document.getElementById('li-name').value.trim();if(!name){document.getElementById('li-name').focus();return;}
     if(!listItems[currentListId])listItems[currentListId]=[];
+    const tags=parseTags(document.getElementById('li-tags').value);
     if(editLIId){
       const item=listItems[currentListId].find(x=>x.id===editLIId);
-      if(item){
-        item.name=name;
-        item.emoji=document.getElementById('li-emoji').value.trim()||null;
-        item.priority=document.getElementById('li-priority').value||null;
-        item.notes=document.getElementById('li-notes').value.trim()||null;
-      }
+      if(item){item.name=name;item.emoji=document.getElementById('li-emoji').value.trim()||null;item.priority=document.getElementById('li-priority').value||null;item.tags=tags;item.notes=document.getElementById('li-notes').value.trim()||null;item.subitems=[...modalLISubitems];}
       saveAll();closeModal('li-modal');renderListItems();showToast('Item updated');editLIId=null;
     }else{
-      listItems[currentListId].push({id:uid(),name,emoji:document.getElementById('li-emoji').value.trim()||null,priority:document.getElementById('li-priority').value||null,notes:document.getElementById('li-notes').value.trim()||null,done:false});
+      listItems[currentListId].push({id:uid(),name,emoji:document.getElementById('li-emoji').value.trim()||null,priority:document.getElementById('li-priority').value||null,tags,notes:document.getElementById('li-notes').value.trim()||null,checkState:'',done:false,subitems:[...modalLISubitems]});
       saveAll();closeModal('li-modal');renderListItems();showToast('Item added');
     }
   });
@@ -2644,27 +3097,31 @@
   }
   function selectDay(ds){calSelected=ds;renderCalendar();}
   function renderCalDay(){
-    const lbl=document.getElementById('cal-selected-lbl');const items=document.getElementById('cal-items');
-    const addBtn=document.getElementById('add-from-cal-btn');
-    const addRemBtn=document.getElementById('add-rem-from-cal-btn');
-    if(!calSelected){lbl.style.display='none';items.innerHTML='';addBtn.style.display='none';addRemBtn.style.display='none';return;}
-    lbl.style.display='block';
-    const d=new Date(calSelected+'T12:00:00');
-    const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-    lbl.textContent=`${days[d.getDay()]}, ${fmtDate(calSelected)}`;
-    const dT=tasks.filter(t=>t.date===calSelected);const dR=reminders.filter(r=>r.date===calSelected);
+    const lbl=document.getElementById('cal-selected-lbl');
+    const items=document.getElementById('cal-items');
+    const addWrap=document.getElementById('cal-add-wrap');
+    if(!calSelected){if(lbl)lbl.style.display='none';if(items)items.innerHTML='';if(addWrap)addWrap.style.display='none';return;}
+    if(lbl){
+      lbl.style.display='block';
+      const d=new Date(calSelected+'T12:00:00');
+      const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+      lbl.textContent=`${days[d.getDay()]}, ${fmtDate(calSelected)}`;
+    }
+    if(addWrap)addWrap.style.display='block';
+    const dTPending=getOrderedPending(calSelected).filter(t=>t.date===calSelected);
+    const dTDone=tasks.filter(t=>t.done&&t.date===calSelected);
+    const dT=[...dTPending,...dTDone];
+    const dR=reminders.filter(r=>r.date===calSelected);
     let html='';
     if(!dT.length&&!dR.length){
       html='<div class="empty-state" style="display:flex"><div class="empty-text">Nothing on this day.</div></div>';
     }else{
-      if(dT.length)html+=`<div class="section-hdr"><div class="section-title">Tasks</div></div>`+dT.map(t=>taskCardHTML(t,t.done,null)).join('');
-      if(dR.length)html+=`<div class="section-hdr" style="margin-top:0.6rem"><div class="section-title">Reminders</div></div>`+dR.map(r=>`<div class="reminder-card"><div class="rem-row"><div class="rem-dot"></div><div class="rem-body"><div class="rem-name">${r.name}</div><div class="rem-meta">${r.time?fmtTime(r.time):''}${r.notes?' — '+r.notes:''}</div></div><button class="del-btn" onclick="openEditReminder('${r.id}')">✎</button><button class="del-btn" onclick="delReminder('${r.id}')">✕</button></div></div>`).join('');
+      if(dT.length)html+=`<div class="section-hdr"><div class="section-title">Tasks</div></div>`+dT.map(t=>taskCardHTML(t,t.done,null,true)).join('');
+      if(dR.length)html+=`<div class="section-hdr" style="margin-top:0.6rem"><div class="section-title">Reminders</div></div>`+dR.map(r=>`<div class="reminder-card"><div class="rem-row"><div class="rem-body"><div class="rem-name">${r.name}</div><div class="rem-meta">${r.date?fmtDate(r.date):''}${r.date&&r.time?' · ':''}${r.time?fmtTime(r.time):''}${r.notes?' — '+r.notes:''}</div></div><button class="del-btn" onclick="openCopyReminder('${r.id}')"><svg viewBox="0 0 18 18" width="0.9rem" height="0.9rem" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="6" y="5" width="8" height="10" rx="1.5"/><path d="M4 13V3h8"/></svg></button><button class="del-btn" onclick="openEditReminder('${r.id}')">✎</button><button class="del-btn" onclick="delReminder('${r.id}')">✕</button></div></div>`).join('');
     }
-    items.innerHTML=html;
-    addBtn.style.display='flex';
-    addRemBtn.style.display='flex';
+    if(items)items.innerHTML=html;
   }
-  function refreshCalIfActive(){if(currentView==='calendar')renderCalDay();}
+  function refreshCalIfActive(){if(currentView==='calendar')renderCalendar();}
 
   document.getElementById('cal-prev').addEventListener('click',()=>{calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();});
   document.getElementById('cal-next').addEventListener('click',()=>{calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();});
@@ -2692,33 +3149,49 @@
   }
   function toggleHG(id){const g=document.getElementById('hg-'+id);if(g)g.classList.toggle('collapsed');}
 
-  const ALL_VIEWS=['tasks','reminders','calendar','list','hashtags','analyze','notes'];
+  function toggleCalDropdown(){
+    const dd=document.getElementById('cal-add-dropdown');
+    if(dd)dd.style.display=dd.style.display==='none'?'block':'none';
+  }
+  function closeCalDropdown(){
+    const dd=document.getElementById('cal-add-dropdown');
+    if(dd)dd.style.display='none';
+  }
+  document.addEventListener('click',e=>{
+    const dd=document.getElementById('cal-add-dropdown');
+    if(dd&&dd.style.display!=='none'&&!e.target.closest('#cal-add-btn')&&!e.target.closest('#cal-add-dropdown'))
+      dd.style.display='none';
+  });
+
+  const ALL_VIEWS=['tasks','reminders','calendar','list','lists','hashtags','analyze','notes'];
 
   function setView(v){
     if(currentNoteId)saveCurrentNote();
     if(v!=='notes')document.getElementById('note-toolbar').style.display='none';
     currentView=v;
     ALL_VIEWS.forEach(x=>document.getElementById('view-'+x).style.display='none');
-    document.getElementById('view-'+v).style.display=(v==='tasks')?'flex':'block';
-    document.getElementById('scroll-area').style.display=(v==='tasks')?'none':'block';
+    document.getElementById('view-'+v).style.display=(v==='tasks'||v==='list'||v==='reminders'||v==='calendar')?'flex':'block';
+    document.getElementById('scroll-area').style.display=(v==='tasks'||v==='list'||v==='reminders'||v==='calendar')?'none':'block';
     const isHome=v==='tasks'||v==='reminders';
     document.getElementById('salutation').style.display = isHome ? 'block' : 'none';
     document.getElementById('date-strip').style.display=isHome?'flex':'none';
     document.getElementById('tasks-header').style.display=(v==='tasks')?'block':'none';
+    document.getElementById('lists-header').style.display=(v==='lists')?'block':'none';
+    document.getElementById('rem-header').style.display=(v==='reminders')?'block':'none';
     document.getElementById('tabs-wrap').style.display=isHome?'flex':'none';
     if(isHome){
       document.querySelectorAll('.tab-btn').forEach(b=>{
         b.classList.toggle('active',b.dataset.tab===v);
       });
     }
-    const liBtn=document.getElementById('add-li-inline-btn');if(liBtn)liBtn.style.display=(v==='list')?'flex':'none';
     if(v==='tasks')render();
     else if(v==='reminders')renderReminders();
     else if(v==='calendar')renderCalendar();
     else if(v==='hashtags')renderHashtags();
+    else if(v==='lists')renderListsPage();
     else if(v==='notes'){renderNotes();}
-    ['mn-today','mn-calendar','mn-hashtags','mn-analyze','mn-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
-    const mnMap={tasks:'mn-today',calendar:'mn-calendar',hashtags:'mn-hashtags',analyze:'mn-analyze',notes:'mn-notes'};
+    ['mn-today','mn-calendar','mn-hashtags','mn-analyze','mn-notes','mn-lists'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
+    const mnMap={tasks:'mn-today',calendar:'mn-calendar',hashtags:'mn-hashtags',analyze:'mn-analyze',notes:'mn-notes',lists:'mn-lists',list:'mn-lists'};
     if(mnMap[v]){const el=document.getElementById(mnMap[v]);if(el)el.classList.add('active');}
   }
   document.querySelectorAll('.tab-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');setView(btn.dataset.tab);});});
@@ -2727,7 +3200,7 @@
   function closeMenu(){document.getElementById('side-menu').classList.remove('open');document.getElementById('menu-overlay').classList.remove('open');}
   document.getElementById('menu-btn').addEventListener('click',openMenu);
   document.getElementById('menu-overlay').addEventListener('click',closeMenu);
-  document.getElementById('add-list-btn').addEventListener('click',()=>{closeMenu();openAddList();});
+  document.getElementById('add-list-btn').addEventListener('click',()=>openAddList());
 
   document.getElementById('st-open-btn').addEventListener('click',()=>{
     if(!stRunning&&!stPaused){['st-h','st-m','st-s'].forEach(id=>document.getElementById(id).value='');document.getElementById('st-display').textContent='00:00:00';document.getElementById('st-start').textContent='Start';document.getElementById('st-set').style.display='flex';}
@@ -2750,6 +3223,7 @@
     document.getElementById('weather-location').value=cfg.weatherLocation||'';
     document.getElementById('user-name').value=cfg.name||'';
     updateNotifStatus();
+    if(Date.now()-settingsCloseTime>10000)document.getElementById('settings-panel').scrollTop=0;
   }
 
   document.getElementById('user-name').addEventListener('input',e=>{
@@ -2759,14 +3233,15 @@
     });
 
   function closeSettings(){
-      const prevKey=cfg.weatherApiKey;
-      const prevLoc=cfg.weatherLocation;
-      cfg.weatherApiKey=document.getElementById('weather-api-key').value.trim();
-      cfg.weatherLocation=document.getElementById('weather-location').value.trim();
-      cfg.name=document.getElementById('user-name').value.trim();
-      saveAll();
-      if(cfg.weatherApiKey!==prevKey||cfg.weatherLocation!==prevLoc)fetchWeather();
-      document.getElementById('settings-overlay').classList.remove('open');
+    settingsCloseTime=Date.now();
+    const prevKey=cfg.weatherApiKey;
+    const prevLoc=cfg.weatherLocation;
+    cfg.weatherApiKey=document.getElementById('weather-api-key').value.trim();
+    cfg.weatherLocation=document.getElementById('weather-location').value.trim();
+    cfg.name=document.getElementById('user-name').value.trim();
+    saveAll();
+    if(cfg.weatherApiKey!==prevKey||cfg.weatherLocation!==prevLoc)fetchWeather();
+    document.getElementById('settings-overlay').classList.remove('open');
   }
   document.getElementById('settings-btn').addEventListener('click',openSettings);
   document.getElementById('settings-back').addEventListener('click',closeSettings);
@@ -2835,13 +3310,21 @@
   });
   document.getElementById('clear-bg-btn').addEventListener('click',()=>{bgImage=null;try{localStorage.removeItem(K.bg);}catch(e){}document.getElementById('bg-preview').style.display='none';document.getElementById('clear-bg-row').style.display='none';document.getElementById('bg-opacity-row').style.display='none';applyTheme();showToast('Background removed');});
   document.getElementById('bg-opacity-slider').addEventListener('input',e=>{const pct=parseInt(e.target.value);cfg.bgOpacity=pct/100;document.getElementById('bg-opacity-val').textContent=pct+'%';document.documentElement.style.setProperty('--bg-opacity',cfg.bgOpacity);saveAll();});
+  document.getElementById('export-open-btn').addEventListener('click',openExportModal);
+  document.getElementById('export-confirm-btn').addEventListener('click',doExport);
   document.getElementById('clear-tasks-btn').addEventListener('click',()=>{showConfirm('Clear all tasks?','This cannot be undone.',()=>{tasks=[];stopTimer();saveAll();render();showToast('All tasks cleared');});});
   document.getElementById('clear-rems-btn').addEventListener('click',()=>{showConfirm('Clear all reminders?','This cannot be undone.',()=>{reminders.forEach(r=>cancelNotif(r.id));
     reminders=[];saveAll();renderReminders();showToast('All reminders cleared');
     });
   });
 
-  function openModal(id){document.getElementById(id).classList.add('open');}
+  function openModal(id){
+    const el=document.getElementById(id);
+    el.classList.add('open');
+    const body=el.querySelector('.modal-body');
+    if(body)body.scrollTop=0;
+    else{const m=el.querySelector('.modal');if(m)m.scrollTop=0;}
+  }
   function closeModal(id){document.getElementById(id).classList.remove('open');}
   document.querySelectorAll('.modal-overlay').forEach(el=>{el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');});});
 
@@ -2853,7 +3336,100 @@
 
   setTimeout(()=>{document.getElementById('splash').classList.add('out');setTimeout(()=>{document.getElementById('splash').style.display='none';},850);},4000);
 
-  loadAll();loadDragOrder();loadNotes();loadTimer();loadStTimer();applyTheme();setDateUI();updateClock();setView('tasks');fetchWeather();rescheduleLocalNotifs();
+  /* ═══════════════════════════════════════════════════════
+     EXPORT / IMPORT
+     ═══════════════════════════════════════════════════════ */
+  function openExportModal(){
+    ['exp-tasks','exp-reminders','exp-lists','exp-hashtags','exp-notes','exp-settings']
+      .forEach(id=>{const el=document.getElementById(id);if(el)el.checked=true;});
+    openModal('export-modal');
+  }
+
+  function doExport(){
+    const get=id=>document.getElementById(id)?.checked;
+    if(!['exp-tasks','exp-reminders','exp-lists','exp-hashtags','exp-notes','exp-settings'].some(id=>get(id))){
+      showToast('Select at least one category');return;
+    }
+    const payload={_meta:{app:'RouTine',version:'2',exportedAt:new Date().toISOString()}};
+    if(get('exp-tasks')){
+      payload.tasks=tasks;
+      payload.taskOrder=taskOrderIds;
+      payload.sortMode=taskSortMode;
+    }
+    if(get('exp-reminders')) payload.reminders=reminders;
+    if(get('exp-lists')) payload.lists={lists,items:listItems,tagOrders:listTagOrders};
+    if(get('exp-hashtags')){
+      const tagSet=new Set();
+      tasks.forEach(t=>(t.tags||[]).forEach(tag=>tagSet.add(tag)));
+      payload.hashtags=[...tagSet].sort();
+    }
+    if(get('exp-notes')) payload.notes={notes,noteGroups};
+    if(get('exp-settings')) payload.settings=cfg;
+
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    const d=new Date();
+    a.download=`routine-backup-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}.json`;
+    document.body.appendChild(a);a.click();
+    setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},150);
+    closeModal('export-modal');
+    showToast('Backup saved');
+  }
+
+  document.getElementById('import-file-input').addEventListener('change',e=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const data=JSON.parse(ev.target.result);
+        if(!data._meta||data._meta.app!=='RouTine'){
+          showToast('Invalid file — not a RouTine backup');
+          e.target.value='';return;
+        }
+        const imported=[];
+        if(Array.isArray(data.tasks)){
+          tasks=data.tasks;
+          if(Array.isArray(data.taskOrder))taskOrderIds=data.taskOrder;
+          if(data.sortMode&&['added','time','manual'].includes(data.sortMode))taskSortMode=data.sortMode;
+          imported.push('Tasks');
+        }
+        if(Array.isArray(data.reminders)){reminders=data.reminders;imported.push('Reminders');}
+        if(data.lists&&Array.isArray(data.lists.lists)){
+          lists=data.lists.lists;listItems=data.lists.items||{};
+          if(data.lists.tagOrders&&typeof data.lists.tagOrders==='object')listTagOrders=data.lists.tagOrders;
+          imported.push('Lists');
+        }
+        if(Array.isArray(data.hashtags)&&!imported.includes('Tasks')){imported.push('Hashtags');}
+        if(data.notes&&Array.isArray(data.notes.notes)){
+          notes=data.notes.notes;noteGroups=data.notes.noteGroups||[];imported.push('Notes');
+        }
+        if(data.settings&&typeof data.settings==='object'){
+          Object.assign(cfg,data.settings);imported.push('Settings');
+        }
+        if(!imported.length){showToast('No recognisable data in file');e.target.value='';return;}
+
+        saveAll();
+        try{localStorage.setItem('rt_order_v1',JSON.stringify(taskOrderIds));}catch(err){}
+        try{localStorage.setItem('rt_sort_v1',taskSortMode);}catch(err){}
+        saveNotes();
+        applyTheme();setDateUI();render();rescheduleLocalNotifs();
+
+        let msg='';
+        if(imported.length===1)msg=imported[0]+' imported';
+        else if(imported.length===2)msg=imported[0]+' and '+imported[1]+' imported';
+        else msg=imported.slice(0,-1).join(', ')+', and '+imported[imported.length-1]+' imported';
+
+        document.getElementById('import-result-text').textContent=msg;
+        openModal('import-result-modal');
+      }catch(err){showToast('Could not read file — check format');}
+      e.target.value='';
+    };
+    reader.readAsText(file);
+  });
+
+  loadAll();loadDragOrder();loadSortMode();loadListTagState();loadNotes();loadTimer();loadStTimer();applyTheme();setDateUI();updateClock();setView('tasks');fetchWeather();rescheduleLocalNotifs();
   if(bgImage){const p=document.getElementById('bg-preview');p.src=bgImage;p.style.display='block';document.getElementById('clear-bg-row').style.display='flex';document.getElementById('bg-opacity-row').style.display='flex';const pct=Math.round((cfg.bgOpacity||0.4)*100);document.getElementById('bg-opacity-slider').value=pct;document.getElementById('bg-opacity-val').textContent=pct+'%';}
 
   /* ═══════════════════════════════════════════════════════
@@ -2868,23 +3444,41 @@
     taskOrderIds=taskOrderIds.filter(id=>valid.has(id));
     try{localStorage.setItem('rt_order_v1',JSON.stringify(taskOrderIds));}catch(e){}
   }
-  function resetTaskOrder(){
-    taskOrderIds=[];saveDragOrder();render();showToast('Sorted by time');
+
+  function saveListTagState(){try{localStorage.setItem('rt_list_tag_v1',JSON.stringify({orders:listTagOrders,collapsed:listTagCollapsed}));}catch(e){}}
+  function loadListTagState(){
+    try{const d=localStorage.getItem('rt_list_tag_v1');if(d){const p=JSON.parse(d);listTagOrders=p.orders||{};listTagCollapsed=p.collapsed||{};}}catch(e){}
   }
 
-function getOrderedPending(){
-    const isToday=taskViewDate===todayStr();
-    const pending=tasks.filter(t=>!t.done&&(t.date===taskViewDate||(isToday&&!t.date)));
-    if(!taskOrderIds.length){
+  function saveSortMode(){try{localStorage.setItem('rt_sort_v1',taskSortMode);}catch(e){}}
+  function loadSortMode(){
+    try{const s=localStorage.getItem('rt_sort_v1');if(s&&['added','time','manual'].includes(s))taskSortMode=s;}catch(e){}
+  }
+  function cycleSortMode(){
+    if(showingDone)return;
+    taskSortMode=taskSortMode==='added'?'time':taskSortMode==='time'?'manual':'added';
+    saveSortMode();render();
+    showToast({added:'Added order',time:'Time order',manual:'Manual order'}[taskSortMode]);
+  }
+
+    function getOrderedPending(dateOverride){
+      const date=dateOverride!==undefined?dateOverride:taskViewDate;
+      const isToday=date===todayStr();
+      const pending=tasks.filter(t=>!t.done&&(t.date===date||(isToday&&!t.date)));
+    if(taskSortMode==='time'){
       return [...pending].sort((a,b)=>{
         if(!a.time&&!b.time)return 0;if(!a.time)return 1;if(!b.time)return-1;
         return a.time.localeCompare(b.time);
       });
     }
-    const ordered=[];
-    taskOrderIds.forEach(id=>{const t=pending.find(x=>x.id===id);if(t)ordered.push(t);});
-    pending.forEach(t=>{if(!taskOrderIds.includes(t.id))ordered.push(t);});
-    return ordered;
+    if(taskSortMode==='manual'){
+      const ordered=[];
+      taskOrderIds.forEach(id=>{const t=pending.find(x=>x.id===id);if(t)ordered.push(t);});
+      pending.forEach(t=>{if(!taskOrderIds.includes(t.id))ordered.push(t);});
+      return ordered;
+    }
+    // 'added' — chronological by creation time (default)
+    return [...pending].sort((a,b)=>(a.created||0)-(b.created||0));
   }
 
   function dragHandleTouch(e,id){
@@ -2892,7 +3486,7 @@ function getOrderedPending(){
     e.preventDefault();
     const wrap=document.getElementById('wrap-'+id);if(!wrap)return;
     dragId=id;
-    dragListEl=document.getElementById('task-list');
+    dragListEl=currentView==='calendar'?document.getElementById('cal-items'):document.getElementById('task-list');
     const rect=wrap.getBoundingClientRect();
     const touch=e.touches[0];
     dragOffY=touch.clientY-rect.top;
@@ -2919,6 +3513,21 @@ function getOrderedPending(){
     const y=e.touches[0].clientY;
     if(dragGhost)dragGhost.style.top=(y-dragOffY)+'px';
 
+    const scrollEl=currentView==='calendar'
+      ?document.getElementById('cal-items-zone')
+      :document.getElementById('task-zone');
+    if(scrollEl){
+      const sr=scrollEl.getBoundingClientRect(),ZONE=80;
+      let dir=0;
+      if(y<sr.top+ZONE&&scrollEl.scrollTop>0)dir=-1;
+      else if(y>sr.bottom-ZONE&&scrollEl.scrollTop<scrollEl.scrollHeight-scrollEl.clientHeight)dir=1;
+      if(dir!==dragScrollDir){
+        if(dragScrollIv){clearInterval(dragScrollIv);dragScrollIv=null;}
+        dragScrollDir=dir;
+        if(dir!==0)dragScrollIv=setInterval(()=>{scrollEl.scrollTop+=dir*3;},16);
+      }
+    }
+
     if(!dragListEl)return;
     const wraps=dragListEl.querySelectorAll('.task-card-wrap:not(.is-dragging)');
     let found=null,pos=null;
@@ -2934,6 +3543,8 @@ function getOrderedPending(){
 
   function onDragEnd(){
     document.removeEventListener('touchmove',onDragMove);
+    if(dragScrollIv){clearInterval(dragScrollIv);dragScrollIv=null;}
+    dragScrollDir=0;
     if(dragGhost){dragGhost.remove();dragGhost=null;}
     const wrap=document.getElementById('wrap-'+(dragId||''));
     if(wrap)wrap.classList.remove('is-dragging');
@@ -2947,7 +3558,9 @@ function getOrderedPending(){
         w.classList.remove('drop-above','drop-below');
       });
       if(targetId&&targetId!==dragId){
-        const ordered=getOrderedPending();
+        const ordered=currentView==='calendar'
+          ?getOrderedPending(calSelected).filter(t=>t.date===calSelected)
+          :getOrderedPending();
         const fromIdx=ordered.findIndex(t=>t.id===dragId);
         if(fromIdx!==-1){
           const[moved]=ordered.splice(fromIdx,1);
@@ -2957,12 +3570,133 @@ function getOrderedPending(){
             else ordered.splice(newToIdx+1,0,moved);
             taskOrderIds=ordered.map(t=>t.id);
             saveDragOrder();
-            render();
+            taskSortMode='manual';
+            saveSortMode();
+            if(currentView==='calendar'){renderCalDay();}else{render();}
           }
         }
       }
     }
     dragId=null;dragListEl=null;
+  }
+
+  function liDragHandleTouch(e,id){
+    e.stopPropagation();e.preventDefault();
+    const wrap=document.getElementById('liwrap-'+id);if(!wrap)return;
+    liDragId=id;
+    const rect=wrap.getBoundingClientRect(),touch=e.touches[0];
+    liDragOffY=touch.clientY-rect.top;
+    const ghost=document.createElement('div');
+    ghost.id='drag-ghost';
+    const item=(listItems[currentListId]||[]).find(x=>x.id===id);
+    ghost.textContent=(item&&item.emoji?item.emoji+' ':'')+(item?item.name:'');
+    ghost.style.top=(touch.clientY-liDragOffY)+'px';
+    ghost.style.left=rect.left+'px';
+    ghost.style.width=rect.width+'px';
+    document.body.appendChild(ghost);liDragGhost=ghost;
+    wrap.classList.add('is-dragging');
+    document.addEventListener('touchmove',onLiDragMove,{passive:false});
+    document.addEventListener('touchend',onLiDragEnd,{once:true});
+    document.addEventListener('touchcancel',onLiDragEnd,{once:true});
+  }
+  function onLiDragMove(e){
+    if(!liDragId)return;
+    e.preventDefault();
+    const y=e.touches[0].clientY;
+    if(liDragGhost)liDragGhost.style.top=(y-liDragOffY)+'px';
+    const zone=document.getElementById('list-items-wrap');if(!zone)return;
+    const wraps=zone.querySelectorAll('.list-item-wrap:not(.is-dragging)');
+    let found=null,pos=null;
+    wraps.forEach(w=>{
+      w.classList.remove('drop-above','drop-below');
+      const r=w.getBoundingClientRect();
+      if(y>=r.top-6&&y<=r.bottom+6){found=w;pos=y<(r.top+r.height/2)?'above':'below';}
+    });
+    if(found)found.classList.add(pos==='above'?'drop-above':'drop-below');
+  }
+  function onLiDragEnd(){
+    document.removeEventListener('touchmove',onLiDragMove);
+    if(liDragGhost){liDragGhost.remove();liDragGhost=null;}
+    const wrap=document.getElementById('liwrap-'+(liDragId||''));
+    if(wrap)wrap.classList.remove('is-dragging');
+    const zone=document.getElementById('list-items-wrap');
+    if(zone&&liDragId&&currentListId){
+      let targetId=null,targetPos=null;
+      zone.querySelectorAll('.list-item-wrap').forEach(w=>{
+        if(w.classList.contains('drop-above')){targetId=w.id.replace('liwrap-','');targetPos='above';}
+        if(w.classList.contains('drop-below')){targetId=w.id.replace('liwrap-','');targetPos='below';}
+        w.classList.remove('drop-above','drop-below');
+      });
+      if(targetId&&targetId!==liDragId){
+        const items=listItems[currentListId];
+        const from=items.findIndex(x=>x.id===liDragId);
+        if(from!==-1){
+          const[moved]=items.splice(from,1);
+          const to=items.findIndex(x=>x.id===targetId);
+          if(to!==-1){items.splice(targetPos==='above'?to:to+1,0,moved);saveAll();renderListItems();}
+        }
+      }
+    }
+    liDragId=null;
+  }
+
+  function liTagDragStart(e,tag){
+    e.stopPropagation();e.preventDefault();
+    const safe=tag.replace(/[^a-z0-9]/g,'_');
+    const grp=document.getElementById('ligrp-'+safe);if(!grp)return;
+    liTagDragGroup=tag;
+    const rect=grp.getBoundingClientRect(),touch=e.touches[0];
+    liTagDragOffY=touch.clientY-rect.top;
+    const ghost=document.createElement('div');
+    ghost.id='drag-ghost';ghost.textContent=tag;
+    ghost.style.top=(touch.clientY-liTagDragOffY)+'px';ghost.style.left=rect.left+'px';ghost.style.width=rect.width+'px';
+    document.body.appendChild(ghost);liTagDragGhost=ghost;
+    grp.classList.add('is-dragging');
+    document.addEventListener('touchmove',onLiTagDragMove,{passive:false});
+    document.addEventListener('touchend',onLiTagDragEnd,{once:true});
+    document.addEventListener('touchcancel',onLiTagDragEnd,{once:true});
+  }
+  function onLiTagDragMove(e){
+    if(!liTagDragGroup)return;e.preventDefault();
+    const y=e.touches[0].clientY;
+    if(liTagDragGhost)liTagDragGhost.style.top=(y-liTagDragOffY)+'px';
+    const zone=document.getElementById('list-items-wrap');if(!zone)return;
+    const groups=zone.querySelectorAll('.li-tag-group:not(.is-dragging)');
+    let found=null,pos=null;
+    groups.forEach(g=>{
+      g.classList.remove('tag-drop-above','tag-drop-below');
+      const r=g.getBoundingClientRect();
+      if(y>=r.top-6&&y<=r.bottom+6){found=g;pos=y<(r.top+r.height/2)?'above':'below';}
+    });
+    if(found)found.classList.add(pos==='above'?'tag-drop-above':'tag-drop-below');
+  }
+  function onLiTagDragEnd(){
+    document.removeEventListener('touchmove',onLiTagDragMove);
+    if(liTagDragGhost){liTagDragGhost.remove();liTagDragGhost=null;}
+    const safe=liTagDragGroup?liTagDragGroup.replace(/[^a-z0-9]/g,'_'):null;
+    if(safe)document.getElementById('ligrp-'+safe)?.classList.remove('is-dragging');
+    const zone=document.getElementById('list-items-wrap');
+    if(zone&&liTagDragGroup&&currentListId){
+      let targetTag=null,targetPos=null;
+      zone.querySelectorAll('.li-tag-group').forEach(g=>{
+        if(g.classList.contains('tag-drop-above')){targetTag=g.getAttribute('data-tag');targetPos='above';}
+        if(g.classList.contains('tag-drop-below')){targetTag=g.getAttribute('data-tag');targetPos='below';}
+        g.classList.remove('tag-drop-above','tag-drop-below');
+      });
+      if(targetTag&&targetTag!==liTagDragGroup&&targetTag.startsWith('#')){
+        const order=listTagOrders[currentListId]||[];
+        const from=order.indexOf(liTagDragGroup);
+        if(from!==-1){
+          order.splice(from,1);
+          const to=order.indexOf(targetTag);
+          if(to!==-1){order.splice(targetPos==='above'?to:to+1,0,liTagDragGroup);}
+          else order.push(liTagDragGroup);
+          listTagOrders[currentListId]=order;
+          saveListTagState();renderListItems();
+        }
+      }
+    }
+    liTagDragGroup=null;
   }
 
 </script>
