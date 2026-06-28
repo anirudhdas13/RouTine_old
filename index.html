@@ -309,7 +309,8 @@
     .sw-btn{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.18rem;cursor:pointer;border:none}
     .sw-btn svg{width:1.4rem;height:1.4rem;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
     .sw-btn span{font-size:0.55rem;color:#fff;font-family:var(--font)}
-    .sw-timer{background:#3a7a52}.sw-edit{background:#5a6a8a}.sw-copy{background:#3a5a7a}.sw-delete{background:#8b3a3a}
+    .sw-timer{background:#3a7a52}.sw-edit{background:#5a6a8a}.sw-copy{background:#3a5a7a}.sw-delete{background:#8b3a3a}.sw-move{background:#7a4a8a}.sw-repeat{background:#2a7a6a}.sw-add-below{background:#3a6a4a}
+    .swipe-actions-left{position:absolute;left:0;top:0;bottom:0;display:flex;border-radius:var(--r) 0 0 var(--r);overflow:hidden}
     .task-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:0.7rem 0.85rem;cursor:pointer;position:relative;overflow:hidden;will-change:transform;z-index:2;transition:box-shadow var(--tr);height:3.8rem;}
     .task-card.active-timer{border-color:var(--accent);height:auto}
     .task-card.expanded{height:auto}
@@ -329,10 +330,10 @@
     .task-name{font-size:0.92rem;font-weight:400;color:var(--text);line-height:1.35;margin-bottom:0.18rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .task-meta{display:flex;gap:0.35rem;align-items:center;flex-wrap:nowrap;overflow:hidden;margin-top:0.12rem}
     .meta-pill{font-size:0.62rem;padding:0.1rem 0.45rem;border-radius:2rem;font-family:var(--mono);background:var(--surface2);color:var(--text2)}
-    .meta-time{font-size:0.62rem;color:var(--text3);font-family:var(--mono)}
+    .meta-time{font-size:0.62rem;color:var(--text3);font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:11rem}
     .p-badge{font-size:0.58rem;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;padding:0.1rem 0.4rem;border-radius:2rem}
     .p-high .p-badge{background:var(--ph-l);color:var(--ph)}.p-med .p-badge{background:var(--pm-l);color:var(--pm)}.p-low .p-badge{background:var(--pl-l);color:var(--pl)}
-    .tag-pill{font-size:0.58rem;padding:0.1rem 0.4rem;border-radius:2rem;background:var(--accent-l);color:var(--accent);font-family:var(--mono)}
+    .tag-pill{font-size:0.58rem;padding:0.1rem 0.4rem;border-radius:2rem;background:var(--accent-l);color:var(--accent);font-family:var(--mono);max-width:8rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .completed-at{font-size:0.62rem;color:var(--text3);font-family:var(--mono);margin-top:0.35rem;padding-top:0.35rem;border-top:0.5px solid var(--border2);display:none}
     .task-card.expanded .completed-at{display:block}
 
@@ -628,6 +629,8 @@
     .li-check[data-state="checked"]::after{content:'✓';font-size:0.6rem;color:#fff;font-weight:500}
     .li-check[data-state="crossed"]{background:var(--ph);border-color:var(--ph)}
     .li-check[data-state="crossed"]::after{content:'✕';font-size:0.6rem;color:#fff;font-weight:500}
+    .li-check[data-state="flagged"]{background:var(--pm);border-color:var(--pm)}
+    .li-check[data-state="flagged"]::after{content:'!';font-size:0.65rem;color:#fff;font-weight:700}
 
     /* ── BLANK PAGE ── */
     .blank-page{padding:2.5rem var(--px);text-align:center;color:var(--text3)}
@@ -802,7 +805,7 @@
     .sub-nav-bar.collapsed .sub-nav-chevron{transform:rotate(-90deg);}
 
     #tasks-header{flex-shrink:0;}
-    .tasks-header-inner{max-width:540px;margin:0 auto;padding:0.4rem var(--px) 0.1rem;}
+    .tasks-header-inner{max-width:540px;margin:0 auto;padding:0.4rem var(--px) 0.1rem;position:relative;}
 
     #view-tasks{flex:1;flex-direction:column;overflow:hidden;min-height:0;}
     #task-pending-zone{
@@ -890,6 +893,34 @@
     .cal-add-dropdown{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.12);margin-top:0.35rem}
     .cal-drop-btn{display:flex;align-items:center;gap:0.6rem;width:100%;padding:0.7rem 0.85rem;border:none;background:transparent;color:var(--text);font-size:0.88rem;font-family:var(--font);cursor:pointer;transition:background var(--tr)}
     .cal-drop-btn:active{background:var(--surface2)}
+
+    .hashtag-suggestions{display:flex;flex-wrap:wrap;gap:0.35rem;padding:0.35rem 0;margin-bottom:0.25rem}
+    .hashtag-suggestion-pill{font-size:0.72rem;padding:0.22rem 0.55rem;border-radius:2rem;background:var(--accent-l);color:var(--accent);font-family:var(--mono);cursor:pointer;border:0.5px solid var(--accent);transition:all var(--tr);-webkit-user-select:none;user-select:none}
+    .hashtag-suggestion-pill:active{background:var(--accent);color:#fff}
+
+    .li-tag-hdr-wrap{position:relative;overflow:hidden;border-radius:var(--rs);margin-bottom:0.25rem}
+    .li-tag-hdr-wrap .li-tag-hdr{margin-bottom:0;border-radius:0;position:relative;z-index:1;will-change:transform}
+    .li-tag-hdr-action{position:absolute;top:0;bottom:0;width:5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.2rem;color:#fff;font-size:0.65rem;font-family:var(--font);cursor:pointer;-webkit-user-select:none;user-select:none}
+    .li-tag-hdr-action svg{width:1.1rem;height:1.1rem}
+    .li-tag-hdr-action-left{left:0;background:var(--accent)}
+    .li-tag-hdr-action-right{right:0;background:var(--ph)}
+
+    .modal-drag-handle{display:flex;align-items:center;justify-content:center;width:1.3rem;flex-shrink:0;cursor:grab;color:var(--accent);touch-action:none;padding:0.15rem 0}
+    .modal-drag-handle svg{width:0.7rem;height:0.7rem}
+    .modal-subtask-item.drop-above{box-shadow:0 -2px 0 0 var(--accent)}
+    .modal-subtask-item.drop-below{box-shadow:0 2px 0 0 var(--accent)}
+
+    /* Task name expansion when card is expanded */
+    .task-card.clipped:not(.expanded):not(.active-timer)::after{content:'•••';position:absolute;bottom:0.3rem;right:0.7rem;font-size:0.55rem;letter-spacing:0.08em;color:var(--text3);pointer-events:none}
+    .task-card.expanded .task-name{white-space:normal;overflow:visible;text-overflow:clip}
+    /* List item name expansion when card is expanded */
+    .list-item-card.expanded .task-name{white-space:normal;overflow:visible;text-overflow:clip}
+    /* Reminder name truncation + expansion */
+    .rem-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .rem-name.name-expanded{white-space:normal;overflow:visible;text-overflow:clip;cursor:pointer}
+    .task-name{cursor:pointer}
+
+    #future-zone::-webkit-scrollbar{display:none}
   </style>
 </head>
 <body>
@@ -908,6 +939,9 @@
   <div class="menu-nav">
     <div class="menu-item active" id="mn-today" onclick="setView('tasks');closeMenu()">
       <span class="menu-icon"><svg viewBox="0 0 18 18"><rect x="2" y="3" width="14" height="13" rx="2"/><path d="M2 7h14M6 3V1M12 3V1"/></svg></span>Today
+    </div>
+    <div class="menu-item" id="mn-future" onclick="setView('future');closeMenu()">
+      <span class="menu-icon"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="9" r="6"/><path d="M9 6v3l2 2"/></svg></span>Future Tasks
     </div>
     <div class="menu-item" id="mn-calendar" onclick="setView('calendar');closeMenu()">
       <span class="menu-icon"><svg viewBox="0 0 18 18"><rect x="2" y="3" width="14" height="13" rx="2"/><path d="M2 7h14M6 3V1M12 3V1"/><circle cx="9" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></span>Calendar
@@ -993,6 +1027,16 @@
           <button class="day-nav-btn" id="day-next">›</button>
         </div>
         <span class="day-nav-count" id="pending-count">0</span>
+      </div>
+      <div id="day-add-dropdown" style="display:none;position:absolute;z-index:50;left:var(--px);right:var(--px);">
+        <div class="cal-add-dropdown">
+          <button class="cal-drop-btn" onclick="closeDayAddDropdown();openAddTask(taskViewDate)">
+            <svg viewBox="0 0 18 18" width="1rem" height="1rem" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="14" height="13" rx="2"/><path d="M2 7h14M6 3V1M12 3V1"/></svg>New Task
+          </button>
+          <button class="cal-drop-btn" onclick="closeDayAddDropdown();openMultiTaskModal()">
+            <svg viewBox="0 0 18 18" width="1rem" height="1rem" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 5h9M2 9h9M2 13h9"/><path d="M14 2v6M11 5h6"/></svg>Multiple Tasks
+          </button>
+        </div>
       </div>
       <div class="progress-wrap" id="progress-wrap" style="display:none">
         <div class="progress-inner">
@@ -1115,6 +1159,25 @@
     </div>
   </div>
 
+  <div id="future-header" style="display:none">
+    <div class="tasks-header-inner" style="padding-bottom:0.5rem">
+      <button class="add-inline-btn" id="add-future-btn">
+        <div class="add-inline-plus">+</div>Add Task
+      </button>
+    </div>
+  </div>
+  <div id="view-future" style="display:none">
+    <div id="future-zone" style="flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none">
+      <div class="zone-inner">
+        <div id="future-list-wrap"></div>
+        <div class="empty-state" id="future-empty" style="display:none">
+          <div class="empty-icon"><svg width="2.2rem" height="2.2rem" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.35"><circle cx="16" cy="16" r="12"/><path d="M16 10v6l3.5 3.5"/></svg></div>
+          <div class="empty-text">No future tasks. Tap above to add one.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="scroll-area" id="scroll-area">
     <div class="scroll-inner">
 
@@ -1198,7 +1261,11 @@
         </div>
       </div>
       <div class="form-group"><label class="form-label">Priority <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label><select class="priority-select" id="task-priority"><option value="">No priority</option><option value="low">Low</option><option value="med">Medium</option><option value="high">High</option></select></div>
-      <div class="form-group"><label class="form-label">Hashtags <span style="color:var(--text3);font-size:0.65rem">(optional, space-separated)</span></label><input class="form-input" id="task-tags" type="text" placeholder="#focus #work"></div>
+      <div class="form-group">
+        <label class="form-label">Hashtags <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label>
+        <div id="hashtag-suggestions" class="hashtag-suggestions" style="display:none"></div>
+        <input class="form-input" id="task-tags" type="text" placeholder="#focus #work">
+      </div>
       <div class="form-group">
         <label class="form-label">Date & Time <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label>
         <button class="time-toggle-btn" id="time-toggle-btn" type="button"><span id="time-toggle-lbl">Add date & time...</span><span id="time-arrow">▾</span></button>
@@ -1263,7 +1330,11 @@
         </div>
       </div>
       <div class="form-group"><label class="form-label">Priority <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label><select class="priority-select" id="li-priority"><option value="">No priority</option><option value="low">Low</option><option value="med">Medium</option><option value="high">High</option></select></div>
-      <div class="form-group"><label class="form-label">Hashtags <span style="color:var(--text3);font-size:0.65rem">(optional, space-separated)</span></label><input class="form-input" id="li-tags" type="text" placeholder="#shopping #urgent"></div>
+      <div class="form-group">
+        <label class="form-label">Hashtags <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label>
+        <div id="li-hashtag-suggestions" class="hashtag-suggestions" style="display:none"></div>
+        <input class="form-input" id="li-tags" type="text" placeholder="#shopping #urgent">
+      </div>
       <div class="form-group"><label class="form-label">Notes <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label><input class="form-input" id="li-notes" type="text" placeholder="Add a note..."></div>
       <div class="form-group">
         <label class="form-label">Subitems <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label>
@@ -1301,12 +1372,45 @@
 
 <div class="modal-overlay" id="move-modal">
   <div class="modal">
-    <div class="modal-title">Move task</div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">New date</label><input class="form-input" id="move-date" type="date"></div>
-      <div class="form-group"><label class="form-label">New time</label><input class="form-input" id="move-time" type="time"></div>
+    <div class="modal-title" id="move-modal-title">Move task</div>
+    <div class="form-group">
+      <label class="form-label">Select date</label>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem">
+        <button class="cal-nav" id="move-cal-prev">‹</button>
+        <span id="move-cal-month-lbl" style="font-size:0.88rem;color:var(--text)"></span>
+        <button class="cal-nav" id="move-cal-next">›</button>
+      </div>
+      <div class="cal-grid" id="move-cal-grid"></div>
     </div>
-    <div class="form-actions"><button class="btn btn-primary" id="move-save">Move</button></div>
+    <div class="form-group">
+      <label class="form-label">Time <span style="color:var(--text3);font-size:0.65rem">(optional — leave blank to keep original)</span></label>
+      <input class="form-input" id="move-time-new" type="time">
+    </div>
+    <div id="move-selected-info" style="font-size:0.72rem;color:var(--text3);margin-bottom:0.1rem;min-height:1.1rem">Tap a date to select</div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal('move-modal')">Cancel</button>
+      <button class="btn btn-primary" id="move-save-new" disabled style="opacity:0.45">Move</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="repeat-modal">
+  <div class="modal">
+    <div class="modal-title">Repeat Task</div>
+    <div class="form-group">
+      <label class="form-label">Frequency</label>
+      <select class="priority-select" id="repeat-freq">
+        <option value="daily">Every day (next 30 days)</option>
+        <option value="weekly">Every week (next 52 weeks)</option>
+        <option value="monthly">Every month (next 12 months)</option>
+        <option value="yearly">Every year (next 5 years)</option>
+      </select>
+    </div>
+    <div id="repeat-info" style="font-size:0.75rem;color:var(--text3);margin-bottom:0.75rem;line-height:1.6;padding:0.5rem 0.65rem;background:var(--surface2);border-radius:var(--rs)"></div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal('repeat-modal')">Cancel</button>
+      <button class="btn btn-primary" id="repeat-save">Create Repeats</button>
+    </div>
   </div>
 </div>
 
@@ -1330,6 +1434,21 @@
     <div class="form-actions">
       <button class="btn btn-ghost" onclick="closeModal('copy-modal')">Cancel</button>
       <button class="btn btn-primary" id="copy-save" disabled style="opacity:0.45">Copy</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="multi-task-modal">
+  <div class="modal">
+    <div class="modal-title">Multiple Tasks</div>
+    <div class="form-group">
+      <label class="form-label">Enter tasks, one per line</label>
+      <textarea class="form-input" id="multi-task-input" rows="8"
+                placeholder="Brush teeth&#10;Breakfast&#10;Exercise&#10;Have coffee"
+                style="resize:none;line-height:1.6;min-height:12rem"></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" id="multi-task-save">Add Tasks</button>
     </div>
   </div>
 </div>
@@ -1540,11 +1659,68 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="future-modal">
+  <div class="modal modal-flex">
+    <div class="modal-title" id="future-modal-title">New Future Task</div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Name & icon</label>
+        <div class="emoji-row">
+          <input class="form-input emoji-input" id="future-emoji" type="text" placeholder="😀" maxlength="2">
+          <input class="form-input" id="future-name" type="text" style="flex:1" placeholder="">
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Priority <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label><select class="priority-select" id="future-priority"><option value="">No priority</option><option value="low">Low</option><option value="med">Medium</option><option value="high">High</option></select></div>
+      <div class="form-group">
+        <label class="form-label">Hashtags <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label>
+        <div id="future-hashtag-suggestions" class="hashtag-suggestions" style="display:none"></div>
+        <input class="form-input" id="future-tags" type="text" placeholder="#someday #idea">
+      </div>
+      <div class="form-group"><label class="form-label">Notes <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label><input class="form-input" id="future-notes" type="text" placeholder="Add a note..."></div>
+      <div class="form-group">
+        <label class="form-label">Subtasks <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label>
+        <div class="subtask-add-row">
+          <input class="form-input" id="future-subtask-input" type="text" placeholder="Add a subtask..." style="flex:1">
+          <button type="button" id="future-subtask-add-btn" class="btn btn-primary" style="flex:none;padding:0.6rem 0.9rem">+</button>
+        </div>
+        <div id="future-modal-subtask-list"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="form-actions"><button class="btn btn-primary" id="future-save">Add Task</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="future-move-modal">
+  <div class="modal">
+    <div class="modal-title">Move to Task List</div>
+    <div class="form-group">
+      <label class="form-label">Select date</label>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem">
+        <button class="cal-nav" id="future-move-cal-prev">‹</button>
+        <span id="future-move-cal-month-lbl" style="font-size:0.88rem;color:var(--text)"></span>
+        <button class="cal-nav" id="future-move-cal-next">›</button>
+      </div>
+      <div class="cal-grid" id="future-move-cal-grid"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Time <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label>
+      <input class="form-input" id="future-move-time" type="time">
+    </div>
+    <div id="future-move-selected-info" style="font-size:0.72rem;color:var(--text3);margin-bottom:0.1rem;min-height:1.1rem">Tap a date to select</div>
+    <div class="form-actions">
+      <button class="btn btn-ghost" onclick="closeModal('future-move-modal')">Cancel</button>
+      <button class="btn btn-primary" id="future-move-save" disabled style="opacity:0.45">Move to Task List</button>
+    </div>
+  </div>
+</div>
+
 <script>
   /* ═══════════════════════════════════════════════════════
      STORAGE KEYS & GLOBAL STATE
      ═══════════════════════════════════════════════════════ */
-  const K={tasks:'rt_tasks_v5',rems:'rt_rems_v3',lists:'rt_lists_v4',cfg:'rt_cfg_v6',bg:'rt_bg_v1',timer:'rt_timer_v1',st:'rt_st_v1',notes:'rt_notes_v1'};
+  const K={tasks:'rt_tasks_v5',rems:'rt_rems_v3',lists:'rt_lists_v4',cfg:'rt_cfg_v6',bg:'rt_bg_v1',timer:'rt_timer_v1',st:'rt_st_v1',notes:'rt_notes_v1',future:'rt_future_v1'};
   let showingDone=false;
   let remSection='today';
   let settingsCloseTime=0;
@@ -1558,11 +1734,13 @@
   let editTaskId=null,editRemId=null,editListId=null,editLIId=null,moveTaskId=null;
   let copyTaskId=null,copyRemId=null,copyCalYear=new Date().getFullYear(),copyCalMonth=new Date().getMonth();
   let copySelectedDates=new Set();
+  let repeatTaskId=null,addBelowTaskId=null;
+  let moveCalYear=new Date().getFullYear(),moveCalMonth=new Date().getMonth(),moveSelectedDate=null;
   let modalSubtasks=[];
   let calYear=new Date().getFullYear(),calMonth=new Date().getMonth(),calSelected=null;
   let mpYear=new Date().getFullYear();
   let confirmFn=null,timeOpen=false;
-  let swEl=null,swX0=0,swDx=0;
+  let swEl=null,swX0=0,swY0=0,swDx=0,swDir=0;
   let expandedCards=new Set();
   let notes=[],noteGroups=[],currentNoteId=null,noteAutoSaveTimer=null,editNoteGroupId=null,noteColorPickerMode=null;
   let captionTargetImg=null;
@@ -1576,8 +1754,20 @@
   let dragId=null,dragGhost=null,dragOffY=0,dragListEl=null;
   let dragScrollIv=null,dragScrollDir=0;
   let liDragId=null,liDragGhost=null,liDragOffY=0;
+  let stDragId=null,stDragGhost=null,stDragOffY=0;
+  let lisDragId=null,lisDragGhost=null,lisDragOffY=0;
+  let futureDragId=null,futureDragGhost=null,futureDragOffY=0,futureDragScrollIv=null,futureDragScrollDir=0;
+  let fstDragId=null,fstDragGhost=null,fstDragOffY=0;
+  let tagHdrSwipeTag=null,tagHdrSwipeX0=0,tagHdrSwipeDx=0,tagHdrOpenTag=null;
+  let addToTagGroup=null;
   let taskOrderIds=[];
   let taskSortMode='added'; // 'added' | 'time' | 'manual'
+  let futureTasks=[];
+  let futureTagOrder=[],futureTagCollapsed={};
+  let editFutureId=null,moveFutureId=null,addToFutureTagGroup=null;
+  let futureCalYear=new Date().getFullYear(),futureCalMonth=new Date().getMonth(),futureSelectedDate=null;
+  let futureTagOpenTag=null,futureTagSwipeTag=null,futureTagSwipeX0=0,futureTagSwipeDx=0;
+  let futureModalSubtasks=[];
 
   function selectNoteImage(img,e){
     if(e)e.stopPropagation();
@@ -1650,7 +1840,7 @@
   /* ═══════════════════════════════════════════════════════
      STORAGE FUNCTIONS
      ═══════════════════════════════════════════════════════ */
-  function saveAll(){try{localStorage.setItem(K.tasks,JSON.stringify(tasks));localStorage.setItem(K.rems,JSON.stringify(reminders));localStorage.setItem(K.lists,JSON.stringify({lists,items:listItems}));localStorage.setItem(K.cfg,JSON.stringify(cfg));}catch(e){}}
+  function saveAll(){try{localStorage.setItem(K.tasks,JSON.stringify(tasks));localStorage.setItem(K.rems,JSON.stringify(reminders));localStorage.setItem(K.lists,JSON.stringify({lists,items:listItems}));localStorage.setItem(K.cfg,JSON.stringify(cfg));localStorage.setItem(K.future,JSON.stringify(futureTasks));}catch(e){}}
   function loadAll(){
     try{
       const t=localStorage.getItem(K.tasks);if(t)tasks=JSON.parse(t);
@@ -1659,8 +1849,11 @@
       const c=localStorage.getItem(K.cfg);if(c)Object.assign(cfg,JSON.parse(c));
       if(cfg.bgOpacity===undefined)cfg.bgOpacity=0.65;
       bgImage=localStorage.getItem(K.bg)||null;
+      const ff=localStorage.getItem(K.future);if(ff)futureTasks=JSON.parse(ff);
     }catch(e){}
   }
+  function saveFutureState(){try{localStorage.setItem('rt_future_state_v1',JSON.stringify({order:futureTagOrder,collapsed:futureTagCollapsed}));}catch(e){}}
+  function loadFutureState(){try{const d=localStorage.getItem('rt_future_state_v1');if(d){const p=JSON.parse(d);futureTagOrder=p.order||[];futureTagCollapsed=p.collapsed||{};}}catch(e){}}
   function saveTimer(){
     try{
       if(activeTimerId){
@@ -2044,10 +2237,86 @@
 
   function renderModalSubtasks(){
     document.getElementById('modal-subtask-list').innerHTML=modalSubtasks.map(s=>`
-      <div class="modal-subtask-item">
-        <span style="flex:1">${s.name}</span>
+      <div class="modal-subtask-item" id="mst-${s.id}">
+        <div class="modal-drag-handle" ontouchstart="stDragStart(event,'${s.id}')"><svg viewBox="0 0 12 22" fill="currentColor"><circle cx="3.5" cy="3" r="1.5"/><circle cx="8.5" cy="3" r="1.5"/><circle cx="3.5" cy="8" r="1.5"/><circle cx="8.5" cy="8" r="1.5"/><circle cx="3.5" cy="13" r="1.5"/><circle cx="8.5" cy="13" r="1.5"/><circle cx="3.5" cy="18" r="1.5"/><circle cx="8.5" cy="18" r="1.5"/></svg></div>
+        <span style="flex:1;font-size:0.85rem;color:var(--text)">${s.name}</span>
+        <button class="del-btn" onclick="editModalSubtask('${s.id}')">✎</button>
         <button class="del-btn" onclick="removeModalSubtask('${s.id}')">✕</button>
       </div>`).join('');
+  }
+
+  function editModalSubtask(id){
+    const row=document.getElementById('mst-'+id);if(!row)return;
+    const sub=modalSubtasks.find(s=>s.id===id);if(!sub)return;
+    row.innerHTML=`
+      <input class="form-input" id="mst-edit-${id}" value="${sub.name}" style="flex:1;padding:0.3rem 0.5rem">
+      <button class="del-btn" style="color:var(--accent);font-size:1rem" onclick="saveModalSubtaskEdit('${id}')">✓</button>
+      <button class="del-btn" onclick="renderModalSubtasks()">✕</button>`;
+    const inp=document.getElementById('mst-edit-'+id);
+    if(inp){
+      inp.focus();inp.select();
+      inp.addEventListener('keydown',e=>{
+        if(e.key==='Enter'){e.preventDefault();saveModalSubtaskEdit(id);}
+        if(e.key==='Escape')renderModalSubtasks();
+      });
+    }
+  }
+  function saveModalSubtaskEdit(id){
+    const inp=document.getElementById('mst-edit-'+id);if(!inp)return;
+    const name=inp.value.trim();if(!name)return;
+    const sub=modalSubtasks.find(s=>s.id===id);if(sub)sub.name=name;
+    renderModalSubtasks();
+  }
+  function stDragStart(e,id){
+    e.stopPropagation();e.preventDefault();
+    stDragId=id;
+    const row=document.getElementById('mst-'+id);if(!row)return;
+    const rect=row.getBoundingClientRect();
+    stDragOffY=e.touches[0].clientY-rect.top;
+    const ghost=document.createElement('div');
+    ghost.style.cssText=`position:fixed;z-index:9000;pointer-events:none;background:var(--surface);border:1.5px solid var(--accent);border-radius:var(--rs);padding:0.35rem 0.6rem;box-shadow:0 4px 16px rgba(0,0,0,0.2);font-size:0.85rem;color:var(--text);font-family:var(--font);top:${e.touches[0].clientY-stDragOffY}px;left:${rect.left}px;width:${rect.width}px;opacity:0.95`;
+    const sub=modalSubtasks.find(s=>s.id===id);ghost.textContent=sub?sub.name:'';
+    document.body.appendChild(ghost);stDragGhost=ghost;
+    row.style.opacity='0.3';
+    document.addEventListener('touchmove',onStDragMove,{passive:false});
+    document.addEventListener('touchend',onStDragEnd,{once:true});
+    document.addEventListener('touchcancel',onStDragEnd,{once:true});
+  }
+  function onStDragMove(e){
+    if(!stDragId)return;e.preventDefault();
+    const y=e.touches[0].clientY;
+    if(stDragGhost)stDragGhost.style.top=(y-stDragOffY)+'px';
+    const list=document.getElementById('modal-subtask-list');if(!list)return;
+    list.querySelectorAll('.modal-subtask-item').forEach(r=>{
+      r.classList.remove('drop-above','drop-below');
+      if(r.id==='mst-'+stDragId)return;
+      const rc=r.getBoundingClientRect();
+      if(y>=rc.top-4&&y<=rc.bottom+4)r.classList.add(y<rc.top+rc.height/2?'drop-above':'drop-below');
+    });
+  }
+  function onStDragEnd(){
+    document.removeEventListener('touchmove',onStDragMove);
+    if(stDragGhost){stDragGhost.remove();stDragGhost=null;}
+    const list=document.getElementById('modal-subtask-list');
+    if(list&&stDragId){
+      let targetId=null,targetPos=null;
+      list.querySelectorAll('.modal-subtask-item').forEach(r=>{
+        if(r.classList.contains('drop-above')){targetId=r.id.replace('mst-','');targetPos='above';}
+        if(r.classList.contains('drop-below')){targetId=r.id.replace('mst-','');targetPos='below';}
+        r.classList.remove('drop-above','drop-below');
+      });
+      if(targetId&&targetId!==stDragId){
+        const from=modalSubtasks.findIndex(s=>s.id===stDragId);
+        if(from!==-1){
+          const[moved]=modalSubtasks.splice(from,1);
+          const to=modalSubtasks.findIndex(s=>s.id===targetId);
+          if(to!==-1)modalSubtasks.splice(targetPos==='above'?to:to+1,0,moved);
+        }
+      }
+    }
+    const row=document.getElementById('mst-'+(stDragId||''));
+    if(row)row.style.opacity='';
+    stDragId=null;renderModalSubtasks();
   }
 
   function addModalSubtask(){
@@ -2059,12 +2328,92 @@
 
   function renderModalLISubitems(){
     document.getElementById('modal-li-subitem-list').innerHTML=modalLISubitems.map(s=>`
-      <div class="modal-subtask-item"><span style="flex:1">${s.name}</span><button class="del-btn" onclick="removeModalLISubitem('${s.id}')">✕</button></div>`).join('');
+      <div class="modal-subtask-item" id="mlis-${s.id}">
+        <div class="modal-drag-handle" ontouchstart="lisDragStart(event,'${s.id}')"><svg viewBox="0 0 12 22" fill="currentColor"><circle cx="3.5" cy="3" r="1.5"/><circle cx="8.5" cy="3" r="1.5"/><circle cx="3.5" cy="8" r="1.5"/><circle cx="8.5" cy="8" r="1.5"/><circle cx="3.5" cy="13" r="1.5"/><circle cx="8.5" cy="13" r="1.5"/><circle cx="3.5" cy="18" r="1.5"/><circle cx="8.5" cy="18" r="1.5"/></svg></div>
+        <span style="flex:1;font-size:0.85rem;color:var(--text)">${s.name}</span>
+        <button class="del-btn" onclick="editModalLISubitem('${s.id}')">✎</button>
+        <button class="del-btn" onclick="removeModalLISubitem('${s.id}')">✕</button>
+      </div>`).join('');
   }
+
+  function editModalLISubitem(id){
+    const row=document.getElementById('mlis-'+id);if(!row)return;
+    const sub=modalLISubitems.find(s=>s.id===id);if(!sub)return;
+    row.innerHTML=`
+      <input class="form-input" id="mlis-edit-${id}" value="${sub.name}" style="flex:1;padding:0.3rem 0.5rem">
+      <button class="del-btn" style="color:var(--accent);font-size:1rem" onclick="saveModalLISubitemEdit('${id}')">✓</button>
+      <button class="del-btn" onclick="renderModalLISubitems()">✕</button>`;
+    const inp=document.getElementById('mlis-edit-'+id);
+    if(inp){
+      inp.focus();inp.select();
+      inp.addEventListener('keydown',e=>{
+        if(e.key==='Enter'){e.preventDefault();saveModalLISubitemEdit(id);}
+        if(e.key==='Escape')renderModalLISubitems();
+      });
+    }
+  }
+  function saveModalLISubitemEdit(id){
+    const inp=document.getElementById('mlis-edit-'+id);if(!inp)return;
+    const name=inp.value.trim();if(!name)return;
+    const sub=modalLISubitems.find(s=>s.id===id);if(sub)sub.name=name;
+    renderModalLISubitems();
+  }
+  function lisDragStart(e,id){
+    e.stopPropagation();e.preventDefault();
+    lisDragId=id;
+    const row=document.getElementById('mlis-'+id);if(!row)return;
+    const rect=row.getBoundingClientRect();
+    lisDragOffY=e.touches[0].clientY-rect.top;
+    const ghost=document.createElement('div');
+    ghost.style.cssText=`position:fixed;z-index:9000;pointer-events:none;background:var(--surface);border:1.5px solid var(--accent);border-radius:var(--rs);padding:0.35rem 0.6rem;box-shadow:0 4px 16px rgba(0,0,0,0.2);font-size:0.85rem;color:var(--text);font-family:var(--font);top:${e.touches[0].clientY-lisDragOffY}px;left:${rect.left}px;width:${rect.width}px;opacity:0.95`;
+    const sub=modalLISubitems.find(s=>s.id===id);ghost.textContent=sub?sub.name:'';
+    document.body.appendChild(ghost);lisDragGhost=ghost;
+    row.style.opacity='0.3';
+    document.addEventListener('touchmove',onLisDragMove,{passive:false});
+    document.addEventListener('touchend',onLisDragEnd,{once:true});
+    document.addEventListener('touchcancel',onLisDragEnd,{once:true});
+  }
+  function onLisDragMove(e){
+    if(!lisDragId)return;e.preventDefault();
+    const y=e.touches[0].clientY;
+    if(lisDragGhost)lisDragGhost.style.top=(y-lisDragOffY)+'px';
+    const list=document.getElementById('modal-li-subitem-list');if(!list)return;
+    list.querySelectorAll('.modal-subtask-item').forEach(r=>{
+      r.classList.remove('drop-above','drop-below');
+      if(r.id==='mlis-'+lisDragId)return;
+      const rc=r.getBoundingClientRect();
+      if(y>=rc.top-4&&y<=rc.bottom+4)r.classList.add(y<rc.top+rc.height/2?'drop-above':'drop-below');
+    });
+  }
+  function onLisDragEnd(){
+    document.removeEventListener('touchmove',onLisDragMove);
+    if(lisDragGhost){lisDragGhost.remove();lisDragGhost=null;}
+    const list=document.getElementById('modal-li-subitem-list');
+    if(list&&lisDragId){
+      let targetId=null,targetPos=null;
+      list.querySelectorAll('.modal-subtask-item').forEach(r=>{
+        if(r.classList.contains('drop-above')){targetId=r.id.replace('mlis-','');targetPos='above';}
+        if(r.classList.contains('drop-below')){targetId=r.id.replace('mlis-','');targetPos='below';}
+        r.classList.remove('drop-above','drop-below');
+      });
+      if(targetId&&targetId!==lisDragId){
+        const from=modalLISubitems.findIndex(s=>s.id===lisDragId);
+        if(from!==-1){
+          const[moved]=modalLISubitems.splice(from,1);
+          const to=modalLISubitems.findIndex(s=>s.id===targetId);
+          if(to!==-1)modalLISubitems.splice(targetPos==='above'?to:to+1,0,moved);
+        }
+      }
+    }
+    const row=document.getElementById('mlis-'+(lisDragId||''));
+    if(row)row.style.opacity='';
+    lisDragId=null;renderModalLISubitems();
+  }
+
   function addModalLISubitem(){
     const inp=document.getElementById('li-subitem-input');
     const name=inp.value.trim();if(!name)return;
-    modalLISubitems.push({id:uid(),name,done:false});
+    modalLISubitems.push({id:uid(),name,done:false,checkState:''});
     inp.value='';renderModalLISubitems();inp.focus();
   }
   function removeModalLISubitem(id){modalLISubitems=modalLISubitems.filter(s=>s.id!==id);renderModalLISubitems();}
@@ -2283,6 +2632,21 @@
   }
   setInterval(updateClock,1000);
 
+  function toggleRemName(el){
+    if(el.scrollWidth>el.clientWidth+2||el.classList.contains('name-expanded')){
+      el.classList.toggle('name-expanded');
+    }
+  }
+  function toggleLICardExpand(e,id){
+    e.stopPropagation();
+    const card=document.getElementById('licard-'+id);if(!card)return;
+    const nameEl=card.querySelector('.task-name');
+    const item=(listItems[currentListId]||[]).find(x=>x.id===id);
+    const hasExpand=!!(item&&(item.notes||(item.subitems&&item.subitems.length)));
+    const nameOverflows=nameEl&&nameEl.scrollWidth>nameEl.clientWidth+2;
+    if(nameOverflows||hasExpand)card.classList.toggle('expanded');
+  }
+
   function fmtDur(min){if(!min)return'';if(min<60)return`${min}m`;const h=Math.floor(min/60),m=min%60;return m?`${h}h ${m}m`:`${h}h`}
   function fmtTimer(s){const m=Math.floor(s/60),sec=s%60;return`${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`}
   function fmtTimerLong(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`}
@@ -2291,7 +2655,126 @@
   function randPH(){return PHS[Math.floor(Math.random()*PHS.length)]}
   function pClass(p){return p?`p-${p}`:''}
   function pLabel(p){return p==='high'?'High':p==='med'?'Medium':p==='low'?'Low':''}
-  function parseTags(s){if(!s)return[];return s.trim().split(/\s+/).filter(t=>t.startsWith('#')).map(t=>t.toLowerCase())}
+  function parseTags(s){if(!s)return[];return s.trim().split(/\s+/).filter(t=>t.startsWith('#')&&t.length>1).map(t=>t.toLowerCase())}
+
+  // ── HASHTAG AUTOCOMPLETE ──
+  function getExistingTags(){
+    const s=new Set();
+    tasks.forEach(t=>(t.tags||[]).forEach(tag=>s.add(tag)));
+    return[...s].sort();
+  }
+  function tagPartial(val){
+    if(!val)return'';
+    const p=val.split(' ');
+    return p[p.length-1]||'';
+  }
+  function renderTagSuggestions(){
+    const inp=document.getElementById('task-tags');
+    const box=document.getElementById('hashtag-suggestions');
+    if(!inp||!box)return;
+    const partial=tagPartial(inp.value).toLowerCase();
+    if(!partial.startsWith('#')){box.style.display='none';box.innerHTML='';return;}
+    const entered=new Set(
+      inp.value.split(' ').slice(0,-1)
+        .filter(p=>p.startsWith('#')&&p.length>1).map(p=>p.toLowerCase())
+    );
+    const all=getExistingTags();
+    const hits=partial==='#'
+      ?all.filter(t=>!entered.has(t))
+      :all.filter(t=>t.startsWith(partial)&&!entered.has(t)&&t!==partial);
+    if(!hits.length){box.style.display='none';box.innerHTML='';return;}
+    box.style.display='flex';
+    box.innerHTML=hits.map(t=>
+      `<div class="hashtag-suggestion-pill" onclick="pickTagSuggestion('${t}')">${t}</div>`
+    ).join('');
+  }
+  function pickTagSuggestion(tag){
+    const inp=document.getElementById('task-tags');
+    if(!inp)return;
+    const parts=inp.value.split(' ');
+    parts[parts.length-1]=tag;
+    inp.value=parts.join(' ')+' #';
+    inp.focus();
+    inp.setSelectionRange(inp.value.length,inp.value.length);
+    renderTagSuggestions();
+  }
+  document.getElementById('task-tags').addEventListener('focus',()=>{
+    const inp=document.getElementById('task-tags');
+    if(!inp.value.trim()){inp.value='#';setTimeout(()=>inp.setSelectionRange(1,1),0);}
+    renderTagSuggestions();
+  });
+  document.getElementById('task-tags').addEventListener('keydown',e=>{
+    if(e.key!==' ')return;
+    const inp=document.getElementById('task-tags');
+    const p=tagPartial(inp.value);
+    if(p==='#'){e.preventDefault();return;}
+    if(p.startsWith('#')&&p.length>1){e.preventDefault();inp.value=inp.value+' #';renderTagSuggestions();}
+  });
+  document.getElementById('task-tags').addEventListener('input',renderTagSuggestions);
+  document.getElementById('task-tags').addEventListener('blur',()=>{
+    setTimeout(()=>{
+      const box=document.getElementById('hashtag-suggestions');
+      if(box){box.style.display='none';box.innerHTML='';}
+    },200);
+  });
+
+  // ── LIST ITEM HASHTAG AUTOCOMPLETE ──
+  function getExistingListTags(){
+    const s=new Set();
+    Object.values(listItems).forEach(items=>{
+      items.forEach(item=>(item.tags||[]).forEach(tag=>s.add(tag)));
+    });
+    return[...s].sort();
+  }
+  function renderLITagSuggestions(){
+    const inp=document.getElementById('li-tags');
+    const box=document.getElementById('li-hashtag-suggestions');
+    if(!inp||!box)return;
+    const partial=tagPartial(inp.value).toLowerCase();
+    if(!partial.startsWith('#')){box.style.display='none';box.innerHTML='';return;}
+    const entered=new Set(
+      inp.value.split(' ').slice(0,-1)
+        .filter(p=>p.startsWith('#')&&p.length>1).map(p=>p.toLowerCase())
+    );
+    const all=getExistingListTags();
+    const hits=partial==='#'
+      ?all.filter(t=>!entered.has(t))
+      :all.filter(t=>t.startsWith(partial)&&!entered.has(t)&&t!==partial);
+    if(!hits.length){box.style.display='none';box.innerHTML='';return;}
+    box.style.display='flex';
+    box.innerHTML=hits.map(t=>
+      `<div class="hashtag-suggestion-pill" onclick="pickLITagSuggestion('${t}')">${t}</div>`
+    ).join('');
+  }
+  function pickLITagSuggestion(tag){
+    const inp=document.getElementById('li-tags');
+    if(!inp)return;
+    const parts=inp.value.split(' ');
+    parts[parts.length-1]=tag;
+    inp.value=parts.join(' ')+' #';
+    inp.focus();
+    inp.setSelectionRange(inp.value.length,inp.value.length);
+    renderLITagSuggestions();
+  }
+  document.getElementById('li-tags').addEventListener('focus',()=>{
+    const inp=document.getElementById('li-tags');
+    if(!inp.value.trim()){inp.value='#';setTimeout(()=>inp.setSelectionRange(1,1),0);}
+    renderLITagSuggestions();
+  });
+  document.getElementById('li-tags').addEventListener('keydown',e=>{
+    if(e.key!==' ')return;
+    const inp=document.getElementById('li-tags');
+    const p=tagPartial(inp.value);
+    if(p==='#'){e.preventDefault();return;}
+    if(p.startsWith('#')&&p.length>1){e.preventDefault();inp.value=inp.value+' #';renderLITagSuggestions();}
+  });
+  document.getElementById('li-tags').addEventListener('input',renderLITagSuggestions);
+  document.getElementById('li-tags').addEventListener('blur',()=>{
+    setTimeout(()=>{
+      const box=document.getElementById('li-hashtag-suggestions');
+      if(box){box.style.display='none';box.innerHTML='';}
+    },200);
+  });
 
   function sysIsDark(){return window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches}
   function applyTheme(){
@@ -2419,39 +2902,86 @@
 
   function getCard(id){return document.getElementById('card-'+id)}
   function getSW(id){return document.getElementById('sw-'+id)}
+  function getSWL(id){return document.getElementById('swl-'+id)}
+  function ordinal(n){if(n===11||n===12||n===13)return n+'th';const s=['th','st','nd','rd'];return n+(s[n%10]||'th');}
   const SW_W=()=>Math.min(12*parseFloat(getComputedStyle(document.documentElement).fontSize),260);
-  function swTouchStart(e,id){if(swEl&&swEl!==id)closeSwipe(swEl);swEl=id;swX0=e.touches[0].clientX;swDx=0;const card=getCard(id);if(card)card.style.transition='none';}
+  function swTouchStart(e,id){
+    if(swEl&&swEl!==id)closeSwipe(swEl);
+    swEl=id;swX0=e.touches[0].clientX;swY0=e.touches[0].clientY;swDx=0;swDir=0;
+    const card=getCard(id);
+    if(card)card.style.transition='none';
+  }
   function swTouchMove(e,id){
     if(swEl!==id)return;
     const dx=e.touches[0].clientX-swX0;const card=getCard(id);if(!card)return;
-    const curTx=parseFloat(card.dataset.tx||0);const newTx=Math.max(-SW_W(),Math.min(0,curTx+dx-swDx));
-    swDx=dx;card.style.transform=`translateX(${newTx}px)`;card.dataset.tx=newTx;
-    const sw=getSW(id);if(sw)sw.style.width=Math.abs(newTx)+'px';
+    if(swDir===0){
+      if(Math.abs(dx)<=4)return;
+      const dy=e.touches[0].clientY-swY0;
+      if(Math.abs(dy)>Math.abs(dx)){swEl=null;card.style.transition='';return;}
+      swDir=dx<0?-1:1;
+      if(card.classList.contains('expanded')){
+        card.classList.remove('expanded');
+        expandedCards.delete(id);
+      }
+    }
+    const delta=dx-swDx;swDx=dx;
+    const curTx=parseFloat(card.dataset.tx||0);
+    let newTx;
+    if(swDir===-1){
+      newTx=Math.max(-SW_W(),Math.min(0,curTx+delta));
+      const sw=getSW(id);if(sw)sw.style.width=Math.abs(newTx)+'px';
+    }else{
+      newTx=Math.max(0,Math.min(SW_W(),curTx+delta));
+      const swl=getSWL(id);if(swl)swl.style.width=newTx+'px';
+    }
+    card.style.transform=`translateX(${newTx}px)`;card.dataset.tx=newTx;
     if(Math.abs(dx)>6)e.preventDefault();
   }
   function swTouchEnd(e,id){
     if(swEl!==id)return;const card=getCard(id);if(!card)return;
     const tx=parseFloat(card.dataset.tx||0);card.style.transition='transform 0.25s cubic-bezier(0.4,0,0.2,1)';
-    const sw=getSW(id);
-    if(tx<-SW_W()/2){card.style.transform=`translateX(-${SW_W()}px)`;card.dataset.tx=-SW_W();card.dataset.open='1';if(sw){sw.style.transition='width 0.25s cubic-bezier(0.4,0,0.2,1)';sw.style.width=SW_W()+'px';}}
-    else closeSwipe(id);
+    if(swDir===-1){
+      const sw=getSW(id);
+      if(tx<-SW_W()/2){card.style.transform=`translateX(-${SW_W()}px)`;card.dataset.tx=-SW_W();card.dataset.open='l';if(sw){sw.style.transition='width 0.25s cubic-bezier(0.4,0,0.2,1)';sw.style.width=SW_W()+'px';}}
+      else closeSwipe(id);
+    }else if(swDir===1){
+      const swl=getSWL(id);
+      if(tx>SW_W()/2){card.style.transform=`translateX(${SW_W()}px)`;card.dataset.tx=SW_W();card.dataset.open='r';if(swl){swl.style.transition='width 0.25s cubic-bezier(0.4,0,0.2,1)';swl.style.width=SW_W()+'px';}}
+      else closeSwipe(id);
+    }else closeSwipe(id);
   }
   function closeSwipe(id){
     const card=getCard(id);if(!card)return;
     card.style.transition='transform 0.25s cubic-bezier(0.4,0,0.2,1)';card.style.transform='translateX(0)';card.dataset.tx=0;card.dataset.open='';
     const sw=getSW(id);if(sw){sw.style.transition='width 0.25s cubic-bezier(0.4,0,0.2,1)';sw.style.width='0';}
+    const swl=getSWL(id);if(swl){swl.style.transition='width 0.25s cubic-bezier(0.4,0,0.2,1)';swl.style.width='0';}
     if(swEl===id)swEl=null;
   }
   document.addEventListener('touchstart',e=>{if(swEl&&!e.target.closest('.task-card-wrap'))closeSwipe(swEl);},{passive:true});
+  function markClippedCards(){
+    requestAnimationFrame(()=>{
+      document.querySelectorAll('.task-card:not(.expanded):not(.active-timer)').forEach(card=>{
+        card.classList.toggle('clipped',card.scrollHeight>card.clientHeight+2);
+      });
+    });
+  }
   function cardClick(id,isDone){
     const card=getCard(id);
-    if(card&&card.dataset.open==='1'){closeSwipe(id);return;}
+    if(card&&card.dataset.open){closeSwipe(id);return;}
     const t=tasks.find(x=>x.id===id);
-    const expandable=isDone||(t&&t.subtasks&&t.subtasks.length>0);
+    const nameEl=card?card.querySelector('.task-name'):null;
+    const nameOverflows=nameEl&&nameEl.scrollWidth>nameEl.clientWidth+2;
+    const hasOverflow=card&&card.scrollHeight>card.clientHeight+2;
+    const expandable=isDone||(t&&t.subtasks&&t.subtasks.length>0)||nameOverflows||hasOverflow;
     if(expandable&&card){
       card.classList.toggle('expanded');
-      if(card.classList.contains('expanded')){expandedCards.add(id);}
-      else{expandedCards.delete(id);}
+      if(card.classList.contains('expanded')){
+        expandedCards.add(id);
+        card.classList.remove('clipped');
+      }else{
+        expandedCards.delete(id);
+        setTimeout(()=>{if(!card.classList.contains('expanded'))card.classList.toggle('clipped',card.scrollHeight>card.clientHeight+2);},300);
+      }
     }
   }
 
@@ -2473,22 +3003,35 @@
           <button class="it-btn stop-btn" onclick="stopTimerBtn(event)" title="Stop"><svg viewBox="0 0 18 18"><rect x="4" y="4" width="10" height="10" rx="2"/></svg></button>
         </div>
       </div>`:'';
+
+    // Right panel — swipe left to reveal: edit, delete
+    const rightPanel=`<div class="swipe-actions" id="sw-${t.id}" style="width:0;overflow:hidden;transition:width 0.25s cubic-bezier(0.4,0,0.2,1)">
+      <button class="sw-btn sw-edit" style="width:${swW/2}px" onclick="openEditTask('${t.id}')"><svg viewBox="0 0 18 18"><path d="M11 4l3 3L7 14H4v-3L11 4z"/></svg><span>Edit</span></button>
+      <button class="sw-btn sw-delete" style="width:${swW/2}px;border-radius:0 var(--r) var(--r) 0" onclick="confirmDelTask('${t.id}')"><svg viewBox="0 0 18 18"><path d="M4 6h10M5 6l1 9h6l1-9M7 9v4M11 9v4M7 6V4h4v2"/></svg><span>Delete</span></button>
+    </div>`;
+
+    // Left panel — swipe right to reveal: (add below if manual), copy, move, repeat
+    const showAddBelow=!isDone&&!calView&&taskSortMode==='manual';
+    let leftBtns='';
+    if(showAddBelow){
+      const bw=swW/4;
+      leftBtns=`
+        <button class="sw-btn sw-add-below" style="width:${bw}px;border-radius:var(--r) 0 0 var(--r)" onclick="openAddBelow('${t.id}')"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 3v12M4 9h10"/></svg><span>Add Below</span></button>
+        <button class="sw-btn sw-copy" style="width:${bw}px" onclick="openCopyTask('${t.id}')"><svg viewBox="0 0 18 18"><rect x="6" y="5" width="8" height="10" rx="1.5"/><path d="M4 13V3h8"/></svg><span>Copy</span></button>
+        <button class="sw-btn sw-move" style="width:${bw}px" onclick="openMoveTask('${t.id}')"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9h12M11 5l4 4-4 4"/></svg><span>Move</span></button>
+        <button class="sw-btn sw-repeat" style="width:${bw}px" onclick="openRepeatModal('${t.id}')"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9a6 6 0 1 0 1.5-4M3 5v4h4"/></svg><span>Repeat</span></button>`;
+    }else{
+      const bw=swW/3;
+      leftBtns=`
+        <button class="sw-btn sw-copy" style="width:${bw}px;border-radius:var(--r) 0 0 var(--r)" onclick="openCopyTask('${t.id}')"><svg viewBox="0 0 18 18"><rect x="6" y="5" width="8" height="10" rx="1.5"/><path d="M4 13V3h8"/></svg><span>Copy</span></button>
+        <button class="sw-btn sw-move" style="width:${bw}px" onclick="openMoveTask('${t.id}')"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9h12M11 5l4 4-4 4"/></svg><span>Move</span></button>
+        <button class="sw-btn sw-repeat" style="width:${bw}px" onclick="openRepeatModal('${t.id}')"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9a6 6 0 1 0 1.5-4M3 5v4h4"/></svg><span>Repeat</span></button>`;
+    }
+    const leftPanel=`<div class="swipe-actions-left" id="swl-${t.id}" style="width:0;overflow:hidden;transition:width 0.25s cubic-bezier(0.4,0,0.2,1)">${leftBtns}</div>`;
+
     return`<div class="task-card-wrap" id="wrap-${t.id}">
-      <div class="swipe-actions" id="sw-${t.id}" style="width:0;overflow:hidden;transition:width 0.25s cubic-bezier(0.4,0,0.2,1)">
-        ${calView?`
-        <button class="sw-btn sw-edit" style="width:${swW/3}px" onclick="openEditTask('${t.id}')"><svg viewBox="0 0 18 18"><path d="M11 4l3 3L7 14H4v-3L11 4z"/></svg><span>Edit</span></button>
-        <button class="sw-btn sw-copy" style="width:${swW/3}px" onclick="openCopyTask('${t.id}')"><svg viewBox="0 0 18 18"><rect x="6" y="5" width="8" height="10" rx="1.5"/><path d="M4 13V3h8"/></svg><span>Copy</span></button>
-        <button class="sw-btn sw-delete" style="width:${swW/3}px;border-radius:0 var(--r) var(--r) 0" onclick="confirmDelTask('${t.id}')"><svg viewBox="0 0 18 18"><path d="M4 6h10M5 6l1 9h6l1-9M7 9v4M11 9v4M7 6V4h4v2"/></svg><span>Delete</span></button>
-        `:isDone?`
-        <button class="sw-btn sw-copy" style="width:${swW/2}px" onclick="openCopyTask('${t.id}')"><svg viewBox="0 0 18 18"><rect x="6" y="5" width="8" height="10" rx="1.5"/><path d="M4 13V3h8"/></svg><span>Copy</span></button>
-        <button class="sw-btn sw-delete" style="width:${swW/2}px;border-radius:0 var(--r) var(--r) 0" onclick="confirmDelTask('${t.id}')"><svg viewBox="0 0 18 18"><path d="M4 6h10M5 6l1 9h6l1-9M7 9v4M11 9v4M7 6V4h4v2"/></svg><span>Delete</span></button>
-        `:`
-        <button class="sw-btn sw-timer" style="width:${swW/4}px" onclick="startTimerTask('${t.id}')"><svg viewBox="0 0 18 18"><circle cx="9" cy="10" r="6"/><path d="M9 7v3l2 1.5M7 1h4"/></svg><span>Timer</span></button>
-        <button class="sw-btn sw-edit"  style="width:${swW/4}px" onclick="openEditTask('${t.id}')"><svg viewBox="0 0 18 18"><path d="M11 4l3 3L7 14H4v-3L11 4z"/></svg><span>Edit</span></button>
-        <button class="sw-btn sw-copy" style="width:${swW/4}px" onclick="openCopyTask('${t.id}')"><svg viewBox="0 0 18 18"><rect x="6" y="5" width="8" height="10" rx="1.5"/><path d="M4 13V3h8"/></svg><span>Copy</span></button>
-        <button class="sw-btn sw-delete" style="width:${swW/4}px;border-radius:0 var(--r) var(--r) 0" onclick="confirmDelTask('${t.id}')"><svg viewBox="0 0 18 18"><path d="M4 6h10M5 6l1 9h6l1-9M7 9v4M11 9v4M7 6V4h4v2"/></svg><span>Delete</span></button>
-        `}
-      </div>
+      ${leftPanel}
+      ${rightPanel}
       <div class="task-card${isActive?' active-timer':''}${isDone?' done':''}${pc?' '+pc:''}" id="card-${t.id}" data-tx="0"
         ontouchstart="swTouchStart(event,'${t.id}')" ontouchmove="swTouchMove(event,'${t.id}')" ontouchend="swTouchEnd(event,'${t.id}')"
         onclick="cardClick('${t.id}',${isDone})">
@@ -2499,7 +3042,7 @@
           <div class="task-body">
             <div class="task-name">${t.emoji?`<span class="task-emoji">${t.emoji}</span>`:''}${t.name}</div>
             <div class="task-meta">
-              ${t.date&&t.date!==todayStr()?`<span class="meta-time">📅 ${fmtDate(t.date)}</span>`:''}
+              ${t.date&&(calView?t.date!==calSelected:t.date!==taskViewDate)?`<span class="meta-time">📅 ${fmtDate(t.date)}</span>`:''}
               ${t.time?`<span class="meta-time">⏰ ${fmtTime(t.time)}</span>`:''}
               ${t.duration?`<span class="meta-pill">${fmtDur(t.duration)}</span>`:''}
               ${pl?`<span class="p-badge">${pl}</span>`:''}
@@ -2510,6 +3053,61 @@
             ${timerHTML}
             ${t.subtasks&&t.subtasks.length?`<div class="subtasks-wrap">${t.subtasks.map(s=>`<div class="subtask-item"><div class="subtask-check${s.done?' checked':''}" onclick="toggleSubtask('${t.id}','${s.id}',event)"></div><span class="subtask-name${s.done?' done':''}">${s.name}</span></div>`).join('')}</div>`:''}
             ${completedHTML}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function futureCardClick(id){
+    const card=getCard(id);
+    if(card&&card.dataset.open){closeSwipe(id);return;}
+    const ft=futureTasks.find(x=>x.id===id);
+    const nameEl=card?card.querySelector('.task-name'):null;
+    const nameOverflows=nameEl&&nameEl.scrollWidth>nameEl.clientWidth+2;
+    const hasOverflow=card&&card.scrollHeight>card.clientHeight+2;
+    const expandable=(ft&&ft.subtasks&&ft.subtasks.length>0)||nameOverflows||hasOverflow;
+    if(expandable&&card){
+      card.classList.toggle('expanded');
+      if(card.classList.contains('expanded')){
+        expandedCards.add(id);
+        card.classList.remove('clipped');
+      }else{
+        expandedCards.delete(id);
+        setTimeout(()=>{if(!card.classList.contains('expanded'))card.classList.toggle('clipped',card.scrollHeight>card.clientHeight+2);},300);
+      }
+    }
+  }
+  function futureTaskCardHTML(ft,hideTags){
+    const pc=pClass(ft.priority),pl=pLabel(ft.priority);
+    const tags=(ft.tags||[]).filter(tag=>!hideTags||!hideTags.includes(tag));
+    const tagHTML=tags.map(tg=>`<span class="tag-pill">${tg}</span>`).join('');
+    const swW=SW_W();
+    const rightPanel=`<div class="swipe-actions" id="sw-${ft.id}" style="width:0;overflow:hidden;transition:width 0.25s cubic-bezier(0.4,0,0.2,1)">
+      <button class="sw-btn sw-edit" style="width:${swW/2}px" onclick="openEditFuture('${ft.id}')"><svg viewBox="0 0 18 18"><path d="M11 4l3 3L7 14H4v-3L11 4z"/></svg><span>Edit</span></button>
+      <button class="sw-btn sw-delete" style="width:${swW/2}px;border-radius:0 var(--r) var(--r) 0" onclick="confirmDelFuture('${ft.id}')"><svg viewBox="0 0 18 18"><path d="M4 6h10M5 6l1 9h6l1-9M7 9v4M11 9v4M7 6V4h4v2"/></svg><span>Delete</span></button>
+    </div>`;
+    const leftPanel=`<div class="swipe-actions-left" id="swl-${ft.id}" style="width:0;overflow:hidden;transition:width 0.25s cubic-bezier(0.4,0,0.2,1)">
+      <button class="sw-btn sw-move" style="width:${swW}px;border-radius:var(--r) 0 0 var(--r)" onclick="openMoveFuture('${ft.id}')"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9h12M11 5l4 4-4 4"/></svg><span>Move</span></button>
+    </div>`;
+    return`<div class="task-card-wrap" id="wrap-${ft.id}">
+      ${leftPanel}${rightPanel}
+      <div class="task-card${pc?' '+pc:''}${ft.done?' done':''}" id="card-${ft.id}" data-tx="0"
+        ontouchstart="swTouchStart(event,'${ft.id}')" ontouchmove="swTouchMove(event,'${ft.id}')" ontouchend="swTouchEnd(event,'${ft.id}')"
+        onclick="futureCardClick('${ft.id}')">
+        <div class="priority-bar"></div>
+        <div class="task-row">
+          <div class="drag-handle" ontouchstart="futureDragHandleTouch(event,'${ft.id}')"><svg viewBox="0 0 12 22" fill="currentColor"><circle cx="3.5" cy="3" r="1.5"/><circle cx="8.5" cy="3" r="1.5"/><circle cx="3.5" cy="8" r="1.5"/><circle cx="8.5" cy="8" r="1.5"/><circle cx="3.5" cy="13" r="1.5"/><circle cx="8.5" cy="13" r="1.5"/><circle cx="3.5" cy="18" r="1.5"/><circle cx="8.5" cy="18" r="1.5"/></svg></div>
+          <div class="task-check${ft.done?' checked':''}" onclick="toggleFutureDone('${ft.id}',event)"></div>
+          <div class="task-body">
+            <div class="task-name">${ft.emoji?`<span class="task-emoji">${ft.emoji}</span>`:''}${ft.name}</div>
+            <div class="task-meta">
+              ${pl?`<span class="p-badge">${pl}</span>`:''}
+              ${tagHTML}
+              ${ft.notes?`<span class="meta-time">${ft.notes}</span>`:''}
+              ${ft.subtasks&&ft.subtasks.length?`<span class="meta-pill">▾ ${ft.subtasks.filter(s=>s.done).length}/${ft.subtasks.length}</span>`:''}
+            </div>
+            ${ft.subtasks&&ft.subtasks.length?`<div class="subtasks-wrap">${ft.subtasks.map(s=>`<div class="subtask-item"><div class="subtask-check${s.done?' checked':''}" onclick="toggleFutureSubtask('${ft.id}','${s.id}',event)"></div><span class="subtask-name${s.done?' done':''}">${s.name}</span></div>`).join('')}</div>`:''}
           </div>
         </div>
       </div>
@@ -2555,7 +3153,62 @@
     document.getElementById('done-list').innerHTML=done.map(t=>taskCardHTML(t,true,null)).join('');
     document.getElementById('show-done-toggle').classList.toggle('on',cfg.showDone);
     renderMenuLists();renderReminders();
-    restoreExpanded();
+    restoreExpanded();markClippedCards();
+  }
+
+  function renderFutureTasks(){
+    const tagSet=new Set();
+    futureTasks.forEach(ft=>{if(ft.tags&&ft.tags.length)tagSet.add(ft.tags[0]);});
+    const emptyEl=document.getElementById('future-empty');
+    const wrap=document.getElementById('future-list-wrap');
+    if(!futureTasks.length){if(emptyEl)emptyEl.style.display='flex';if(wrap)wrap.innerHTML='';return;}
+    if(emptyEl)emptyEl.style.display='none';
+    if(!tagSet.size){if(wrap)wrap.innerHTML=futureTasks.map(ft=>futureTaskCardHTML(ft)).join('');markClippedCards();return;}
+    const ordered=futureTagOrder.filter(t=>tagSet.has(t));
+    tagSet.forEach(t=>{if(!ordered.includes(t))ordered.push(t);});
+    futureTagOrder=[...ordered];
+    const newTags=[...tagSet].filter(t=>!(t in futureTagCollapsed));
+    if(newTags.length>0){
+      [...tagSet,'__untagged__'].forEach(t=>{if(!(t in futureTagCollapsed))futureTagCollapsed[t]=false;});
+      saveFutureState();
+    }
+    let html='';
+    futureTagOrder.forEach(tag=>{
+      if(!tagSet.has(tag))return;
+      const group=futureTasks.filter(ft=>(ft.tags||[]).length&&ft.tags[0]===tag);
+      if(!group.length)return;
+      const safe=tag.replace(/[^a-z0-9]/g,'_'),isCol=!!futureTagCollapsed[tag];
+      html+=`<div class="li-tag-group${isCol?' collapsed':''}" id="ftgrp-${safe}" data-tag="${tag}">
+        <div class="li-tag-hdr-wrap">
+          <div class="li-tag-hdr-action li-tag-hdr-action-left" onclick="ftTagActionAdd('${tag}')">
+            <svg viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>Add
+          </div>
+          <div class="li-tag-hdr-action li-tag-hdr-action-right" onclick="ftTagActionDelete('${tag}')">
+            <svg viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h10M5 6l1 9h6l1-9M7 9v4M11 9v4M7 6V4h4v2"/></svg>Delete
+          </div>
+          <div class="li-tag-hdr" id="fttag-${safe}" onclick="ftTagHdrClick(event,'${tag}')" ontouchstart="ftTagHdrTouchStart(event,'${tag}')" ontouchmove="ftTagHdrTouchMove(event,'${tag}')" ontouchend="ftTagHdrTouchEnd(event,'${tag}')">
+            <span class="li-tag-label" onclick="toggleFutureTagGroup(event,'${tag}')">${tag}</span>
+            <span class="li-tag-count">${group.length}</span>
+            <div class="li-tag-chevron" onclick="toggleFutureTagGroup(event,'${tag}')">▾</div>
+          </div>
+        </div>
+        <div class="li-tag-body">${group.map(ft=>futureTaskCardHTML(ft,[tag])).join('')}</div>
+      </div>`;
+    });
+    const untagged=futureTasks.filter(ft=>!(ft.tags&&ft.tags.length));
+    if(untagged.length){
+      const isCol=!!futureTagCollapsed['__untagged__'];
+      html+=`<div class="li-tag-group${isCol?' collapsed':''}" id="ftgrp-untagged" data-tag="__untagged__">
+        <div class="li-tag-hdr" style="background:var(--surface2)" onclick="toggleFutureTagGroup(event,'__untagged__')">
+          <span class="li-tag-label" style="color:var(--text3)">Other</span>
+          <span class="li-tag-count" style="color:var(--text3)">${untagged.length}</span>
+          <div class="li-tag-chevron" style="color:var(--text3)">▾</div>
+        </div>
+        <div class="li-tag-body">${untagged.map(ft=>futureTaskCardHTML(ft)).join('')}</div>
+      </div>`;
+    }
+    if(wrap)wrap.innerHTML=html;
+    markClippedCards();
   }
 
   function switchSection(){
@@ -2675,10 +3328,96 @@
   }
   function stopTimer(){if(timerIv){clearInterval(timerIv);timerIv=null;}activeTimerId=null;timerSec=0;timerPaused=false;try{localStorage.removeItem(K.timer);}catch(e){}updateTimerDot();}
 
-  document.getElementById('move-save').addEventListener('click',()=>{
-    if(!moveTaskId)return;const t=tasks.find(x=>x.id===moveTaskId);
-    if(t){t.date=document.getElementById('move-date').value||todayStr();t.time=document.getElementById('move-time').value||null;}
-    saveAll();closeModal('move-modal');render();showToast('Task moved');moveTaskId=null;
+  function openMoveTask(id){
+    closeSwipe(id);moveTaskId=id;moveSelectedDate=null;
+    moveCalYear=new Date().getFullYear();moveCalMonth=new Date().getMonth();
+    document.getElementById('move-time-new').value='';
+    const t=tasks.find(x=>x.id===id);
+    document.getElementById('move-modal-title').textContent=t?`Move "${t.name}"`:'Move task';
+    renderMoveCalendar();openModal('move-modal');
+  }
+  function renderMoveCalendar(){
+    const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('move-cal-month-lbl').textContent=`${months[moveCalMonth]} ${moveCalYear}`;
+    const now=new Date();const tD=now.getDate(),tM=now.getMonth(),tY=now.getFullYear();
+    const first=new Date(moveCalYear,moveCalMonth,1).getDay();const off=(first+6)%7;
+    const dim=new Date(moveCalYear,moveCalMonth+1,0).getDate();const dip=new Date(moveCalYear,moveCalMonth,0).getDate();
+    const dows=['Mo','Tu','We','Th','Fr','Sa','Su'];
+    let html=dows.map(d=>`<div class="cal-dow">${d}</div>`).join('');
+    for(let i=0;i<off;i++)html+=`<div class="cal-day other-month">${dip-off+1+i}</div>`;
+    for(let d=1;d<=dim;d++){
+      const ds=`${moveCalYear}-${String(moveCalMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const isT=d===tD&&moveCalMonth===tM&&moveCalYear===tY;const isSel=moveSelectedDate===ds;
+      html+=`<div class="cal-day${isT?' today':''}${isSel?' selected':''}" onclick="selectMoveDate('${ds}')">${d}</div>`;
+    }
+    const rem=42-(off+dim);for(let i=1;i<=rem;i++)html+=`<div class="cal-day other-month">${i}</div>`;
+    document.getElementById('move-cal-grid').innerHTML=html;
+    const info=document.getElementById('move-selected-info');
+    if(info)info.textContent=moveSelectedDate?`Moving to ${fmtDate(moveSelectedDate)}`:'Tap a date to select';
+    const btn=document.getElementById('move-save-new');
+    if(btn){btn.disabled=!moveSelectedDate;btn.style.opacity=moveSelectedDate?'':'0.45';}
+  }
+  function selectMoveDate(ds){moveSelectedDate=ds;renderMoveCalendar();}
+  document.getElementById('move-cal-prev').addEventListener('click',()=>{moveCalMonth--;if(moveCalMonth<0){moveCalMonth=11;moveCalYear--;}renderMoveCalendar();});
+  document.getElementById('move-cal-next').addEventListener('click',()=>{moveCalMonth++;if(moveCalMonth>11){moveCalMonth=0;moveCalYear++;}renderMoveCalendar();});
+  document.getElementById('move-save-new').addEventListener('click',()=>{
+    if(!moveTaskId||!moveSelectedDate)return;
+    const t=tasks.find(x=>x.id===moveTaskId);
+    if(t){
+      const timeOverride=document.getElementById('move-time-new').value;
+      t.date=moveSelectedDate;
+      if(timeOverride)t.time=timeOverride;
+      if(t.date&&t.time){cancelNotif(t.id);scheduleNotif(t.id,t.name,t.date+'T'+t.time);}
+    }
+    saveAll();closeModal('move-modal');render();refreshCalIfActive();showToast('Task moved');
+    moveTaskId=null;moveSelectedDate=null;
+  });
+
+  function openMoveFuture(id){
+    closeSwipe(id);moveFutureId=id;futureSelectedDate=null;
+    futureCalYear=new Date().getFullYear();futureCalMonth=new Date().getMonth();
+    document.getElementById('future-move-time').value='';
+    renderFutureMoveCalendar();openModal('future-move-modal');
+  }
+  function renderFutureMoveCalendar(){
+    const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('future-move-cal-month-lbl').textContent=`${months[futureCalMonth]} ${futureCalYear}`;
+    const now=new Date();const tD=now.getDate(),tM=now.getMonth(),tY=now.getFullYear();
+    const first=new Date(futureCalYear,futureCalMonth,1).getDay();const off=(first+6)%7;
+    const dim=new Date(futureCalYear,futureCalMonth+1,0).getDate();const dip=new Date(futureCalYear,futureCalMonth,0).getDate();
+    const dows=['Mo','Tu','We','Th','Fr','Sa','Su'];
+    let html=dows.map(d=>`<div class="cal-dow">${d}</div>`).join('');
+    for(let i=0;i<off;i++)html+=`<div class="cal-day other-month">${dip-off+1+i}</div>`;
+    for(let d=1;d<=dim;d++){
+      const ds=`${futureCalYear}-${String(futureCalMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const isT=d===tD&&futureCalMonth===tM&&futureCalYear===tY;const isSel=futureSelectedDate===ds;
+      html+=`<div class="cal-day${isT?' today':''}${isSel?' selected':''}" onclick="selectFutureMoveDate('${ds}')">${d}</div>`;
+    }
+    const rem=42-(off+dim);for(let i=1;i<=rem;i++)html+=`<div class="cal-day other-month">${i}</div>`;
+    document.getElementById('future-move-cal-grid').innerHTML=html;
+    const info=document.getElementById('future-move-selected-info');
+    if(info)info.textContent=futureSelectedDate?`Moving to ${fmtDate(futureSelectedDate)}`:'Tap a date to select';
+    const btn=document.getElementById('future-move-save');
+    if(btn){btn.disabled=!futureSelectedDate;btn.style.opacity=futureSelectedDate?'':'0.45';}
+  }
+  function selectFutureMoveDate(ds){futureSelectedDate=ds;renderFutureMoveCalendar();}
+  document.getElementById('future-move-cal-prev').addEventListener('click',()=>{futureCalMonth--;if(futureCalMonth<0){futureCalMonth=11;futureCalYear--;}renderFutureMoveCalendar();});
+  document.getElementById('future-move-cal-next').addEventListener('click',()=>{futureCalMonth++;if(futureCalMonth>11){futureCalMonth=0;futureCalYear++;}renderFutureMoveCalendar();});
+  document.getElementById('future-move-save').addEventListener('click',()=>{
+    if(!moveFutureId||!futureSelectedDate)return;
+    const ft=futureTasks.find(x=>x.id===moveFutureId);
+    if(ft){
+      const time=document.getElementById('future-move-time').value||null;
+      tasks.push({id:ft.id,name:ft.name,emoji:ft.emoji||null,priority:ft.priority||null,
+        tags:[...(ft.tags||[])],date:futureSelectedDate,time,duration:null,
+        notes:ft.notes||null,subtasks:(ft.subtasks||[]).map(s=>({id:uid(),name:s.name,done:false})),
+        done:false,created:ft.created||Date.now(),completedAt:null});
+      futureTasks=futureTasks.filter(x=>x.id!==moveFutureId);
+      if(time)scheduleNotif(ft.id,ft.name,futureSelectedDate+'T'+time);
+      saveAll();closeModal('future-move-modal');renderFutureTasks();render();refreshCalIfActive();
+      showToast('Task moved to '+fmtDate(futureSelectedDate));
+    }
+    moveFutureId=null;futureSelectedDate=null;
   });
 
   document.getElementById('copy-cal-prev').addEventListener('click',()=>{
@@ -2719,7 +3458,7 @@
   });
 
   function openAddTask(prefillDate){
-    editTaskId=null;timeOpen=false;modalSubtasks=[];
+    addBelowTaskId=null;editTaskId=null;timeOpen=false;modalSubtasks=[];
     document.getElementById('task-modal-title').textContent='New task';document.getElementById('task-save').textContent='Add task';
     ['task-emoji','task-name','task-tags','task-notes'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('task-name').placeholder=randPH();document.getElementById('task-priority').value='';
@@ -2730,6 +3469,78 @@
     renderModalSubtasks();
     openModal('task-modal');
   }
+
+  function openRepeatModal(id){
+    closeSwipe(id);repeatTaskId=id;
+    const t=tasks.find(x=>x.id===id);
+    if(!t){showToast('Task not found');return;}
+    if(!t.date){showToast('Task needs a date to repeat');return;}
+    document.getElementById('repeat-freq').value='daily';
+    updateRepeatInfo();openModal('repeat-modal');
+  }
+  function updateRepeatInfo(){
+    const t=tasks.find(x=>x.id===repeatTaskId);if(!t||!t.date)return;
+    const freq=document.getElementById('repeat-freq').value;
+    const d=new Date(t.date+'T12:00:00');
+    const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+    let info='';
+    if(freq==='daily')info='Creates 30 daily copies starting the day after the original.';
+    else if(freq==='weekly')info=`Creates 52 copies, one every ${dayNames[d.getDay()]}.`;
+    else if(freq==='monthly'){info=`Creates copies on the ${ordinal(d.getDate())} of each month for 12 months. Months that don't have a ${ordinal(d.getDate())} are skipped.`;}
+    else if(freq==='yearly'){const isLeap=d.getMonth()===1&&d.getDate()===29;info=`Creates copies on ${d.getDate()} ${monthNames[d.getMonth()]} each year for 5 years.${isLeap?' Non-leap years (no Feb 29) are skipped.':''}`;}
+    document.getElementById('repeat-info').textContent=info;
+  }
+  document.getElementById('repeat-freq').addEventListener('change',updateRepeatInfo);
+  document.getElementById('repeat-save').addEventListener('click',()=>{
+    if(!repeatTaskId)return;
+    const t=tasks.find(x=>x.id===repeatTaskId);
+    if(!t||!t.date){showToast('Task needs a date to repeat');closeModal('repeat-modal');return;}
+    const freq=document.getElementById('repeat-freq').value;
+    const start=new Date(t.date+'T12:00:00');
+    const toDS=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const dates=[];
+    if(freq==='daily'){
+      for(let i=1;i<=30;i++){const d=new Date(start);d.setDate(d.getDate()+i);dates.push(toDS(d));}
+    }else if(freq==='weekly'){
+      for(let i=1;i<=52;i++){const d=new Date(start);d.setDate(d.getDate()+i*7);dates.push(toDS(d));}
+    }else if(freq==='monthly'){
+      const day=start.getDate();
+      for(let i=1;i<=12;i++){
+        const d=new Date(start.getFullYear(),start.getMonth()+i,1);
+        const dim=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+        if(day<=dim){d.setDate(day);dates.push(toDS(d));}
+        // else: skip months where the day doesn't exist (e.g. Feb for 31st tasks)
+      }
+    }else if(freq==='yearly'){
+      const month=start.getMonth(),day=start.getDate();
+      for(let i=1;i<=5;i++){
+        const year=start.getFullYear()+i;
+        const dim=new Date(year,month+1,0).getDate();
+        if(day<=dim)dates.push(`${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`);
+        // else: skip years where the day doesn't exist (Feb 29 on non-leap years)
+      }
+    }
+    const now=Date.now();
+    dates.forEach((date,i)=>{
+      const newTask={id:uid(),name:t.name,emoji:t.emoji||null,priority:t.priority||null,
+        tags:[...(t.tags||[])],date,time:t.time||null,duration:t.duration||null,
+        notes:t.notes||null,subtasks:(t.subtasks||[]).map(s=>({id:uid(),name:s.name,done:false})),
+        done:false,created:now+i,completedAt:null};
+      tasks.push(newTask);
+      if(newTask.date&&newTask.time)scheduleNotif(newTask.id,newTask.name,newTask.date+'T'+newTask.time);
+    });
+    saveAll();closeModal('repeat-modal');render();refreshCalIfActive();
+    showToast(dates.length?`${dates.length} repeat${dates.length!==1?'s':''} created`:'No valid dates found');
+    repeatTaskId=null;
+  });
+
+  function openAddBelow(id){
+    closeSwipe(id);
+    openAddTask(taskViewDate);   // openAddTask resets addBelowTaskId first
+    addBelowTaskId=id;           // then we set it after
+  }
+
   function updateTimeLbl(){
     const date=document.getElementById('task-date').value,time=document.getElementById('task-time').value,dur=document.getElementById('task-dur').value;
     const parts=[];if(date&&date!==todayStr())parts.push(fmtDate(date));if(time)parts.push(fmtTime(time));if(dur)parts.push(dur+'min');
@@ -2743,7 +3554,16 @@
     const d={name,emoji:document.getElementById('task-emoji').value.trim()||null,priority:document.getElementById('task-priority').value||null,tags:parseTags(document.getElementById('task-tags').value),date:(rawDate&&/^\d{4}-\d{2}-\d{2}$/.test(rawDate))?rawDate:todayStr(),time:timeOpen?document.getElementById('task-time').value||null:null,duration:timeOpen?parseInt(document.getElementById('task-dur').value)||null:null,notes:document.getElementById('task-notes').value.trim()||null,subtasks:[...modalSubtasks]};
     const taskId=editTaskId||uid();
     if(editTaskId){const t=tasks.find(x=>x.id===editTaskId);if(t)Object.assign(t,d);}
-    else tasks.push({id:taskId,...d,done:false,created:Date.now(),completedAt:null});
+    else{
+      tasks.push({id:taskId,...d,done:false,created:Date.now(),completedAt:null});
+      if(addBelowTaskId){
+        const currentOrdered=getOrderedPending().filter(t=>t.id!==taskId);
+        taskOrderIds=currentOrdered.map(t=>t.id);
+        const idx=taskOrderIds.indexOf(addBelowTaskId);
+        if(idx!==-1)taskOrderIds.splice(idx+1,0,taskId);else taskOrderIds.push(taskId);
+        taskSortMode='manual';saveSortMode();saveDragOrder();addBelowTaskId=null;
+      }
+    }
     if(d.date&&d.time){cancelNotif(taskId);scheduleNotif(taskId,d.name,d.date+'T'+d.time);}
     saveAll();closeModal('task-modal');render();showToast(editTaskId?'Task updated':'Task added');editTaskId=null;refreshCalIfActive();
   });
@@ -2751,7 +3571,7 @@
 
   function remCardHTML(r){
     return`<div class="reminder-card"><div class="rem-row">
-      <div class="rem-body"><div class="rem-name">${r.name}</div><div class="rem-meta">${r.date?fmtDate(r.date):''}${r.date&&r.time?' · ':''}${r.time?fmtTime(r.time):''}${r.notes?' — '+r.notes:''}</div></div>
+      <div class="rem-body"><div class="rem-name" onclick="toggleRemName(this)">${r.name}</div><div class="rem-meta">${r.date?fmtDate(r.date):''}${r.date&&r.time?' · ':''}${r.time?fmtTime(r.time):''}${r.notes?' — '+r.notes:''}</div></div>
       <button class="del-btn" onclick="openCopyReminder('${r.id}')"><svg viewBox="0 0 18 18" width="0.9rem" height="0.9rem" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="6" y="5" width="8" height="10" rx="1.5"/><path d="M4 13V3h8"/></svg></button>
       <button class="del-btn" onclick="openEditReminder('${r.id}')">✎</button>
       <button class="del-btn" onclick="delReminder('${r.id}')">✕</button>
@@ -2841,7 +3661,24 @@
     }
   });
 
-  document.getElementById('day-add-btn').addEventListener('click',()=>openAddTask(taskViewDate));
+  document.getElementById('multi-task-save').addEventListener('click',()=>{
+    const raw=document.getElementById('multi-task-input').value;
+    const names=raw.split('\n').map(s=>s.trim()).filter(s=>s.length>0);
+    if(!names.length){document.getElementById('multi-task-input').focus();return;}
+    const now=Date.now();
+    names.forEach((name,i)=>{
+      tasks.push({id:uid(),name,emoji:null,priority:null,tags:[],date:taskViewDate,
+        time:null,duration:null,notes:null,subtasks:[],done:false,created:now+i,completedAt:null});
+    });
+    saveAll();closeModal('multi-task-modal');render();
+    showToast(`${names.length} task${names.length>1?'s':''} added`);
+  });
+
+  document.getElementById('day-add-btn').addEventListener('click',e=>{
+    e.stopPropagation();
+    const dd=document.getElementById('day-add-dropdown');
+    if(dd)dd.style.display=dd.style.display==='none'?'block':'none';
+  });
   document.getElementById('day-prev').addEventListener('click',()=>{taskViewDate=addDays(taskViewDate,-1);showingDone=false;render();});
   document.getElementById('day-next').addEventListener('click',()=>{taskViewDate=addDays(taskViewDate,1);showingDone=false;render();});
   document.getElementById('day-nav-label').addEventListener('click',()=>{if(taskViewDate!==todayStr()){taskViewDate=todayStr();showingDone=false;render();}});
@@ -2857,6 +3694,42 @@
     if(remSection!=='today'){remSection='today';renderReminders();}
   });
   document.getElementById('add-li-inline-btn').addEventListener('click',()=>openAddLI());
+  document.getElementById('add-future-btn').addEventListener('click',()=>openAddFutureTask());
+  document.getElementById('future-name').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('future-save').click();});
+  document.getElementById('future-subtask-add-btn').addEventListener('click',addFutureModalSubtask);
+  document.getElementById('future-subtask-input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addFutureModalSubtask();}});
+  document.getElementById('future-save').addEventListener('click',()=>{
+    const name=document.getElementById('future-name').value.trim();if(!name){document.getElementById('future-name').focus();return;}
+    const tags=addToFutureTagGroup?[addToFutureTagGroup]:parseTags(document.getElementById('future-tags').value);
+    const d={name,emoji:document.getElementById('future-emoji').value.trim()||null,
+      priority:document.getElementById('future-priority').value||null,tags,
+      notes:document.getElementById('future-notes').value.trim()||null,subtasks:[...futureModalSubtasks]};
+    const isEdit=!!editFutureId;
+    if(isEdit){const ft=futureTasks.find(x=>x.id===editFutureId);if(ft)Object.assign(ft,d);editFutureId=null;}
+    else futureTasks.push({id:uid(),...d,done:false,created:Date.now()});
+    restoreFutureTagField();saveAll();closeModal('future-modal');renderFutureTasks();
+    showToast(isEdit?'Task updated':'Task added');
+  });
+  // Future hashtag autocomplete
+  function getExistingFutureTags(){const s=new Set();futureTasks.forEach(ft=>(ft.tags||[]).forEach(tag=>s.add(tag)));tasks.forEach(t=>(t.tags||[]).forEach(tag=>s.add(tag)));return[...s].sort();}
+  function renderFutureTagSuggestions(){
+    const inp=document.getElementById('future-tags');const box=document.getElementById('future-hashtag-suggestions');if(!inp||!box)return;
+    const partial=tagPartial(inp.value).toLowerCase();if(!partial.startsWith('#')){box.style.display='none';box.innerHTML='';return;}
+    const entered=new Set(inp.value.split(' ').slice(0,-1).filter(p=>p.startsWith('#')&&p.length>1).map(p=>p.toLowerCase()));
+    const hits=(partial==='#'?getExistingFutureTags():getExistingFutureTags().filter(t=>t.startsWith(partial)&&t!==partial)).filter(t=>!entered.has(t));
+    if(!hits.length){box.style.display='none';box.innerHTML='';return;}
+    box.style.display='flex';box.innerHTML=hits.map(t=>`<div class="hashtag-suggestion-pill" onclick="pickFutureTagSuggestion('${t}')">${t}</div>`).join('');
+  }
+  function pickFutureTagSuggestion(tag){
+    const inp=document.getElementById('future-tags');if(!inp)return;
+    const parts=inp.value.split(' ');parts[parts.length-1]=tag;
+    inp.value=parts.join(' ')+' #';inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);
+    renderFutureTagSuggestions();
+  }
+  document.getElementById('future-tags').addEventListener('focus',()=>{const inp=document.getElementById('future-tags');if(!inp.value.trim()){inp.value='#';setTimeout(()=>inp.setSelectionRange(1,1),0);}renderFutureTagSuggestions();});
+  document.getElementById('future-tags').addEventListener('keydown',e=>{if(e.key!==' ')return;const inp=document.getElementById('future-tags');const p=tagPartial(inp.value);if(p==='#'){e.preventDefault();return;}if(p.startsWith('#')&&p.length>1){e.preventDefault();inp.value=inp.value+' #';renderFutureTagSuggestions();}});
+  document.getElementById('future-tags').addEventListener('input',renderFutureTagSuggestions);
+  document.getElementById('future-tags').addEventListener('blur',()=>{setTimeout(()=>{const box=document.getElementById('future-hashtag-suggestions');if(box){box.style.display='none';box.innerHTML='';}},200);});
   document.getElementById('add-btn').addEventListener('click',()=>{
     if(currentView==='tasks')openAddTask();
     else if(currentView==='reminders')openAddReminder();
@@ -2920,7 +3793,15 @@
     }
   });
   function openListView(id){
-    currentListId=id;setView('list');closeMenu();renderListHdr();renderListItems();
+    currentListId=id;
+    // Collapse all tag groups whenever the list is opened
+    const items=listItems[id]||[];
+    const tagSet=new Set();
+    items.forEach(item=>{if(item.tags&&item.tags.length)tagSet.add(item.tags[0]);});
+    listTagCollapsed[id]={};
+    tagSet.forEach(t=>{listTagCollapsed[id][t]=true;});
+    listTagCollapsed[id]['__untagged__']=true;
+    setView('list');closeMenu();renderListHdr();renderListItems();
   }
   function renderListHdr(){
     const l=lists.find(x=>x.id===currentListId);if(!l)return;
@@ -2952,7 +3833,7 @@
           </div>
           <div class="li-check" data-state="${cs}" onclick="toggleLI('${item.id}')"></div>
           <div class="task-body" style="flex:1;min-width:0">
-            <div class="task-name">${item.emoji?`<span class="task-emoji">${item.emoji}</span>`:''}${item.name}</div>
+            <div class="task-name" onclick="toggleLICardExpand(event,'${item.id}')">${item.emoji?`<span class="task-emoji">${item.emoji}</span>`:''}${item.name}</div>
             ${item.priority?`<div class="task-meta"><span class="p-badge">${pLabel(item.priority)}</span></div>`:''}
           </div>
           <button class="del-btn" onclick="openEditLI('${item.id}')">✎</button>
@@ -2975,18 +3856,33 @@
     const ordered=saved.filter(t=>tagSet.has(t));
     tagSet.forEach(t=>{if(!ordered.includes(t))ordered.push(t);});
     listTagOrders[currentListId]=ordered;
-    const col=listTagCollapsed[currentListId]||{};
+    if(!listTagCollapsed[currentListId])listTagCollapsed[currentListId]={};
+    const col=listTagCollapsed[currentListId];
+    const newTags=[...tagSet].filter(t=>!(t in col));
+    if(newTags.length>0){
+      [...tagSet,'__untagged__'].forEach(t=>{col[t]=true;});
+      newTags.forEach(t=>{col[t]=false;});
+      saveListTagState();
+    }
     let html='';
     ordered.forEach(tag=>{
       const group=items.filter(i=>(i.tags||[]).length&&i.tags[0]===tag);
       if(!group.length)return;
       const safe=tag.replace(/[^a-z0-9]/g,'_'),isCol=!!col[tag];
       html+=`<div class="li-tag-group${isCol?' collapsed':''}" id="ligrp-${safe}" data-tag="${tag}">
-        <div class="li-tag-hdr">
-          <div class="li-tag-drag-handle" ontouchstart="liTagDragStart(event,'${tag}')"><svg viewBox="0 0 12 22" fill="currentColor"><circle cx="3.5" cy="3" r="1.5"/><circle cx="8.5" cy="3" r="1.5"/><circle cx="3.5" cy="8" r="1.5"/><circle cx="8.5" cy="8" r="1.5"/><circle cx="3.5" cy="13" r="1.5"/><circle cx="8.5" cy="13" r="1.5"/><circle cx="3.5" cy="18" r="1.5"/><circle cx="8.5" cy="18" r="1.5"/></svg></div>
-          <span class="li-tag-label" onclick="toggleLITagGroup(event,'${tag}')">${tag}</span>
-          <span class="li-tag-count">${group.length}</span>
-          <div class="li-tag-chevron" onclick="toggleLITagGroup(event,'${tag}')">▾</div>
+        <div class="li-tag-hdr-wrap">
+          <div class="li-tag-hdr-action li-tag-hdr-action-left" onclick="tagHdrActionAdd('${tag}')">
+            <svg viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M9 3v12M3 9h12"/></svg>Add
+          </div>
+          <div class="li-tag-hdr-action li-tag-hdr-action-right" onclick="tagHdrActionDelete('${tag}')">
+            <svg viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h10M5 6l1 9h6l1-9M7 9v4M11 9v4M7 6V4h4v2"/></svg>Delete
+          </div>
+          <div class="li-tag-hdr" id="litag-${safe}" onclick="liTagHdrClick(event,'${tag}')" ontouchstart="liTagHdrTouchStart(event,'${tag}')" ontouchmove="liTagHdrTouchMove(event,'${tag}')" ontouchend="liTagHdrTouchEnd(event,'${tag}')">
+            <div class="li-tag-drag-handle" ontouchstart="liTagDragStart(event,'${tag}')"><svg viewBox="0 0 12 22" fill="currentColor"><circle cx="3.5" cy="3" r="1.5"/><circle cx="8.5" cy="3" r="1.5"/><circle cx="3.5" cy="8" r="1.5"/><circle cx="8.5" cy="8" r="1.5"/><circle cx="3.5" cy="13" r="1.5"/><circle cx="8.5" cy="13" r="1.5"/><circle cx="3.5" cy="18" r="1.5"/><circle cx="8.5" cy="18" r="1.5"/></svg></div>
+            <span class="li-tag-label" onclick="toggleLITagGroup(event,'${tag}')">${tag}</span>
+            <span class="li-tag-count">${group.length}</span>
+            <div class="li-tag-chevron" onclick="toggleLITagGroup(event,'${tag}')">▾</div>
+          </div>
         </div>
         <div class="li-tag-body">${group.map(renderLICard).join('')}</div>
       </div>`;
@@ -3008,7 +3904,7 @@
   }
   function toggleLI(id){
     const items=listItems[currentListId]||[];const it=items.find(x=>x.id===id);
-    if(it){const s=it.checkState||'';it.checkState=s===''?'checked':s==='checked'?'crossed':'';it.done=it.checkState!=='';saveAll();renderListItems();}
+    if(it){const s=it.checkState||'';it.checkState=s===''?'checked':s==='checked'?'crossed':s==='crossed'?'flagged':'';it.done=it.checkState!=='';saveAll();renderListItems();}
   }
   function toggleLIExpand(id,e){
     if(e)e.stopPropagation();
@@ -3018,7 +3914,33 @@
   function toggleLITagGroup(e,tag){
     if(e)e.stopPropagation();
     if(!listTagCollapsed[currentListId])listTagCollapsed[currentListId]={};
-    listTagCollapsed[currentListId][tag]=!listTagCollapsed[currentListId][tag];
+    const isCurrentlyCollapsed=!!listTagCollapsed[currentListId][tag];
+    // Expanding: collapse all other groups first (accordion)
+    if(isCurrentlyCollapsed){
+      const items=listItems[currentListId]||[];
+      const tagSet=new Set();
+      items.forEach(item=>{if(item.tags&&item.tags.length)tagSet.add(item.tags[0]);});
+      tagSet.add('__untagged__');
+      tagSet.forEach(t=>{
+        if(t===tag)return;
+        listTagCollapsed[currentListId][t]=true;
+        const s=t==='__untagged__'?'untagged':t.replace(/[^a-z0-9]/g,'_');
+        const g=document.getElementById('ligrp-'+s);
+        if(g)g.classList.add('collapsed');
+      });
+    }
+    // Collapsing: collapse all expanded list item cards within this group
+    if(!isCurrentlyCollapsed){
+      const groupItems=(listItems[currentListId]||[]).filter(i=>{
+        if(tag==='__untagged__')return!(i.tags&&i.tags.length);
+        return(i.tags||[]).length&&i.tags[0]===tag;
+      });
+      groupItems.forEach(item=>{
+        const card=document.getElementById('licard-'+item.id);
+        if(card)card.classList.remove('expanded');
+      });
+    }
+    listTagCollapsed[currentListId][tag]=!isCurrentlyCollapsed;
     saveListTagState();
     const safe=tag==='__untagged__'?'untagged':tag.replace(/[^a-z0-9]/g,'_');
     const grp=document.getElementById('ligrp-'+safe);
@@ -3031,7 +3953,7 @@
     const sub=item.subitems.find(s=>s.id===subId);
     if(!sub)return;
     const s=sub.checkState||'';
-    sub.checkState=s===''?'checked':s==='checked'?'crossed':'';
+    sub.checkState=s===''?'checked':s==='checked'?'crossed':s==='crossed'?'flagged':'';
     sub.done=sub.checkState!=='';
     saveAll();
     // Update only this element — avoids rebuilding and collapsing the card
@@ -3039,7 +3961,228 @@
   }
 
   function confirmDelLI(id){showConfirm('Remove item?','This cannot be undone.',()=>{listItems[currentListId]=(listItems[currentListId]||[]).filter(x=>x.id!==id);saveAll();renderListItems();showToast('Item removed');});}
+
+  function renderFutureModalSubtasks(){
+    document.getElementById('future-modal-subtask-list').innerHTML=futureModalSubtasks.map(s=>`
+      <div class="modal-subtask-item" id="fmst-${s.id}">
+        <div class="modal-drag-handle" ontouchstart="fstDragStart(event,'${s.id}')"><svg viewBox="0 0 12 22" fill="currentColor"><circle cx="3.5" cy="3" r="1.5"/><circle cx="8.5" cy="3" r="1.5"/><circle cx="3.5" cy="8" r="1.5"/><circle cx="8.5" cy="8" r="1.5"/><circle cx="3.5" cy="13" r="1.5"/><circle cx="8.5" cy="13" r="1.5"/><circle cx="3.5" cy="18" r="1.5"/><circle cx="8.5" cy="18" r="1.5"/></svg></div>
+        <span style="flex:1;font-size:0.85rem;color:var(--text)">${s.name}</span>
+        <button class="del-btn" onclick="editFutureModalSubtask('${s.id}')">✎</button>
+        <button class="del-btn" onclick="removeFutureModalSubtask('${s.id}')">✕</button>
+      </div>`).join('');
+  }
+  function editFutureModalSubtask(id){
+    const row=document.getElementById('fmst-'+id);if(!row)return;
+    const sub=futureModalSubtasks.find(s=>s.id===id);if(!sub)return;
+    row.innerHTML=`
+      <input class="form-input" id="fmst-edit-${id}" value="${sub.name}" style="flex:1;padding:0.3rem 0.5rem">
+      <button class="del-btn" style="color:var(--accent);font-size:1rem" onclick="saveFutureModalSubtaskEdit('${id}')">✓</button>
+      <button class="del-btn" onclick="renderFutureModalSubtasks()">✕</button>`;
+    const inp=document.getElementById('fmst-edit-'+id);
+    if(inp){
+      inp.focus();inp.select();
+      inp.addEventListener('keydown',e=>{
+        if(e.key==='Enter'){e.preventDefault();saveFutureModalSubtaskEdit(id);}
+        if(e.key==='Escape')renderFutureModalSubtasks();
+      });
+    }
+  }
+  function saveFutureModalSubtaskEdit(id){
+    const inp=document.getElementById('fmst-edit-'+id);if(!inp)return;
+    const name=inp.value.trim();if(!name)return;
+    const sub=futureModalSubtasks.find(s=>s.id===id);if(sub)sub.name=name;
+    renderFutureModalSubtasks();
+  }
+  function fstDragStart(e,id){
+    e.stopPropagation();e.preventDefault();
+    fstDragId=id;
+    const row=document.getElementById('fmst-'+id);if(!row)return;
+    const rect=row.getBoundingClientRect();
+    fstDragOffY=e.touches[0].clientY-rect.top;
+    const ghost=document.createElement('div');
+    ghost.style.cssText=`position:fixed;z-index:9000;pointer-events:none;background:var(--surface);border:1.5px solid var(--accent);border-radius:var(--rs);padding:0.35rem 0.6rem;box-shadow:0 4px 16px rgba(0,0,0,0.2);font-size:0.85rem;color:var(--text);font-family:var(--font);top:${e.touches[0].clientY-fstDragOffY}px;left:${rect.left}px;width:${rect.width}px;opacity:0.95`;
+    const sub=futureModalSubtasks.find(s=>s.id===id);ghost.textContent=sub?sub.name:'';
+    document.body.appendChild(ghost);fstDragGhost=ghost;
+    row.style.opacity='0.3';
+    document.addEventListener('touchmove',onFstDragMove,{passive:false});
+    document.addEventListener('touchend',onFstDragEnd,{once:true});
+    document.addEventListener('touchcancel',onFstDragEnd,{once:true});
+  }
+  function onFstDragMove(e){
+    if(!fstDragId)return;e.preventDefault();
+    const y=e.touches[0].clientY;
+    if(fstDragGhost)fstDragGhost.style.top=(y-fstDragOffY)+'px';
+    const list=document.getElementById('future-modal-subtask-list');if(!list)return;
+    list.querySelectorAll('.modal-subtask-item').forEach(r=>{
+      r.classList.remove('drop-above','drop-below');
+      if(r.id==='fmst-'+fstDragId)return;
+      const rc=r.getBoundingClientRect();
+      if(y>=rc.top-4&&y<=rc.bottom+4)r.classList.add(y<rc.top+rc.height/2?'drop-above':'drop-below');
+    });
+  }
+  function onFstDragEnd(){
+    document.removeEventListener('touchmove',onFstDragMove);
+    if(fstDragGhost){fstDragGhost.remove();fstDragGhost=null;}
+    const list=document.getElementById('future-modal-subtask-list');
+    if(list&&fstDragId){
+      let targetId=null,targetPos=null;
+      list.querySelectorAll('.modal-subtask-item').forEach(r=>{
+        if(r.classList.contains('drop-above')){targetId=r.id.replace('fmst-','');targetPos='above';}
+        if(r.classList.contains('drop-below')){targetId=r.id.replace('fmst-','');targetPos='below';}
+        r.classList.remove('drop-above','drop-below');
+      });
+      if(targetId&&targetId!==fstDragId){
+        const from=futureModalSubtasks.findIndex(s=>s.id===fstDragId);
+        if(from!==-1){
+          const[moved]=futureModalSubtasks.splice(from,1);
+          const to=futureModalSubtasks.findIndex(s=>s.id===targetId);
+          if(to!==-1)futureModalSubtasks.splice(targetPos==='above'?to:to+1,0,moved);
+        }
+      }
+    }
+    const row=document.getElementById('fmst-'+(fstDragId||''));
+    if(row)row.style.opacity='';
+    fstDragId=null;renderFutureModalSubtasks();
+  }
+  function addFutureModalSubtask(){
+    const inp=document.getElementById('future-subtask-input');
+    const name=inp.value.trim();if(!name)return;
+    futureModalSubtasks.push({id:uid(),name,done:false});
+    inp.value='';renderFutureModalSubtasks();inp.focus();
+  }
+  function removeFutureModalSubtask(id){futureModalSubtasks=futureModalSubtasks.filter(s=>s.id!==id);renderFutureModalSubtasks();}
+  function restoreFutureTagField(){
+    addToFutureTagGroup=null;
+    const g=document.getElementById('future-tags').closest('.form-group');if(g)g.style.display='';
+  }
+  function openAddFutureTask(){
+    restoreFutureTagField();editFutureId=null;
+    document.getElementById('future-modal-title').textContent='New Future Task';
+    document.getElementById('future-save').textContent='Add Task';
+    ['future-emoji','future-name','future-tags','future-notes'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('future-priority').value='';
+    futureModalSubtasks=[];renderFutureModalSubtasks();
+    openModal('future-modal');
+  }
+  function openAddFutureInGroup(tag){
+    addToFutureTagGroup=tag;editFutureId=null;
+    document.getElementById('future-modal-title').textContent='Add task to '+tag;
+    document.getElementById('future-save').textContent='Add Task';
+    ['future-emoji','future-name','future-notes'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('future-priority').value='';
+    document.getElementById('future-tags').value=tag;
+    const g=document.getElementById('future-tags').closest('.form-group');if(g)g.style.display='none';
+    const sb=document.getElementById('future-hashtag-suggestions');if(sb){sb.style.display='none';sb.innerHTML='';}
+    futureModalSubtasks=[];renderFutureModalSubtasks();
+    openModal('future-modal');
+  }
+  function openEditFuture(id){
+    closeSwipe(id);const ft=futureTasks.find(x=>x.id===id);if(!ft)return;
+    restoreFutureTagField();editFutureId=id;
+    document.getElementById('future-modal-title').textContent='Edit Task';
+    document.getElementById('future-save').textContent='Save Changes';
+    document.getElementById('future-emoji').value=ft.emoji||'';
+    document.getElementById('future-name').value=ft.name;
+    document.getElementById('future-priority').value=ft.priority||'';
+    document.getElementById('future-tags').value=(ft.tags||[]).join(' ');
+    document.getElementById('future-notes').value=ft.notes||'';
+    futureModalSubtasks=(ft.subtasks||[]).map(s=>({...s}));
+    renderFutureModalSubtasks();openModal('future-modal');
+  }
+  function confirmDelFuture(id){
+    closeSwipe(id);const ft=futureTasks.find(x=>x.id===id);if(!ft)return;
+    showConfirm(`Delete "${ft.name}"?`,'This cannot be undone.',()=>{
+      futureTasks=futureTasks.filter(x=>x.id!==id);saveAll();renderFutureTasks();showToast('Task deleted');
+    });
+  }
+  function toggleFutureDone(id,e){
+    if(e)e.stopPropagation();
+    const ft=futureTasks.find(x=>x.id===id);if(!ft)return;
+    ft.done=!ft.done;
+    if(!ft.done&&ft.subtasks)ft.subtasks.forEach(s=>s.done=false);
+    saveAll();renderFutureTasks();showToast(ft.done?'Task completed ✓':'Task reopened');
+  }
+  function futureDragHandleTouch(e,id){
+    e.stopPropagation();e.preventDefault();
+    const wrap=document.getElementById('wrap-'+id);if(!wrap)return;
+    futureDragId=id;
+    const rect=wrap.getBoundingClientRect(),touch=e.touches[0];
+    futureDragOffY=touch.clientY-rect.top;
+    const ghost=document.createElement('div');
+    ghost.id='drag-ghost';
+    const ft=futureTasks.find(x=>x.id===id);
+    ghost.textContent=(ft&&ft.emoji?ft.emoji+' ':'')+(ft?ft.name:'');
+    ghost.style.top=(touch.clientY-futureDragOffY)+'px';
+    ghost.style.left=rect.left+'px';
+    ghost.style.width=rect.width+'px';
+    document.body.appendChild(ghost);futureDragGhost=ghost;
+    wrap.classList.add('is-dragging');
+    document.addEventListener('touchmove',onFutureDragMove,{passive:false});
+    document.addEventListener('touchend',onFutureDragEnd,{once:true});
+    document.addEventListener('touchcancel',onFutureDragEnd,{once:true});
+  }
+  function onFutureDragMove(e){
+    if(!futureDragId)return;e.preventDefault();
+    const y=e.touches[0].clientY;
+    if(futureDragGhost)futureDragGhost.style.top=(y-futureDragOffY)+'px';
+    const scrollEl=document.getElementById('future-zone');
+    if(scrollEl){
+      const sr=scrollEl.getBoundingClientRect(),ZONE=80;
+      let dir=0;
+      if(y<sr.top+ZONE&&scrollEl.scrollTop>0)dir=-1;
+      else if(y>sr.bottom-ZONE&&scrollEl.scrollTop<scrollEl.scrollHeight-scrollEl.clientHeight)dir=1;
+      if(dir!==futureDragScrollDir){
+        if(futureDragScrollIv){clearInterval(futureDragScrollIv);futureDragScrollIv=null;}
+        futureDragScrollDir=dir;
+        if(dir!==0)futureDragScrollIv=setInterval(()=>{scrollEl.scrollTop+=dir*3;},16);
+      }
+    }
+    const zone=document.getElementById('future-list-wrap');if(!zone)return;
+    zone.querySelectorAll('.task-card-wrap:not(.is-dragging)').forEach(w=>{
+      w.classList.remove('drop-above','drop-below');
+      const r=w.getBoundingClientRect();
+      if(y>=r.top-6&&y<=r.bottom+6)w.classList.add(y<(r.top+r.height/2)?'drop-above':'drop-below');
+    });
+  }
+  function onFutureDragEnd(){
+    document.removeEventListener('touchmove',onFutureDragMove);
+    if(futureDragScrollIv){clearInterval(futureDragScrollIv);futureDragScrollIv=null;}
+    futureDragScrollDir=0;
+    if(futureDragGhost){futureDragGhost.remove();futureDragGhost=null;}
+    const wrap=document.getElementById('wrap-'+(futureDragId||''));
+    if(wrap)wrap.classList.remove('is-dragging');
+    const zone=document.getElementById('future-list-wrap');
+    if(zone&&futureDragId){
+      let targetId=null,targetPos=null;
+      zone.querySelectorAll('.task-card-wrap').forEach(w=>{
+        if(w.classList.contains('drop-above')){targetId=w.id.replace('wrap-','');targetPos='above';}
+        if(w.classList.contains('drop-below')){targetId=w.id.replace('wrap-','');targetPos='below';}
+        w.classList.remove('drop-above','drop-below');
+      });
+      if(targetId&&targetId!==futureDragId){
+        const from=futureTasks.findIndex(x=>x.id===futureDragId);
+        if(from!==-1){
+          const[moved]=futureTasks.splice(from,1);
+          const to=futureTasks.findIndex(x=>x.id===targetId);
+          if(to!==-1){futureTasks.splice(targetPos==='above'?to:to+1,0,moved);saveAll();renderFutureTasks();}
+        }
+      }
+    }
+    futureDragId=null;
+  }
+  function toggleFutureSubtask(ftId,subId,e){
+    if(e)e.stopPropagation();
+    const ft=futureTasks.find(x=>x.id===ftId);if(!ft||!ft.subtasks)return;
+    const sub=ft.subtasks.find(s=>s.id===subId);if(!sub)return;
+    sub.done=!sub.done;
+    if(e)e.target.classList.toggle('checked',sub.done);
+    const nameEl=e?e.target.nextElementSibling:null;
+    if(nameEl)nameEl.classList.toggle('done',sub.done);
+    saveAll();
+  }
+
   function openAddLI(){
+    restoreLITagField();
     editLIId=null;
     document.getElementById('li-modal-title').textContent='Add item';
     document.getElementById('li-save').textContent='Add item';
@@ -3050,6 +4193,7 @@
   }
   function openEditLI(id){
     if(!currentListId)return;
+    restoreLITagField();
     const item=(listItems[currentListId]||[]).find(x=>x.id===id);if(!item)return;
     editLIId=id;
     document.getElementById('li-modal-title').textContent='Edit item';
@@ -3066,14 +4210,14 @@
   document.getElementById('li-save').addEventListener('click',()=>{
     const name=document.getElementById('li-name').value.trim();if(!name){document.getElementById('li-name').focus();return;}
     if(!listItems[currentListId])listItems[currentListId]=[];
-    const tags=parseTags(document.getElementById('li-tags').value);
+    const tags=addToTagGroup?[addToTagGroup]:parseTags(document.getElementById('li-tags').value);
     if(editLIId){
       const item=listItems[currentListId].find(x=>x.id===editLIId);
       if(item){item.name=name;item.emoji=document.getElementById('li-emoji').value.trim()||null;item.priority=document.getElementById('li-priority').value||null;item.tags=tags;item.notes=document.getElementById('li-notes').value.trim()||null;item.subitems=[...modalLISubitems];}
-      saveAll();closeModal('li-modal');renderListItems();showToast('Item updated');editLIId=null;
+      restoreLITagField();saveAll();closeModal('li-modal');renderListItems();showToast('Item updated');editLIId=null;
     }else{
       listItems[currentListId].push({id:uid(),name,emoji:document.getElementById('li-emoji').value.trim()||null,priority:document.getElementById('li-priority').value||null,tags,notes:document.getElementById('li-notes').value.trim()||null,checkState:'',done:false,subitems:[...modalLISubitems]});
-      saveAll();closeModal('li-modal');renderListItems();showToast('Item added');
+      restoreLITagField();saveAll();closeModal('li-modal');renderListItems();showToast('Item added');
     }
   });
 
@@ -3119,7 +4263,7 @@
       if(dT.length)html+=`<div class="section-hdr"><div class="section-title">Tasks</div></div>`+dT.map(t=>taskCardHTML(t,t.done,null,true)).join('');
       if(dR.length)html+=`<div class="section-hdr" style="margin-top:0.6rem"><div class="section-title">Reminders</div></div>`+dR.map(r=>`<div class="reminder-card"><div class="rem-row"><div class="rem-body"><div class="rem-name">${r.name}</div><div class="rem-meta">${r.date?fmtDate(r.date):''}${r.date&&r.time?' · ':''}${r.time?fmtTime(r.time):''}${r.notes?' — '+r.notes:''}</div></div><button class="del-btn" onclick="openCopyReminder('${r.id}')"><svg viewBox="0 0 18 18" width="0.9rem" height="0.9rem" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="6" y="5" width="8" height="10" rx="1.5"/><path d="M4 13V3h8"/></svg></button><button class="del-btn" onclick="openEditReminder('${r.id}')">✎</button><button class="del-btn" onclick="delReminder('${r.id}')">✕</button></div></div>`).join('');
     }
-    if(items)items.innerHTML=html;
+    if(items)items.innerHTML=html;markClippedCards();
   }
   function refreshCalIfActive(){if(currentView==='calendar')renderCalendar();}
 
@@ -3146,8 +4290,19 @@
         <div class="hashtag-group-body">${tagMap[tag].map(t=>taskCardHTML(t,t.done,[tag])).join('')}</div>
       </div>`;
     }).join('');
+    markClippedCards();
   }
   function toggleHG(id){const g=document.getElementById('hg-'+id);if(g)g.classList.toggle('collapsed');}
+
+  function closeDayAddDropdown(){
+    const dd=document.getElementById('day-add-dropdown');
+    if(dd)dd.style.display='none';
+  }
+  function openMultiTaskModal(){
+    document.getElementById('multi-task-input').value='';
+    openModal('multi-task-modal');
+    setTimeout(()=>document.getElementById('multi-task-input').focus(),80);
+  }
 
   function toggleCalDropdown(){
     const dd=document.getElementById('cal-add-dropdown');
@@ -3161,23 +4316,52 @@
     const dd=document.getElementById('cal-add-dropdown');
     if(dd&&dd.style.display!=='none'&&!e.target.closest('#cal-add-btn')&&!e.target.closest('#cal-add-dropdown'))
       dd.style.display='none';
+    const ddd=document.getElementById('day-add-dropdown');
+    if(ddd&&ddd.style.display!=='none'&&!e.target.closest('#day-add-btn')&&!e.target.closest('#day-add-dropdown'))
+      ddd.style.display='none';
+    if(tagHdrOpenTag){
+      const safe=tagHdrOpenTag.replace(/[^a-z0-9]/g,'_');
+      if(!e.target.closest(`#ligrp-${safe} .li-tag-hdr-wrap`))closeLITagHdr(tagHdrOpenTag);
+    }
+    // Collapse name-expanded reminders on outside tap
+    document.querySelectorAll('.rem-name.name-expanded').forEach(el=>{
+      if(!el.contains(e.target))el.classList.remove('name-expanded');
+    });
+    // Collapse name-only expanded task cards on outside tap
+    [...expandedCards].forEach(id=>{
+      const card=getCard(id);if(!card||card.contains(e.target))return;
+      const t=tasks.find(x=>x.id===id)||futureTasks.find(x=>x.id===id);
+      const hasSubtasks=t&&t.subtasks&&t.subtasks.length>0;
+      const isDone=t&&t.done;
+      if(!hasSubtasks&&!isDone){card.classList.remove('expanded');expandedCards.delete(id);}
+    });
+    if(futureTagOpenTag){
+      const safe=futureTagOpenTag.replace(/[^a-z0-9]/g,'_');
+      if(!e.target.closest(`#ftgrp-${safe} .li-tag-hdr-wrap`))closeFTTagHdr(futureTagOpenTag);
+    }
+    // Collapse name-only expanded list item cards on outside tap
+    document.querySelectorAll('.list-item-card.expanded').forEach(card=>{
+      if(card.contains(e.target))return;
+      if(!card.querySelector('.li-chevron'))card.classList.remove('expanded');
+    });
   });
 
-  const ALL_VIEWS=['tasks','reminders','calendar','list','lists','hashtags','analyze','notes'];
+  const ALL_VIEWS=['tasks','reminders','calendar','list','lists','hashtags','analyze','notes','future'];
 
   function setView(v){
     if(currentNoteId)saveCurrentNote();
     if(v!=='notes')document.getElementById('note-toolbar').style.display='none';
     currentView=v;
     ALL_VIEWS.forEach(x=>document.getElementById('view-'+x).style.display='none');
-    document.getElementById('view-'+v).style.display=(v==='tasks'||v==='list'||v==='reminders'||v==='calendar')?'flex':'block';
-    document.getElementById('scroll-area').style.display=(v==='tasks'||v==='list'||v==='reminders'||v==='calendar')?'none':'block';
+    document.getElementById('view-'+v).style.display=(v==='tasks'||v==='list'||v==='reminders'||v==='calendar'||v==='future')?'flex':'block';
+    document.getElementById('scroll-area').style.display=(v==='tasks'||v==='list'||v==='reminders'||v==='calendar'||v==='future')?'none':'block';
     const isHome=v==='tasks'||v==='reminders';
     document.getElementById('salutation').style.display = isHome ? 'block' : 'none';
     document.getElementById('date-strip').style.display=isHome?'flex':'none';
     document.getElementById('tasks-header').style.display=(v==='tasks')?'block':'none';
     document.getElementById('lists-header').style.display=(v==='lists')?'block':'none';
     document.getElementById('rem-header').style.display=(v==='reminders')?'block':'none';
+    document.getElementById('future-header').style.display=(v==='future')?'block':'none';
     document.getElementById('tabs-wrap').style.display=isHome?'flex':'none';
     if(isHome){
       document.querySelectorAll('.tab-btn').forEach(b=>{
@@ -3190,8 +4374,9 @@
     else if(v==='hashtags')renderHashtags();
     else if(v==='lists')renderListsPage();
     else if(v==='notes'){renderNotes();}
-    ['mn-today','mn-calendar','mn-hashtags','mn-analyze','mn-notes','mn-lists'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
-    const mnMap={tasks:'mn-today',calendar:'mn-calendar',hashtags:'mn-hashtags',analyze:'mn-analyze',notes:'mn-notes',lists:'mn-lists',list:'mn-lists'};
+    else if(v==='future')renderFutureTasks();
+    ['mn-today','mn-future','mn-calendar','mn-hashtags','mn-analyze','mn-notes','mn-lists'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
+    const mnMap={tasks:'mn-today',calendar:'mn-calendar',hashtags:'mn-hashtags',analyze:'mn-analyze',notes:'mn-notes',lists:'mn-lists',list:'mn-lists',future:'mn-future'};
     if(mnMap[v]){const el=document.getElementById(mnMap[v]);if(el)el.classList.add('active');}
   }
   document.querySelectorAll('.tab-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');setView(btn.dataset.tab);});});
@@ -3355,6 +4540,7 @@
       payload.tasks=tasks;
       payload.taskOrder=taskOrderIds;
       payload.sortMode=taskSortMode;
+      payload.futureTasks=futureTasks;
     }
     if(get('exp-reminders')) payload.reminders=reminders;
     if(get('exp-lists')) payload.lists={lists,items:listItems,tagOrders:listTagOrders};
@@ -3393,6 +4579,7 @@
           tasks=data.tasks;
           if(Array.isArray(data.taskOrder))taskOrderIds=data.taskOrder;
           if(data.sortMode&&['added','time','manual'].includes(data.sortMode))taskSortMode=data.sortMode;
+          if(Array.isArray(data.futureTasks))futureTasks=data.futureTasks;
           imported.push('Tasks');
         }
         if(Array.isArray(data.reminders)){reminders=data.reminders;imported.push('Reminders');}
@@ -3429,7 +4616,7 @@
     reader.readAsText(file);
   });
 
-  loadAll();loadDragOrder();loadSortMode();loadListTagState();loadNotes();loadTimer();loadStTimer();applyTheme();setDateUI();updateClock();setView('tasks');fetchWeather();rescheduleLocalNotifs();
+  loadAll();loadDragOrder();loadSortMode();loadListTagState();loadNotes();loadFutureState();loadTimer();loadStTimer();applyTheme();setDateUI();updateClock();setView('tasks');fetchWeather();rescheduleLocalNotifs();
   if(bgImage){const p=document.getElementById('bg-preview');p.src=bgImage;p.style.display='block';document.getElementById('clear-bg-row').style.display='flex';document.getElementById('bg-opacity-row').style.display='flex';const pct=Math.round((cfg.bgOpacity||0.4)*100);document.getElementById('bg-opacity-slider').value=pct;document.getElementById('bg-opacity-val').textContent=pct+'%';}
 
   /* ═══════════════════════════════════════════════════════
@@ -3697,6 +4884,141 @@
       }
     }
     liTagDragGroup=null;
+  }
+
+  // ── TAG HEADER SWIPE ──
+  const TAG_HDR_SNAP_W=()=>5*parseFloat(getComputedStyle(document.documentElement).fontSize);
+  function closeLITagHdr(tag){
+    if(!tag)return;
+    const safe=tag.replace(/[^a-z0-9]/g,'_');
+    const hdr=document.getElementById('litag-'+safe);
+    if(hdr){hdr.style.transition='transform 0.25s cubic-bezier(0.4,0,0.2,1)';hdr.style.transform='translateX(0)';}
+    if(tagHdrOpenTag===tag)tagHdrOpenTag=null;
+  }
+  function liTagHdrClick(e,tag){
+    if(tagHdrOpenTag===tag){e.stopPropagation();closeLITagHdr(tag);}
+  }
+  function tagHdrActionAdd(tag){closeLITagHdr(tag);openAddLIInGroup(tag);}
+  function tagHdrActionDelete(tag){closeLITagHdr(tag);confirmDelTagGroup(tag);}
+  function liTagHdrTouchStart(e,tag){
+    if(tagHdrOpenTag&&tagHdrOpenTag!==tag)closeLITagHdr(tagHdrOpenTag);
+    tagHdrSwipeTag=tag;
+    tagHdrSwipeX0=e.touches[0].clientX;
+    tagHdrSwipeDx=0;
+    const safe=tag.replace(/[^a-z0-9]/g,'_');
+    const hdr=document.getElementById('litag-'+safe);
+    if(hdr)hdr.style.transition='none';
+  }
+  function liTagHdrTouchMove(e,tag){
+    if(tagHdrSwipeTag!==tag)return;
+    tagHdrSwipeDx=e.touches[0].clientX-tagHdrSwipeX0;
+    if(Math.abs(tagHdrSwipeDx)>8)e.preventDefault();
+    const safe=tag.replace(/[^a-z0-9]/g,'_');
+    const hdr=document.getElementById('litag-'+safe);
+    if(!hdr)return;
+    const snap=TAG_HDR_SNAP_W();
+    hdr.style.transform=`translateX(${Math.max(-snap,Math.min(snap,tagHdrSwipeDx))}px)`;
+  }
+  function liTagHdrTouchEnd(e,tag){
+    if(tagHdrSwipeTag!==tag)return;
+    const dx=tagHdrSwipeDx;
+    tagHdrSwipeTag=null;tagHdrSwipeDx=0;
+    const safe=tag.replace(/[^a-z0-9]/g,'_');
+    const hdr=document.getElementById('litag-'+safe);
+    if(!hdr)return;
+    const snap=TAG_HDR_SNAP_W();
+    hdr.style.transition='transform 0.25s cubic-bezier(0.4,0,0.2,1)';
+    if(dx>snap/2){hdr.style.transform=`translateX(${snap}px)`;tagHdrOpenTag=tag;}
+    else if(dx<-snap/2){hdr.style.transform=`translateX(-${snap}px)`;tagHdrOpenTag=tag;}
+    else{hdr.style.transform='translateX(0)';tagHdrOpenTag=null;}
+  }
+  function openAddLIInGroup(tag){
+    addToTagGroup=tag;
+    editLIId=null;
+    document.getElementById('li-modal-title').textContent='Add item to '+tag;
+    document.getElementById('li-save').textContent='Add item';
+    ['li-emoji','li-name','li-notes'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('li-priority').value='';
+    document.getElementById('li-tags').value=tag;
+    const tagsGroup=document.getElementById('li-tags').closest('.form-group');
+    if(tagsGroup)tagsGroup.style.display='none';
+    const sugBox=document.getElementById('li-hashtag-suggestions');
+    if(sugBox){sugBox.style.display='none';sugBox.innerHTML='';}
+    modalLISubitems=[];renderModalLISubitems();
+    openModal('li-modal');
+  }
+  function confirmDelTagGroup(tag){
+    const items=(listItems[currentListId]||[]).filter(i=>(i.tags||[]).length&&i.tags[0]===tag);
+    showConfirm(
+      `Delete "${tag}" group?`,
+      `This will permanently remove all ${items.length} item${items.length!==1?'s':''} in this group.`,
+      ()=>{
+        listItems[currentListId]=(listItems[currentListId]||[]).filter(i=>!((i.tags||[]).length&&i.tags[0]===tag));
+        saveAll();renderListItems();showToast(`"${tag}" group deleted`);
+      }
+    );
+  }
+  function restoreLITagField(){
+    addToTagGroup=null;
+    const tagsGroup=document.getElementById('li-tags').closest('.form-group');
+    if(tagsGroup)tagsGroup.style.display='';
+  }
+
+  function toggleFutureTagGroup(e,tag){
+    if(e)e.stopPropagation();
+    const isCollapsed=!!futureTagCollapsed[tag];
+    if(isCollapsed){
+      const tagSet=new Set();futureTasks.forEach(ft=>{if(ft.tags&&ft.tags.length)tagSet.add(ft.tags[0]);});tagSet.add('__untagged__');
+      tagSet.forEach(t=>{
+        if(t===tag)return;futureTagCollapsed[t]=true;
+        const s=t==='__untagged__'?'untagged':t.replace(/[^a-z0-9]/g,'_');
+        const g=document.getElementById('ftgrp-'+s);if(g)g.classList.add('collapsed');
+      });
+    }
+    if(!isCollapsed){
+      futureTasks.filter(ft=>{if(tag==='__untagged__')return!(ft.tags&&ft.tags.length);return(ft.tags||[]).length&&ft.tags[0]===tag;})
+        .forEach(ft=>{const card=document.getElementById('card-'+ft.id);if(card)card.classList.remove('expanded');});
+    }
+    futureTagCollapsed[tag]=!isCollapsed;saveFutureState();
+    const safe=tag==='__untagged__'?'untagged':tag.replace(/[^a-z0-9]/g,'_');
+    const grp=document.getElementById('ftgrp-'+safe);if(grp)grp.classList.toggle('collapsed',!!futureTagCollapsed[tag]);
+  }
+  const FT_TAG_SNAP_W=()=>5*parseFloat(getComputedStyle(document.documentElement).fontSize);
+  function closeFTTagHdr(tag){
+    if(!tag)return;const safe=tag.replace(/[^a-z0-9]/g,'_');
+    const hdr=document.getElementById('fttag-'+safe);
+    if(hdr){hdr.style.transition='transform 0.25s cubic-bezier(0.4,0,0.2,1)';hdr.style.transform='translateX(0)';}
+    if(futureTagOpenTag===tag)futureTagOpenTag=null;
+  }
+  function ftTagHdrClick(e,tag){if(futureTagOpenTag===tag){e.stopPropagation();closeFTTagHdr(tag);}}
+  function ftTagActionAdd(tag){closeFTTagHdr(tag);openAddFutureInGroup(tag);}
+  function ftTagActionDelete(tag){closeFTTagHdr(tag);confirmDelFutureTagGroup(tag);}
+  function ftTagHdrTouchStart(e,tag){
+    if(futureTagOpenTag&&futureTagOpenTag!==tag)closeFTTagHdr(futureTagOpenTag);
+    futureTagSwipeTag=tag;futureTagSwipeX0=e.touches[0].clientX;futureTagSwipeDx=0;
+    const safe=tag.replace(/[^a-z0-9]/g,'_');const hdr=document.getElementById('fttag-'+safe);if(hdr)hdr.style.transition='none';
+  }
+  function ftTagHdrTouchMove(e,tag){
+    if(futureTagSwipeTag!==tag)return;
+    futureTagSwipeDx=e.touches[0].clientX-futureTagSwipeX0;
+    if(Math.abs(futureTagSwipeDx)>8)e.preventDefault();
+    const safe=tag.replace(/[^a-z0-9]/g,'_');const hdr=document.getElementById('fttag-'+safe);if(!hdr)return;
+    const snap=FT_TAG_SNAP_W();hdr.style.transform=`translateX(${Math.max(-snap,Math.min(snap,futureTagSwipeDx))}px)`;
+  }
+  function ftTagHdrTouchEnd(e,tag){
+    if(futureTagSwipeTag!==tag)return;const dx=futureTagSwipeDx;futureTagSwipeTag=null;futureTagSwipeDx=0;
+    const safe=tag.replace(/[^a-z0-9]/g,'_');const hdr=document.getElementById('fttag-'+safe);if(!hdr)return;
+    const snap=FT_TAG_SNAP_W();hdr.style.transition='transform 0.25s cubic-bezier(0.4,0,0.2,1)';
+    if(dx>snap/2){hdr.style.transform=`translateX(${snap}px)`;futureTagOpenTag=tag;}
+    else if(dx<-snap/2){hdr.style.transform=`translateX(-${snap}px)`;futureTagOpenTag=tag;}
+    else{hdr.style.transform='translateX(0)';futureTagOpenTag=null;}
+  }
+  function confirmDelFutureTagGroup(tag){
+    const items=futureTasks.filter(ft=>(ft.tags||[]).length&&ft.tags[0]===tag);
+    showConfirm(`Delete "${tag}" group?`,`This will permanently remove all ${items.length} task${items.length!==1?'s':''} in this group.`,()=>{
+      futureTasks=futureTasks.filter(ft=>!((ft.tags||[]).length&&ft.tags[0]===tag));
+      saveAll();renderFutureTasks();showToast(`"${tag}" group deleted`);
+    });
   }
 
 </script>
