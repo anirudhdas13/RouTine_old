@@ -311,7 +311,7 @@
     .sw-btn span{font-size:0.55rem;color:#fff;font-family:var(--font)}
     .sw-timer{background:#3a7a52}.sw-edit{background:#5a6a8a}.sw-copy{background:#3a5a7a}.sw-delete{background:#8b3a3a}.sw-move{background:#7a4a8a}.sw-repeat{background:#2a7a6a}.sw-add-below{background:#3a6a4a}
     .swipe-actions-left{position:absolute;left:0;top:0;bottom:0;display:flex;border-radius:var(--r) 0 0 var(--r);overflow:hidden}
-    .task-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:0.7rem 0.85rem;cursor:pointer;position:relative;overflow:hidden;will-change:transform;z-index:2;transition:box-shadow var(--tr);height:3.8rem;}
+    .task-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:0.7rem 0.85rem;cursor:pointer;position:relative;overflow:hidden;will-change:transform;z-index:2;transition:box-shadow var(--tr);height:3.8rem;touch-action:pan-y;}
     .task-card.active-timer{border-color:var(--accent);height:auto}
     .task-card.expanded{height:auto}
     .task-card.done{opacity:0.42}
@@ -449,7 +449,7 @@
     .modal-overlay.open .modal{transform:translateY(0)}
     .modal-flex{padding:0!important;overflow:hidden!important;display:flex;flex-direction:column}
     .modal-flex .modal-title{padding:1.2rem 1.1rem 0.9rem;margin-bottom:0;flex-shrink:0;border-bottom:0.5px solid var(--border2)}
-    .modal-body{flex:1;overflow-y:auto;padding:0.75rem 1.1rem 0.25rem;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior:contain}
+    .modal-body{flex:1;overflow-y:auto;min-height:0;padding:0.75rem 1.1rem 0.25rem;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior:contain;touch-action:pan-y}
     .modal-body::-webkit-scrollbar{display:none}
     .modal-footer{flex-shrink:0;padding:0.5rem 1.1rem calc(1.5rem + var(--sab))}
     .modal-footer .form-actions{margin-top:0}
@@ -560,11 +560,13 @@
     }
     body.has-bg.dark .cal-day{background:rgba(28,28,26,0);}
     .cal-day:hover{background:var(--surface3)}
-    .cal-day.today{background:var(--accent-l);color:var(--accent);font-weight:500}
-    .cal-day.selected{background:var(--accent)!important;color:#fff!important;font-weight:500}
+    .cal-day.today{background:var(--accent);color:#fff;font-weight:500}
+    .cal-day.selected{background:var(--accent-l);color:var(--accent);font-weight:500}
     .cal-day.other-month{opacity:0.3}
-    .cal-day.has-items::after{content:'';position:absolute;bottom:0.18rem;left:50%;transform:translateX(-50%);width:0.22rem;height:0.22rem;border-radius:50%;background:var(--accent)}
-    .cal-day.selected::after{background:rgba(255,255,255,0)}
+    .cal-day.past-date{opacity:0.45}
+    .cal-day.has-pending::after{content:'';position:absolute;bottom:0.18rem;left:50%;transform:translateX(-50%);width:0.22rem;height:0.22rem;border-radius:50%;background:#f97316}
+    .cal-day.has-done::after{content:'';position:absolute;bottom:0.18rem;left:50%;transform:translateX(-50%);width:0.22rem;height:0.22rem;border-radius:50%;background:var(--accent)}
+    .cal-day.selected::after{background:transparent!important}
     .cal-selected-lbl{
       font-size:0.72rem;color:var(--text3);margin-bottom:0.7rem;padding:0.35rem 0.6rem 0.35rem;
       border-bottom:0.5px solid var(--border2);
@@ -631,6 +633,79 @@
     .li-check[data-state="crossed"]::after{content:'✕';font-size:0.6rem;color:#fff;font-weight:500}
     .li-check[data-state="flagged"]{background:var(--pm);border-color:var(--pm)}
     .li-check[data-state="flagged"]::after{content:'!';font-size:0.65rem;color:#fff;font-weight:700}
+
+    /* ── WEATHER PAGE ── */
+    .weather-page-hdr{display:flex;align-items:center;gap:0.55rem;margin-bottom:0.9rem}
+    .weather-page-city{flex:1;font-size:1.1rem;font-weight:500;color:var(--text);letter-spacing:-0.02em}
+    .weather-page-updated{font-size:0.62rem;color:var(--text3);font-family:var(--mono);white-space:nowrap}
+    .weather-page-next-update{font-size:0.6rem;color:var(--text3);font-family:var(--mono);white-space:nowrap;opacity:0.7}
+
+    .weather-hero{
+      border-radius:var(--r);padding:1.1rem 1rem;margin-bottom:1.1rem;
+      background:linear-gradient(135deg,var(--accent) 0%,#234e34 100%);
+      color:#fff;display:flex;align-items:center;gap:0.9rem;
+      box-shadow:0 6px 22px rgba(0,0,0,0.16);
+    }
+    .dark .weather-hero{background:linear-gradient(135deg,#1f4730 0%,#142a1c 100%)}
+    .weather-hero-icon{font-size:2.6rem;flex-shrink:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.2))}
+    .weather-hero-mid{flex:1;min-width:0}
+    .weather-hero-temp{font-size:2.1rem;font-weight:300;font-family:var(--mono);letter-spacing:-0.03em;line-height:1}
+    .weather-hero-desc{font-size:0.8rem;text-transform:capitalize;opacity:0.92;margin-top:0.15rem}
+    .weather-hero-range{display:flex;flex-direction:column;align-items:flex-end;gap:0.15rem;flex-shrink:0}
+    .weather-hero-hl{font-size:0.78rem;font-family:var(--mono);opacity:0.92}
+    .weather-hero-feels{font-size:0.65rem;font-family:var(--mono);opacity:0.7}
+
+    .section-title.weather-section-title{margin-bottom:0.65rem}
+
+    .weather-day-card{
+      border-radius:var(--r);margin-bottom:0.75rem;overflow:hidden;
+      background:linear-gradient(165deg,var(--surface) 0%,var(--surface2) 100%);
+      border:0.5px solid var(--border);
+      box-shadow:0 1px 0 rgba(255,255,255,0.07) inset,0 4px 14px rgba(0,0,0,0.09),0 1px 3px rgba(0,0,0,0.05);
+      transform:translateZ(0);
+    }
+    body.has-bg .weather-day-card{background:rgba(255,255,255,0.04);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-color:rgba(255,255,255,0.22);box-shadow:0 4px 20px rgba(0,0,0,0.13),0 1px 3px rgba(0,0,0,0.06)}
+    body.has-bg.dark .weather-day-card{background:rgba(28,28,26,0.04);border-color:rgba(255,255,255,0.1)}
+    .weather-day-card.is-today{border-color:rgba(45,90,61,0.5);box-shadow:0 1px 0 rgba(255,255,255,0.07) inset,0 4px 16px rgba(45,90,61,0.16),0 1px 3px rgba(0,0,0,0.05)}
+    .weather-card-strip{height:3px;display:block;flex-shrink:0}
+
+    .weather-day-row{display:flex;align-items:center;gap:0.55rem;padding:0.7rem 0.85rem;cursor:pointer;transition:background var(--tr)}
+    .weather-day-row:active{background:var(--surface2)}
+    body.has-bg .weather-day-row:active{background:rgba(240,239,233,0.15)}
+    .weather-day-left{min-width:5.2rem;flex-shrink:0}
+    .weather-day-label{font-size:0.88rem;color:var(--text);font-weight:500}
+    .weather-day-card.is-today .weather-day-label{color:var(--accent)}
+    .weather-day-date{font-size:0.62rem;color:var(--text3);font-family:var(--mono);margin-top:0.08rem}
+    .weather-day-icon-wrap{
+      width:2.4rem;height:2.4rem;border-radius:50%;background:var(--accent-l);
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.3rem;
+    }
+    .weather-day-mid{flex:1;min-width:0}
+    .weather-day-desc{font-size:0.74rem;color:var(--text2);text-transform:capitalize;line-height:1.3;font-weight:500}
+    .weather-day-pills{display:flex;gap:0.3rem;margin-top:0.3rem;flex-wrap:wrap}
+    .weather-day-pill{font-size:0.58rem;font-family:var(--mono);color:var(--text3);background:var(--surface2);padding:0.1rem 0.42rem;border-radius:2rem;cursor:pointer;transition:background var(--tr)}
+    .weather-day-pill:active{background:var(--surface3)}
+    .weather-day-right{display:flex;flex-direction:column;align-items:flex-end;gap:0.1rem;flex-shrink:0}
+    .weather-day-range{display:flex;align-items:center;gap:0.3rem}
+    .weather-day-high{font-size:0.95rem;font-weight:600;color:var(--text);font-family:var(--mono)}
+    .weather-day-low{font-size:0.82rem;color:var(--text3);font-family:var(--mono)}
+    .weather-day-feels{font-size:0.6rem;color:var(--text3);font-family:var(--mono)}
+    .forecast-day-chevron{font-size:0.62rem;color:var(--text3);transition:transform var(--tr);margin-top:0.22rem;line-height:1;flex-shrink:0}
+    .forecast-day-chevron.open{transform:rotate(180deg);color:var(--accent)}
+
+    .weather-3h-section{border-top:0.5px solid var(--border2);background:var(--surface2)}
+    body.has-bg .weather-3h-section{background:rgba(240,239,233,0.18);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+    body.has-bg.dark .weather-3h-section{background:rgba(36,36,34,0.25)}
+    .weather-3h-section.hidden{display:none}
+    .weather-3h-row{display:flex;align-items:flex-start;gap:0.5rem;padding:0.55rem 0.85rem;margin:0.35rem 0.5rem;border-radius:var(--rs);background:var(--surface)}
+    body.has-bg .weather-3h-row{background:rgba(255,255,255,0.06)}
+    body.has-bg.dark .weather-3h-row{background:rgba(255,255,255,0.04)}
+    .weather-3h-time{font-size:0.7rem;font-family:var(--mono);color:var(--text2);font-weight:500;min-width:3.2rem;flex-shrink:0;padding-top:0.1rem}
+    .weather-3h-icon{font-size:1.05rem;flex-shrink:0;width:1.5rem;text-align:center;padding-top:0.04rem}
+    .weather-3h-temp{font-size:0.88rem;font-weight:600;color:var(--text);font-family:var(--mono)}
+    .weather-3h-feels{font-size:0.6rem;color:var(--text3);font-family:var(--mono);margin-top:0.04rem}
+    .weather-3h-pills{display:flex;gap:0.28rem;flex-wrap:wrap;flex:1;align-content:flex-start}
+    .weather-loading{text-align:center;padding:2.5rem 1rem;color:var(--text3);font-size:0.88rem}
 
     /* ── BLANK PAGE ── */
     .blank-page{padding:2.5rem var(--px);text-align:center;color:var(--text3)}
@@ -891,6 +966,7 @@
     #cal-items-zone::-webkit-scrollbar{display:none}
     .cal-items-inner{max-width:540px;margin:0 auto;padding:0.5rem var(--px) calc(1.5rem + var(--sab))}
     .cal-add-dropdown{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.12);margin-top:0.35rem}
+    #cal-add-dropdown{position:absolute;left:0;right:0;z-index:50}
     .cal-drop-btn{display:flex;align-items:center;gap:0.6rem;width:100%;padding:0.7rem 0.85rem;border:none;background:transparent;color:var(--text);font-size:0.88rem;font-family:var(--font);cursor:pointer;transition:background var(--tr)}
     .cal-drop-btn:active{background:var(--surface2)}
 
@@ -913,7 +989,6 @@
     /* Task name expansion when card is expanded */
     .task-card.clipped:not(.expanded):not(.active-timer)::after{content:'•••';position:absolute;bottom:0.3rem;right:0.7rem;font-size:0.55rem;letter-spacing:0.08em;color:var(--text3);pointer-events:none}
     .task-card.expanded .task-name{white-space:normal;overflow:visible;text-overflow:clip}
-    /* List item name expansion when card is expanded */
     .list-item-card.expanded .task-name{white-space:normal;overflow:visible;text-overflow:clip}
     /* Reminder name truncation + expansion */
     .rem-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -921,20 +996,139 @@
     .task-name{cursor:pointer}
 
     #future-zone::-webkit-scrollbar{display:none}
+
+    /* ── TASK IMAGE THUMBNAIL ── */
+    .task-img-thumb{
+      width:2.2rem;height:2.2rem;border-radius:var(--rs);
+      object-fit:cover;cursor:pointer;flex-shrink:0;
+      border:0.5px solid var(--border);margin-left:0.35rem;
+      align-self:flex-start;margin-top:0.1rem;transition:opacity var(--tr);
+    }
+    .task-img-thumb:active{opacity:0.7}
+    /* Modal image preview */
+    .task-img-preview-wrap{margin-top:0.45rem}
+    .task-img-preview{
+      width:100%;height:8rem;object-fit:cover;
+      border-radius:var(--rs);display:block;
+      cursor:pointer;border:0.5px solid var(--border);
+    }
+    .task-img-act-row{display:flex;gap:0.5rem;margin-top:0.35rem}
+    .task-img-act-btn{
+      flex:1;padding:0.4rem;border-radius:var(--rs);
+      font-size:0.75rem;font-family:var(--font);cursor:pointer;
+      border:0.5px solid var(--border);background:var(--surface2);
+      color:var(--text2);transition:background var(--tr);
+    }
+    .task-img-act-btn:active{background:var(--surface3)}
+    .task-img-act-btn.del{color:var(--ph)}
+    /* ── IMAGE EDITOR ── */
+    .img-ed-ov{
+      position:fixed;inset:0;z-index:850;background:#000;
+      display:none;flex-direction:column;
+      opacity:0;pointer-events:none;transition:opacity 0.25s;
+    }
+    .img-ed-ov.open{display:flex;opacity:1;pointer-events:all}
+    .img-ed-hdr{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:calc(var(--sat) + 0.65rem) 1rem 0.55rem;flex-shrink:0;
+    }
+    .img-ed-hbtn{
+      padding:0.32rem 0.85rem;border-radius:2rem;font-size:0.8rem;
+      font-family:var(--font);cursor:pointer;
+      border:0.5px solid rgba(255,255,255,0.25);
+      background:rgba(255,255,255,0.1);color:#fff;transition:background var(--tr);
+    }
+    .img-ed-hbtn:active{background:rgba(255,255,255,0.22)}
+    .img-ed-hbtn.done{background:var(--accent);border-color:var(--accent)}
+    .img-ed-tabs{display:flex;gap:0.4rem;padding:0 1rem 0.5rem;flex-shrink:0}
+    .img-ed-tab{
+      padding:0.28rem 0.85rem;border-radius:2rem;font-size:0.75rem;
+      font-family:var(--font);cursor:pointer;
+      border:0.5px solid rgba(255,255,255,0.18);
+      background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.6);
+      transition:all var(--tr);
+    }
+    .img-ed-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+    .img-ed-canvas-wrap{
+      flex:1;display:flex;align-items:center;justify-content:center;
+      overflow:hidden;position:relative;min-height:0;
+    }
+    #img-ed-canvas{max-width:100%;max-height:100%;touch-action:auto;display:block}
+    .img-ed-bar{
+      flex-shrink:0;padding:0.5rem 1rem calc(0.5rem + var(--sab));
+      display:flex;align-items:center;gap:0.45rem;flex-wrap:wrap;
+    }
+    .img-ed-tool{
+      padding:0.28rem 0.7rem;border-radius:2rem;font-size:0.72rem;
+      font-family:var(--font);cursor:pointer;
+      border:0.5px solid rgba(255,255,255,0.18);
+      background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.65);
+      transition:all var(--tr);flex-shrink:0;
+    }
+    .img-ed-tool.active{background:rgba(255,255,255,0.22);color:#fff}
+    .img-ed-color{
+      width:1.3rem;height:1.3rem;border-radius:50%;cursor:pointer;flex-shrink:0;
+      border:2px solid transparent;transition:transform var(--tr);
+    }
+    .img-ed-color.active{border-color:#fff;transform:scale(1.18)}
+    .img-ed-sz{
+      width:4.5rem;height:3px;border-radius:2px;
+      background:rgba(255,255,255,0.25);outline:none;
+      cursor:pointer;-webkit-appearance:none;appearance:none;flex-shrink:0;
+    }
+    .img-ed-sz::-webkit-slider-thumb{
+      -webkit-appearance:none;width:1rem;height:1rem;
+      border-radius:50%;background:#fff;cursor:pointer;
+    }
+    .img-ed-tip{
+      font-size:0.65rem;color:rgba(255,255,255,0.38);
+      width:100%;padding-top:0.15rem;
+    }
+    /* ── IMAGE VIEWER ── */
+    .img-viewer-ov{
+      position:fixed;inset:0;z-index:900;
+      background:rgba(0,0,0,0.96);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      opacity:0;pointer-events:none;transition:opacity 0.2s;
+    }
+    .img-viewer-ov.open{opacity:1;pointer-events:all}
+    .img-viewer-ov>img{
+      max-width:100%;max-height:calc(100dvh - 7rem);
+      object-fit:contain;flex-shrink:0;
+    }
+    .img-viewer-close{
+      position:absolute;top:calc(var(--sat) + 0.65rem);right:1rem;
+      width:2.2rem;height:2.2rem;border-radius:50%;
+      border:0.5px solid rgba(255,255,255,0.28);
+      background:rgba(0,0,0,0.45);color:#fff;font-size:1.05rem;
+      cursor:pointer;display:flex;align-items:center;justify-content:center;
+    }
+    .img-viewer-acts{
+      display:flex;gap:0.55rem;
+      padding:0.75rem 1rem calc(0.75rem + var(--sab));flex-shrink:0;
+    }
+    .img-viewer-btn{
+      padding:0.38rem 1rem;border-radius:2rem;font-size:0.78rem;
+      font-family:var(--font);cursor:pointer;
+      border:0.5px solid rgba(255,255,255,0.2);
+      background:rgba(255,255,255,0.1);color:#fff;
+      transition:background var(--tr);
+    }
+    .img-viewer-btn:active{background:rgba(255,255,255,0.2)}
+    .img-viewer-btn.del{border-color:rgba(255,80,80,0.4);background:rgba(160,40,40,0.3)}
   </style>
 </head>
 <body>
 
 <div id="splash">
   <div class="splash-logo">Rou<b>Tine</b></div>
-  <div class="splash-ver">v2</div>
 </div>
 
 <div class="menu-overlay" id="menu-overlay"></div>
 <div class="side-menu" id="side-menu">
   <div class="menu-header">
     <div class="menu-logo">Rou<b>Tine</b></div>
-    <div class="menu-version">v2.3</div>
+    <div class="menu-version">v2.4.8.2</div>
   </div>
   <div class="menu-nav">
     <div class="menu-item active" id="mn-today" onclick="setView('tasks');closeMenu()">
@@ -1195,6 +1389,10 @@
         </div>
       </div>
 
+      <div id="view-weather" style="display:none">
+        <div id="weather-page-content"></div>
+      </div>
+
       <div id="view-notes" style="display:none">
 
         <!-- Notes list -->
@@ -1258,6 +1456,20 @@
         <div class="emoji-row">
           <input class="form-input emoji-input" id="task-emoji" type="text" placeholder="😀" maxlength="2">
           <input class="form-input" id="task-name" type="text" style="flex:1" placeholder="">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Image <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label>
+        <button type="button" class="time-toggle-btn" id="task-img-add-btn" onclick="document.getElementById('task-img-input').click()">
+          <span>Add image...</span><span>📷</span>
+        </button>
+        <div style="font-size:0.62rem;color:var(--text3);margin-top:0.25rem">You can also paste an image with ⌘V</div>
+        <div class="task-img-preview-wrap" id="task-img-preview-wrap" style="display:none">
+          <img id="task-img-preview" class="task-img-preview" alt="" onclick="openImgEditorRetask()">
+          <div class="task-img-act-row">
+            <button class="task-img-act-btn" onclick="openImgEditorRetask()">✎ Edit</button>
+            <button class="task-img-act-btn del" onclick="clearTaskImg()">✕ Remove</button>
+          </div>
         </div>
       </div>
       <div class="form-group"><label class="form-label">Priority <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label><select class="priority-select" id="task-priority"><option value="">No priority</option><option value="low">Low</option><option value="med">Medium</option><option value="high">High</option></select></div>
@@ -1327,6 +1539,20 @@
         <div class="emoji-row">
           <input class="form-input emoji-input" id="li-emoji" type="text" placeholder="📌" maxlength="2">
           <input class="form-input" id="li-name" type="text" style="flex:1" placeholder="e.g. Milk">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Image <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label>
+        <button type="button" class="time-toggle-btn" id="li-img-add-btn" onclick="document.getElementById('li-img-input').click()">
+          <span>Add image...</span><span>📷</span>
+        </button>
+        <div style="font-size:0.62rem;color:var(--text3);margin-top:0.25rem">You can also paste an image with ⌘V</div>
+        <div class="task-img-preview-wrap" id="li-img-preview-wrap" style="display:none">
+          <img id="li-img-preview" class="task-img-preview" alt="" onclick="openImgEditorReLI()">
+          <div class="task-img-act-row">
+            <button class="task-img-act-btn" onclick="openImgEditorReLI()">✎ Edit</button>
+            <button class="task-img-act-btn del" onclick="clearLIImg()">✕ Remove</button>
+          </div>
         </div>
       </div>
       <div class="form-group"><label class="form-label">Priority <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label><select class="priority-select" id="li-priority"><option value="">No priority</option><option value="low">Low</option><option value="med">Medium</option><option value="high">High</option></select></div>
@@ -1488,7 +1714,7 @@
           <input class="form-input" id="user-name" type="text" placeholder="e.g. Alex" style="flex:none;width:12rem;padding:0.4rem 0.6rem;font-size:0.75rem">
         </div>
       </div>
-      <div class="settings-section">
+      <div class="settings-section" id="settings-weather-section">
         <div class="settings-section-title">Weather</div>
         <div class="settings-row">
           <div><div class="settings-row-label">API Key</div><div class="settings-row-sub">OpenWeatherMap API key</div></div>
@@ -1501,10 +1727,6 @@
       </div>
       <div class="settings-section">
         <div class="settings-section-title">Appearance</div>
-        <div class="settings-row">
-          <div><div class="settings-row-label">Auto dark mode</div><div class="settings-row-sub">Follows your OS setting</div></div>
-          <div class="toggle" id="auto-dark-toggle"></div>
-        </div>
         <div class="settings-row">
           <div><div class="settings-row-label">Background image</div><div class="settings-row-sub">Glass effect on cards, solid backing on labels</div></div>
           <label class="upload-btn" for="bg-file-input">Upload</label>
@@ -1716,18 +1938,58 @@
   </div>
 </div>
 
+<!-- Image file inputs -->
+<input type="file" id="task-img-input" accept="image/*" style="display:none">
+<input type="file" id="li-img-input" accept="image/*" style="display:none">
+
+<!-- Image Editor -->
+<div class="img-ed-ov" id="img-ed-ov">
+  <div class="img-ed-hdr">
+    <button class="img-ed-hbtn" id="img-ed-cancel">Cancel</button>
+    <span style="font-size:0.85rem;color:#fff;font-weight:500">Edit Image</span>
+    <button class="img-ed-hbtn done" id="img-ed-done">Done</button>
+  </div>
+  <div class="img-ed-tabs">
+    <button class="img-ed-tab active" id="img-ed-tab-crop" onclick="imgEdSetMode('crop')">✂ Crop</button>
+    <button class="img-ed-tab" id="img-ed-tab-sketch" onclick="imgEdSetMode('sketch')">✏ Sketch</button>
+  </div>
+  <div class="img-ed-canvas-wrap" id="img-ed-canvas-wrap">
+    <canvas id="img-ed-canvas"></canvas>
+  </div>
+  <div class="img-ed-bar" id="img-ed-bar-crop">
+    <button class="img-ed-tool" onclick="imgEdApplyCrop()">Apply Crop</button>
+    <button class="img-ed-tool" onclick="imgEdResetCrop()">Reset</button>
+    <div class="img-ed-tip">Drag corners or inside to move the crop</div>
+  </div>
+  <div class="img-ed-bar" id="img-ed-bar-sketch" style="display:none">
+    <div id="img-ed-colors" style="display:flex;gap:0.35rem;align-items:center"></div>
+    <input type="range" class="img-ed-sz" id="img-ed-sz" min="2" max="24" value="4">
+    <button class="img-ed-tool" id="img-ed-eraser-btn" onclick="imgEdToggleEraser()">⊘ Eraser</button>
+    <button class="img-ed-tool" onclick="imgEdUndo()">↩ Undo</button>
+  </div>
+</div>
+
+<!-- Image Viewer -->
+<div class="img-viewer-ov" id="img-viewer-ov">
+  <button class="img-viewer-close" onclick="closeImgViewer()">✕</button>
+  <img id="img-viewer-img" src="" alt="">
+</div>
+
 <script>
   /* ═══════════════════════════════════════════════════════
      STORAGE KEYS & GLOBAL STATE
      ═══════════════════════════════════════════════════════ */
-  const K={tasks:'rt_tasks_v5',rems:'rt_rems_v3',lists:'rt_lists_v4',cfg:'rt_cfg_v6',bg:'rt_bg_v1',timer:'rt_timer_v1',st:'rt_st_v1',notes:'rt_notes_v1',future:'rt_future_v1'};
+  const K={tasks:'rt_tasks_v5',rems:'rt_rems_v3',lists:'rt_lists_v4',cfg:'rt_cfg_v6',bg:'rt_bg_v1',timer:'rt_timer_v1',st:'rt_st_v1',notes:'rt_notes_v1',future:'rt_future_v1',forecast:'rt_forecast_v1'};
   let showingDone=false;
   let remSection='today';
   let settingsCloseTime=0;
   let weatherLastFetch=0,weatherHasError=false,weatherLastKey='',weatherLastLoc='';
+  let forecastData=null,forecastSlotTime=0,currentWeatherData=null;
+  let expandedForecastDay=null;
+  let forecastScheduleTimeout=null;
   let taskViewDate=todayStr();
   let tasks=[],reminders=[],lists=[],listItems={},bgImage=null;
-  let cfg={dark:false,autoDark:true,showDone:true,manualOverride:false,use24h:false,bgOpacity:0.65,weatherApiKey:'',weatherLocation:'',name:''};
+  let cfg={themeMode:'auto',showDone:true,use24h:false,bgOpacity:0.65,weatherApiKey:'',weatherLocation:'',name:''};
   let currentView='tasks',currentListId=null;
   let activeTimerId=null,timerSec=0,timerPaused=false,timerTotal=0,timerIv=null;
   let stRunning=false,stPaused=false,stSec=0,stIv=null,stCountdown=false;
@@ -1757,6 +2019,20 @@
   let stDragId=null,stDragGhost=null,stDragOffY=0;
   let lisDragId=null,lisDragGhost=null,lisDragOffY=0;
   let futureDragId=null,futureDragGhost=null,futureDragOffY=0,futureDragScrollIv=null,futureDragScrollDir=0;
+
+  // Image editor / viewer state
+  const IMG_ED_COLORS=['#ff3b30','#ff9500','#ffcc00','#34c759','#007aff','#5856d6','#ff2d55','#ffffff','#1a1917'];
+  let pendingTaskImg=null, pendingLIImg=null;
+  let imgEdTarget=null, imgEdBase=null;
+  let imgEdMode='crop';
+  let imgEdCanvasEl=null, imgEdCtx=null;
+  let imgEdImgEl=new Image();
+  let imgDrawRect={x:0,y:0,w:0,h:0};
+  let cropNorm={x:0.05,y:0.05,w:0.9,h:0.9};
+  let cropHandle=null, cropDragPt=null, cropDragCrop=null;
+  let sketchColor='#ff3b30', sketchSize=4, sketchEraser=false;
+  let sketchDrawing=false, sketchStrokes=[];
+  let viewerIsTask=true, viewerTaskId=null, viewerLIId=null;
   let fstDragId=null,fstDragGhost=null,fstDragOffY=0;
   let tagHdrSwipeTag=null,tagHdrSwipeX0=0,tagHdrSwipeDx=0,tagHdrOpenTag=null;
   let addToTagGroup=null;
@@ -1840,6 +2116,403 @@
   /* ═══════════════════════════════════════════════════════
      STORAGE FUNCTIONS
      ═══════════════════════════════════════════════════════ */
+
+  /* ═══════════════════════════════════════════════════════
+     IMAGE EDITOR & VIEWER
+     ═══════════════════════════════════════════════════════ */
+
+  function imgCompressAndOpen(target, dataURL){
+    const img=new Image();
+    img.onload=()=>{
+      const MAX=1400;
+      const scale=Math.min(1,MAX/Math.max(img.naturalWidth,img.naturalHeight));
+      const w=Math.round(img.naturalWidth*scale),h=Math.round(img.naturalHeight*scale);
+      const c=document.createElement('canvas');c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      openImgEditor(target,c.toDataURL('image/jpeg',0.85));
+    };
+    img.src=dataURL;
+  }
+
+  function openImgEditor(target, dataURL){
+    imgEdTarget=target;
+    imgEdBase=dataURL;
+    cropNorm={x:0.05,y:0.05,w:0.9,h:0.9};
+    sketchStrokes=[];sketchEraser=false;
+    imgEdSetMode('crop',true);
+    imgEdImgEl=new Image();
+    imgEdImgEl.onload=imgEdInitCanvas;
+    imgEdImgEl.src=imgEdBase;
+    const _ov=document.getElementById('img-ed-ov');
+    _ov.style.display='flex';
+    requestAnimationFrame(()=>{_ov.classList.add('open');});
+    document.getElementById('img-ed-eraser-btn').classList.remove('active');
+    imgEdSetupColors();
+    document.getElementById('img-ed-sz').value=sketchSize;
+    const _c=document.getElementById('img-ed-canvas');
+    _c.addEventListener('touchstart',imgEdTouchStart,{passive:false});
+    _c.addEventListener('touchmove',imgEdTouchMove,{passive:false});
+    _c.addEventListener('touchend',imgEdTouchEnd,{passive:true});
+  }
+
+  function openImgEditorRetask(){openImgEditor('task',pendingTaskImg);}
+  function openImgEditorReLI(){openImgEditor('li',pendingLIImg);}
+
+  function imgEdSetMode(mode,force){
+    if(imgEdMode===mode&&!force)return;
+    imgEdMode=mode;
+    document.getElementById('img-ed-tab-crop').classList.toggle('active',mode==='crop');
+    document.getElementById('img-ed-tab-sketch').classList.toggle('active',mode==='sketch');
+    document.getElementById('img-ed-bar-crop').style.display=mode==='crop'?'flex':'none';
+    document.getElementById('img-ed-bar-sketch').style.display=mode==='sketch'?'flex':'none';
+    if(mode==='sketch'){
+      // Reload base image without crop overlay for sketch
+      const tmp=new Image();
+      tmp.onload=()=>{imgEdImgEl=tmp;imgEdInitCanvas();};
+      tmp.src=imgEdBase;
+    }else{imgEdDraw();}
+  }
+
+  function imgEdInitCanvas(){
+    imgEdCanvasEl=document.getElementById('img-ed-canvas');
+    imgEdCtx=imgEdCanvasEl.getContext('2d');
+    const wrap=document.getElementById('img-ed-canvas-wrap');
+    const ww=wrap.clientWidth,wh=wrap.clientHeight;
+    const dpr=window.devicePixelRatio||1;
+    imgEdCanvasEl.width=ww*dpr;imgEdCanvasEl.height=wh*dpr;
+    imgEdCanvasEl.style.width=ww+'px';imgEdCanvasEl.style.height=wh+'px';
+    imgEdCtx.scale(dpr,dpr);
+    const iw=imgEdImgEl.naturalWidth,ih=imgEdImgEl.naturalHeight;
+    const scale=Math.min(ww/iw,wh/ih);
+    const dw=iw*scale,dh=ih*scale;
+    imgDrawRect={x:(ww-dw)/2,y:(wh-dh)/2,w:dw,h:dh};
+    imgEdDraw();
+  }
+
+  function imgEdDraw(){
+    if(!imgEdCtx||!imgEdImgEl.complete)return;
+    const ctx=imgEdCtx;
+    const cw=imgEdCanvasEl.width/(window.devicePixelRatio||1);
+    const ch=imgEdCanvasEl.height/(window.devicePixelRatio||1);
+    ctx.clearRect(0,0,cw,ch);
+    ctx.fillStyle='#111';ctx.fillRect(0,0,cw,ch);
+    const {x,y,w,h}=imgDrawRect;
+    if(imgEdMode==='crop'){
+      ctx.drawImage(imgEdImgEl,x,y,w,h);
+      const cx=x+cropNorm.x*w,cy=y+cropNorm.y*h,cw2=cropNorm.w*w,ch2=cropNorm.h*h;
+      ctx.fillStyle='rgba(0,0,0,0.52)';ctx.fillRect(x,y,w,h);
+      ctx.drawImage(imgEdImgEl,
+        cropNorm.x*imgEdImgEl.naturalWidth,cropNorm.y*imgEdImgEl.naturalHeight,
+        cropNorm.w*imgEdImgEl.naturalWidth,cropNorm.h*imgEdImgEl.naturalHeight,
+        cx,cy,cw2,ch2);
+      ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.strokeRect(cx,cy,cw2,ch2);
+      // Rule of thirds
+      ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=0.5;ctx.beginPath();
+      ctx.moveTo(cx+cw2/3,cy);ctx.lineTo(cx+cw2/3,cy+ch2);
+      ctx.moveTo(cx+cw2*2/3,cy);ctx.lineTo(cx+cw2*2/3,cy+ch2);
+      ctx.moveTo(cx,cy+ch2/3);ctx.lineTo(cx+cw2,cy+ch2/3);
+      ctx.moveTo(cx,cy+ch2*2/3);ctx.lineTo(cx+cw2,cy+ch2*2/3);
+      ctx.stroke();
+      // Handles
+      imgEdHandles().forEach(({hx,hy})=>{
+        ctx.beginPath();ctx.arc(hx,hy,9,0,Math.PI*2);
+        ctx.fillStyle='#fff';ctx.fill();
+        ctx.strokeStyle='rgba(0,0,0,0.25)';ctx.lineWidth=1;ctx.stroke();
+      });
+    }else{
+      ctx.drawImage(imgEdImgEl,x,y,w,h);
+      sketchStrokes.forEach(s=>{
+        if(!s.pts.length)return;
+        ctx.save();
+        ctx.globalCompositeOperation=s.eraser?'destination-out':'source-over';
+        if(!s.eraser)ctx.strokeStyle=s.color;
+        ctx.lineWidth=s.size;ctx.lineCap='round';ctx.lineJoin='round';
+        ctx.beginPath();ctx.moveTo(s.pts[0].x,s.pts[0].y);
+        for(let i=1;i<s.pts.length;i++){
+          const p=s.pts[i-1],q=s.pts[i];
+          ctx.quadraticCurveTo(p.x,p.y,(p.x+q.x)/2,(p.y+q.y)/2);
+        }
+        ctx.stroke();ctx.restore();
+      });
+    }
+  }
+
+  function imgEdHandles(){
+    const {x,y,w,h}=imgDrawRect;
+    const cx=x+cropNorm.x*w,cy=y+cropNorm.y*h,cw=cropNorm.w*w,ch=cropNorm.h*h;
+    return[{k:'tl',hx:cx,hy:cy},{k:'tr',hx:cx+cw,hy:cy},{k:'bl',hx:cx,hy:cy+ch},{k:'br',hx:cx+cw,hy:cy+ch}];
+  }
+
+  function imgEdPt(e){
+    const r=imgEdCanvasEl.getBoundingClientRect();
+    const t=e.touches?e.touches[0]:e;
+    return{x:t.clientX-r.left,y:t.clientY-r.top};
+  }
+
+  function imgEdTouchStart(e){
+    if(!document.getElementById('img-ed-ov').classList.contains('open'))return;
+    e.preventDefault();
+    const pt=imgEdPt(e);
+    if(imgEdMode==='crop'){
+      cropHandle=null;
+      const HIT=18;
+      for(const {k,hx,hy} of imgEdHandles()){
+        if(Math.hypot(pt.x-hx,pt.y-hy)<HIT){cropHandle=k;break;}
+      }
+      if(!cropHandle){
+        const {x,y,w,h}=imgDrawRect;
+        const cx=x+cropNorm.x*w,cy=y+cropNorm.y*h,cw=cropNorm.w*w,ch=cropNorm.h*h;
+        if(pt.x>=cx&&pt.x<=cx+cw&&pt.y>=cy&&pt.y<=cy+ch)cropHandle='move';
+      }
+      cropDragPt={...pt};cropDragCrop={...cropNorm};
+    }else{
+      sketchDrawing=true;
+      sketchStrokes.push({color:sketchColor,size:sketchSize,eraser:sketchEraser,pts:[{...pt}]});
+    }
+  }
+
+  function imgEdTouchMove(e){
+    if(!document.getElementById('img-ed-ov').classList.contains('open'))return;
+    e.preventDefault();
+    const pt=imgEdPt(e);
+    if(imgEdMode==='crop'&&cropHandle&&cropDragPt){
+      const {w:iw,h:ih}=imgDrawRect;
+      const dx=(pt.x-cropDragPt.x)/iw,dy=(pt.y-cropDragPt.y)/ih;
+      let {x,y,w,h}={...cropDragCrop};
+      const MIN=0.06;
+      if(cropHandle==='move'){x=Math.max(0,Math.min(1-w,x+dx));y=Math.max(0,Math.min(1-h,y+dy));}
+      else if(cropHandle==='tl'){const nx=Math.min(x+w-MIN,x+dx),ny=Math.min(y+h-MIN,y+dy);w+=(x-nx);h+=(y-ny);x=nx;y=ny;}
+      else if(cropHandle==='tr'){const ny=Math.min(y+h-MIN,y+dy);w=Math.max(MIN,w+dx);h+=(y-ny);y=ny;}
+      else if(cropHandle==='bl'){const nx=Math.min(x+w-MIN,x+dx);h=Math.max(MIN,h+dy);w+=(x-nx);x=nx;}
+      else if(cropHandle==='br'){w=Math.max(MIN,w+dx);h=Math.max(MIN,h+dy);}
+      x=Math.max(0,x);y=Math.max(0,y);
+      if(x+w>1)w=1-x;if(y+h>1)h=1-y;
+      cropNorm={x,y,w,h};imgEdDraw();
+    }else if(imgEdMode==='sketch'&&sketchDrawing&&sketchStrokes.length){
+      sketchStrokes[sketchStrokes.length-1].pts.push({...pt});
+      imgEdDraw();
+    }
+  }
+
+  function imgEdTouchEnd(){cropHandle=null;cropDragPt=null;sketchDrawing=false;}
+
+  function imgEdApplyCrop(){
+    const iw=imgEdImgEl.naturalWidth,ih=imgEdImgEl.naturalHeight;
+    const sx=Math.round(cropNorm.x*iw),sy=Math.round(cropNorm.y*ih);
+    const sw=Math.max(1,Math.round(cropNorm.w*iw)),sh=Math.max(1,Math.round(cropNorm.h*ih));
+    const c=document.createElement('canvas');c.width=sw;c.height=sh;
+    c.getContext('2d').drawImage(imgEdImgEl,sx,sy,sw,sh,0,0,sw,sh);
+    imgEdBase=c.toDataURL('image/jpeg',0.88);
+    sketchStrokes=[];
+    const tmp=new Image();
+    tmp.onload=()=>{imgEdImgEl=tmp;imgEdInitCanvas();};
+    tmp.src=imgEdBase;
+    cropNorm={x:0.05,y:0.05,w:0.9,h:0.9};
+    showToast('Crop applied');
+  }
+
+  function imgEdResetCrop(){cropNorm={x:0.05,y:0.05,w:0.9,h:0.9};imgEdDraw();}
+
+  function imgEdToggleEraser(){
+    sketchEraser=!sketchEraser;
+    document.getElementById('img-ed-eraser-btn').classList.toggle('active',sketchEraser);
+  }
+
+  function imgEdUndo(){if(!sketchStrokes.length)return;sketchStrokes.pop();imgEdDraw();}
+
+  function imgEdSetupColors(){
+    const el=document.getElementById('img-ed-colors');
+    el.innerHTML=IMG_ED_COLORS.map(c=>
+      `<div class="img-ed-color${c===sketchColor?' active':''}" style="background:${c==='#1a1917'?'#1a1917':c}" onclick="imgEdSetColor('${c}')"></div>`
+    ).join('');
+    const sz=document.getElementById('img-ed-sz');
+    sz.value=sketchSize;
+    sz.oninput=e=>{sketchSize=parseInt(e.target.value);};
+  }
+
+  function imgEdSetColor(c){
+    sketchColor=c;sketchEraser=false;
+    document.getElementById('img-ed-eraser-btn').classList.remove('active');
+    document.querySelectorAll('.img-ed-color').forEach(el=>el.classList.toggle('active',el.style.background===c||el.style.background===`rgb(${hexToRgb(c)})`));
+  }
+
+  function hexToRgb(hex){
+    const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+    return`${r}, ${g}, ${b}`;
+  }
+
+  function imgEdFinalize(){
+    const MAX=1200;
+    const iw=imgEdImgEl.naturalWidth,ih=imgEdImgEl.naturalHeight;
+    const scale=Math.min(1,MAX/Math.max(iw,ih));
+    const fw=Math.round(iw*scale),fh=Math.round(ih*scale);
+    const off=document.createElement('canvas');off.width=fw;off.height=fh;
+    const ctx=off.getContext('2d');
+    ctx.drawImage(imgEdImgEl,0,0,fw,fh);
+    if(imgEdMode==='sketch'&&sketchStrokes.length){
+      const sx=fw/imgDrawRect.w,sy=fh/imgDrawRect.h;
+      sketchStrokes.forEach(s=>{
+        if(!s.pts.length)return;
+        ctx.save();
+        ctx.globalCompositeOperation=s.eraser?'destination-out':'source-over';
+        if(!s.eraser)ctx.strokeStyle=s.color;
+        ctx.lineWidth=s.size*Math.max(sx,sy);ctx.lineCap='round';ctx.lineJoin='round';
+        ctx.beginPath();
+        ctx.moveTo((s.pts[0].x-imgDrawRect.x)*sx,(s.pts[0].y-imgDrawRect.y)*sy);
+        for(let i=1;i<s.pts.length;i++){
+          const prev=s.pts[i-1],cur=s.pts[i];
+          const px=(prev.x-imgDrawRect.x)*sx,py=(prev.y-imgDrawRect.y)*sy;
+          const qx=(cur.x-imgDrawRect.x)*sx,qy=(cur.y-imgDrawRect.y)*sy;
+          ctx.quadraticCurveTo(px,py,(px+qx)/2,(py+qy)/2);
+        }
+        ctx.stroke();ctx.restore();
+      });
+    }
+    return off.toDataURL('image/jpeg',0.84);
+  }
+
+  // Editor done/cancel
+  document.getElementById('img-ed-done').addEventListener('click',()=>{
+    const final=imgEdFinalize();
+    if(imgEdTarget==='task'){pendingTaskImg=final;refreshTaskImgPreview();}
+    else if(imgEdTarget==='li'){pendingLIImg=final;refreshLIImgPreview();}
+    else if(imgEdTarget==='task_edit'){
+      const t=tasks.find(x=>x.id===viewerTaskId);
+      if(t){t.image=final;saveAll();}
+      if(currentView==='tasks')render();
+      else if(currentView==='calendar')renderCalDay();
+      else if(currentView==='hashtags')renderHashtags();
+      showToast('Image updated');
+    }else if(imgEdTarget==='li_edit'){
+      if(currentListId&&viewerLIId){
+        const item=(listItems[currentListId]||[]).find(x=>x.id===viewerLIId);
+        if(item){item.image=final;saveAll();}
+        renderListItems();
+      }
+      showToast('Image updated');
+    }
+    imgEdClose();
+  });
+  document.getElementById('img-ed-cancel').addEventListener('click',()=>{
+    imgEdClose();
+  });
+
+  function imgEdClose(){
+    const c=document.getElementById('img-ed-canvas');
+    c.removeEventListener('touchstart',imgEdTouchStart);
+    c.removeEventListener('touchmove',imgEdTouchMove);
+    c.removeEventListener('touchend',imgEdTouchEnd);
+    const ov=document.getElementById('img-ed-ov');
+    ov.classList.remove('open');
+    setTimeout(()=>{ov.style.display='none';},300);
+  }
+
+  // Canvas events
+  // Canvas mouse events only (static) — touch listeners added/removed dynamically in openImgEditor
+  const imgC=document.getElementById('img-ed-canvas');
+  imgC.addEventListener('mousedown',e=>{imgEdTouchStart({touches:[e],preventDefault:()=>{}});});
+  imgC.addEventListener('mousemove',e=>{if(e.buttons)imgEdTouchMove({touches:[e],preventDefault:()=>{}});});
+  imgC.addEventListener('mouseup',imgEdTouchEnd);
+
+  // File input handlers
+  document.getElementById('task-img-input').addEventListener('change',e=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>imgCompressAndOpen('task',ev.target.result);
+    reader.readAsDataURL(file);e.target.value='';
+  });
+  document.getElementById('li-img-input').addEventListener('change',e=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>imgCompressAndOpen('li',ev.target.result);
+    reader.readAsDataURL(file);e.target.value='';
+  });
+
+  // Paste support (keyboard)
+  document.addEventListener('paste',e=>{
+    const taskOpen=document.getElementById('task-modal').classList.contains('open');
+    const liOpen=document.getElementById('li-modal').classList.contains('open');
+    if(!taskOpen&&!liOpen)return;
+    const items=e.clipboardData?.items;if(!items)return;
+    for(const item of items){
+      if(item.type.startsWith('image/')){
+        const file=item.getAsFile();if(!file)return;
+        const reader=new FileReader();
+        reader.onload=ev=>imgCompressAndOpen(taskOpen?'task':'li',ev.target.result);
+        reader.readAsDataURL(file);break;
+      }
+    }
+  });
+
+  function refreshTaskImgPreview(){
+    document.getElementById('task-img-add-btn').style.display=pendingTaskImg?'none':'';
+    const wrap=document.getElementById('task-img-preview-wrap');
+    if(pendingTaskImg){
+      document.getElementById('task-img-preview').src=pendingTaskImg;
+      wrap.style.display='block';
+    }else{wrap.style.display='none';}
+  }
+
+  function clearTaskImg(){showConfirm('Remove image?','This cannot be undone.',()=>{pendingTaskImg=null;refreshTaskImgPreview();});}
+
+  function refreshLIImgPreview(){
+    document.getElementById('li-img-add-btn').style.display=pendingLIImg?'none':'';
+    const wrap=document.getElementById('li-img-preview-wrap');
+    if(pendingLIImg){
+      document.getElementById('li-img-preview').src=pendingLIImg;
+      wrap.style.display='block';
+    }else{wrap.style.display='none';}
+  }
+
+  function clearLIImg(){showConfirm('Remove image?','This cannot be undone.',()=>{pendingLIImg=null;refreshLIImgPreview();});}
+
+  // Image viewer
+  function openImgViewer(e,id,isTask){
+    e.stopPropagation();
+    const src=isTask
+      ?(tasks.find(x=>x.id===id)||{}).image
+      :((listItems[currentListId]||[]).find(x=>x.id===id)||{}).image;
+    if(!src)return;
+    document.getElementById('img-viewer-img').src=src;
+    viewerIsTask=isTask;
+    if(isTask)viewerTaskId=id;else viewerLIId=id;
+    document.getElementById('img-viewer-ov').classList.add('open');
+  }
+
+  function closeImgViewer(){document.getElementById('img-viewer-ov').classList.remove('open');}
+
+  function openImgViewerEdit(){
+    closeImgViewer();
+    if(viewerIsTask&&viewerTaskId){
+      const t=tasks.find(x=>x.id===viewerTaskId);
+      if(t&&t.image)openImgEditor('task_edit',t.image);
+    }else if(!viewerIsTask&&viewerLIId&&currentListId){
+      const item=(listItems[currentListId]||[]).find(x=>x.id===viewerLIId);
+      if(item&&item.image)openImgEditor('li_edit',item.image);
+    }
+  }
+
+  function imgViewerDelete(){
+    showConfirm('Remove image?','This cannot be undone.',()=>{
+      if(viewerIsTask&&viewerTaskId){
+        const t=tasks.find(x=>x.id===viewerTaskId);
+        if(t){t.image=null;saveAll();}
+        if(currentView==='tasks')render();
+        else if(currentView==='calendar')renderCalDay();
+        else if(currentView==='hashtags')renderHashtags();
+      }else if(!viewerIsTask&&viewerLIId&&currentListId){
+        const item=(listItems[currentListId]||[]).find(x=>x.id===viewerLIId);
+        if(item){item.image=null;saveAll();}
+        renderListItems();
+      }
+      closeImgViewer();showToast('Image removed');
+    });
+  }
+
+  document.getElementById('img-viewer-ov').addEventListener('click',e=>{
+    if(e.target===document.getElementById('img-viewer-ov'))closeImgViewer();
+  });
+
   function saveAll(){try{localStorage.setItem(K.tasks,JSON.stringify(tasks));localStorage.setItem(K.rems,JSON.stringify(reminders));localStorage.setItem(K.lists,JSON.stringify({lists,items:listItems}));localStorage.setItem(K.cfg,JSON.stringify(cfg));localStorage.setItem(K.future,JSON.stringify(futureTasks));}catch(e){}}
   function loadAll(){
     try{
@@ -2445,6 +3118,8 @@
 
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState!=='visible')return;
+    updateSalutation();
+    if(cfg.themeMode==='auto')applyTheme();
 
     // Sync inline task timer
     if(activeTimerId&&!timerPaused){
@@ -2486,6 +3161,11 @@
       }catch(e){}
     }
 
+    if(cfg.weatherApiKey&&cfg.weatherLocation){
+      const lastSlot=getLastForecastSlot(new Date());
+      if(!forecastData||forecastSlotTime!==lastSlot)fetchForecast(true);
+      scheduleForecastFetch();
+    }
     rescheduleLocalNotifs();
   });
 
@@ -2631,6 +3311,7 @@
     document.getElementById('live-clock').textContent=str;
   }
   setInterval(updateClock,1000);
+  setInterval(()=>{updateSalutation();if(cfg.themeMode==='auto')applyTheme();},60000);
 
   function toggleRemName(el){
     if(el.scrollWidth>el.clientWidth+2||el.classList.contains('name-expanded')){
@@ -2778,12 +3459,11 @@
 
   function sysIsDark(){return window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches}
   function applyTheme(){
-    if(cfg.autoDark&&!cfg.manualOverride)cfg.dark=sysIsDark();
-    document.body.classList.toggle('dark',cfg.dark);
-    document.getElementById('theme-toggle').textContent=cfg.dark?'☽':'☀';
-    document.getElementById('auto-dark-toggle').classList.toggle('on',cfg.autoDark);
+    const isDark=cfg.themeMode==='dark'||(cfg.themeMode==='auto'&&sysIsDark());
+    document.body.classList.toggle('dark',isDark);
+    document.getElementById('theme-toggle').textContent=cfg.themeMode==='light'?'☀':cfg.themeMode==='dark'?'☽':'⊙';
     document.getElementById('clock24-toggle').classList.toggle('on',cfg.use24h);
-    document.getElementById('theme-meta').setAttribute('content',cfg.dark?'#111110':'#f7f6f2');
+    document.getElementById('theme-meta').setAttribute('content',isDark?'#111110':'#f7f6f2');
     const bgLayer=document.getElementById('bg-layer');
     const splash=document.getElementById('splash');
     if(bgImage){
@@ -2797,7 +3477,7 @@
       if(splash)splash.style.backgroundImage='';
     }
   }
-  if(window.matchMedia)window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{if(cfg.autoDark&&!cfg.manualOverride)applyTheme();});
+  if(window.matchMedia)window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{if(cfg.themeMode==='auto')applyTheme();});
 
   // Remove icon highlight after click
   document.addEventListener('click',e=>{if(e.target.matches('.icon-btn, .menu-btn'))setTimeout(()=>e.target.blur(),50);});
@@ -2841,6 +3521,8 @@
       weatherLastKey=cfg.weatherApiKey;
       weatherLastLoc=cfg.weatherLocation;
       weatherHasError=false;
+      currentWeatherData=data;
+      if(currentView==='weather')renderWeatherPage();
     }catch(e){
       console.error('Weather fetch error:',e);
       document.getElementById('weather-icon').textContent='⚠️';
@@ -2852,11 +3534,19 @@
   }
 
   // Weather widget click opens settings
-  document.getElementById('weather-widget').addEventListener('click',openSettings);
+  document.getElementById('weather-widget').addEventListener('click',()=>{
+    if(!cfg.weatherApiKey||!cfg.weatherLocation){
+      openSettings();
+      setTimeout(()=>{const s=document.getElementById('settings-weather-section');if(s)s.scrollIntoView({behavior:'smooth',block:'start'});},350);
+      return;
+    }
+    if(weatherHasError){showToast('Weather data unavailable — check settings');return;}
+    setView('weather');
+  });
 
   // Weather settings change handlers
-  document.getElementById('weather-api-key').addEventListener('change',e=>{cfg.weatherApiKey=e.target.value.trim();saveAll();fetchWeather();});
-  document.getElementById('weather-location').addEventListener('change',e=>{cfg.weatherLocation=e.target.value.trim();saveAll();fetchWeather();});
+  document.getElementById('weather-api-key').addEventListener('change',e=>{cfg.weatherApiKey=e.target.value.trim();saveAll();fetchWeather();fetchForecast(true);scheduleForecastFetch();});
+  document.getElementById('weather-location').addEventListener('change',e=>{cfg.weatherLocation=e.target.value.trim();saveAll();fetchWeather();fetchForecast(true);scheduleForecastFetch();});
 
   // Fetch weather every 5 minutes
   setInterval(fetchWeather,300000);
@@ -2877,6 +3567,70 @@
     e.stopPropagation();
     refreshWeather();
   });
+
+  const FORECAST_SLOT_UTC_HOURS=[0,3,6,9,12,15,18,21];
+  function getForecastSlotTimes(refDate){
+    const slots=[];
+    for(let dayOffset=-1;dayOffset<=1;dayOffset++){
+      const d=new Date(refDate);
+      d.setUTCDate(d.getUTCDate()+dayOffset);
+      FORECAST_SLOT_UTC_HOURS.forEach(h=>{
+        slots.push(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate(),h,30,0,0));
+      });
+    }
+    return slots.sort((a,b)=>a-b);
+  }
+  function getLastForecastSlot(now){
+    const past=getForecastSlotTimes(now).filter(s=>s<=now.getTime());
+    return past[past.length-1];
+  }
+  function getNextForecastSlot(now){
+    const future=getForecastSlotTimes(now).filter(s=>s>now.getTime());
+    return future[0];
+  }
+
+  function scheduleForecastFetch(){
+    if(forecastScheduleTimeout){clearTimeout(forecastScheduleTimeout);forecastScheduleTimeout=null;}
+    if(!cfg.weatherApiKey||!cfg.weatherLocation)return;
+    const next=getNextForecastSlot(new Date());
+    const delay=Math.max(1000,next-Date.now());
+    forecastScheduleTimeout=setTimeout(()=>{
+      fetchForecast(true);
+      scheduleForecastFetch();
+    },delay);
+  }
+
+  function loadForecastCache(){
+    try{
+      const d=JSON.parse(localStorage.getItem(K.forecast)||'null');
+      if(d&&d.data&&d.slotTime){forecastData=d.data;forecastSlotTime=d.slotTime;}
+    }catch(e){}
+  }
+
+  async function fetchForecast(force){
+    if(!cfg.weatherApiKey||!cfg.weatherLocation)return;
+    const lastSlot=getLastForecastSlot(new Date());
+    if(!force&&forecastData&&forecastSlotTime===lastSlot)return;
+    try{
+      const isCoord=/^-?\d+\.?\d*,-?\d+\.?\d*$/.test(cfg.weatherLocation.trim());
+      let url;
+      if(isCoord){
+        const[lat,lon]=cfg.weatherLocation.split(',');
+        url=`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&cnt=40&appid=${cfg.weatherApiKey}`;
+      }else{
+        url=`https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(cfg.weatherLocation)}&units=metric&cnt=40&appid=${cfg.weatherApiKey}`;
+      }
+      const res=await fetch(url);
+      if(!res.ok)throw new Error('Forecast error '+res.status);
+      forecastData=await res.json();
+      forecastSlotTime=getLastForecastSlot(new Date());
+      try{localStorage.setItem(K.forecast,JSON.stringify({data:forecastData,slotTime:forecastSlotTime}));}catch(e){}
+      if(currentView==='weather')renderWeatherPage();
+    }catch(e){
+      console.error('Forecast fetch error:',e);
+      if(currentView==='weather')renderWeatherPage();
+    }
+  }
 
   function updateSalutation(){
     const hr=new Date().getHours();
@@ -3039,7 +3793,7 @@
         <div class="task-row">
           ${!isDone?`<div class="drag-handle" ontouchstart="dragHandleTouch(event,'${t.id}')"><svg viewBox="0 0 12 22" fill="currentColor"><circle cx="3.5" cy="3" r="1.5"/><circle cx="8.5" cy="3" r="1.5"/><circle cx="3.5" cy="8" r="1.5"/><circle cx="8.5" cy="8" r="1.5"/><circle cx="3.5" cy="13" r="1.5"/><circle cx="8.5" cy="13" r="1.5"/><circle cx="3.5" cy="18" r="1.5"/><circle cx="8.5" cy="18" r="1.5"/></svg></div>`:'<div style="width:1.3rem;flex-shrink:0"></div>'}
           <div class="task-check${t.done?' checked':''}" onclick="toggleDone('${t.id}',event)"></div>
-          <div class="task-body">
+          <div class="task-body" style="min-width:0;flex:1">
             <div class="task-name">${t.emoji?`<span class="task-emoji">${t.emoji}</span>`:''}${t.name}</div>
             <div class="task-meta">
               ${t.date&&(calView?t.date!==calSelected:t.date!==taskViewDate)?`<span class="meta-time">📅 ${fmtDate(t.date)}</span>`:''}
@@ -3054,6 +3808,7 @@
             ${t.subtasks&&t.subtasks.length?`<div class="subtasks-wrap">${t.subtasks.map(s=>`<div class="subtask-item"><div class="subtask-check${s.done?' checked':''}" onclick="toggleSubtask('${t.id}','${s.id}',event)"></div><span class="subtask-name${s.done?' done':''}">${s.name}</span></div>`).join('')}</div>`:''}
             ${completedHTML}
           </div>
+          ${t.image?`<img class="task-img-thumb" src="${t.image}" onclick="openImgViewer(event,'${t.id}',true)" alt="">`:''}
         </div>
       </div>
     </div>`;
@@ -3315,6 +4070,7 @@
     document.getElementById('task-dur').value=t.duration||'';document.getElementById('task-notes').value=t.notes||'';
     if(t.date||t.time||t.duration){timeOpen=true;document.getElementById('time-fields').classList.add('open');document.getElementById('time-toggle-btn').classList.add('active');updateTimeLbl();}
     else{document.getElementById('time-fields').classList.remove('open');document.getElementById('time-toggle-btn').classList.remove('active');}
+    pendingTaskImg=t.image||null;refreshTaskImgPreview();
     modalSubtasks=(t.subtasks||[]).map(s=>({...s}));
     renderModalSubtasks();
     openModal('task-modal');
@@ -3460,6 +4216,7 @@
   function openAddTask(prefillDate){
     addBelowTaskId=null;editTaskId=null;timeOpen=false;modalSubtasks=[];
     document.getElementById('task-modal-title').textContent='New task';document.getElementById('task-save').textContent='Add task';
+    pendingTaskImg=null;refreshTaskImgPreview();
     ['task-emoji','task-name','task-tags','task-notes'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('task-name').placeholder=randPH();document.getElementById('task-priority').value='';
     document.getElementById('task-date').value=prefillDate||todayStr();document.getElementById('task-time').value='';document.getElementById('task-dur').value='';
@@ -3551,7 +4308,7 @@
   document.getElementById('task-save').addEventListener('click',()=>{
     const name=document.getElementById('task-name').value.trim();if(!name){document.getElementById('task-name').focus();return;}
     const rawDate=timeOpen?document.getElementById('task-date').value:'';
-    const d={name,emoji:document.getElementById('task-emoji').value.trim()||null,priority:document.getElementById('task-priority').value||null,tags:parseTags(document.getElementById('task-tags').value),date:(rawDate&&/^\d{4}-\d{2}-\d{2}$/.test(rawDate))?rawDate:todayStr(),time:timeOpen?document.getElementById('task-time').value||null:null,duration:timeOpen?parseInt(document.getElementById('task-dur').value)||null:null,notes:document.getElementById('task-notes').value.trim()||null,subtasks:[...modalSubtasks]};
+    const d={name,emoji:document.getElementById('task-emoji').value.trim()||null,priority:document.getElementById('task-priority').value||null,tags:parseTags(document.getElementById('task-tags').value),date:(rawDate&&/^\d{4}-\d{2}-\d{2}$/.test(rawDate))?rawDate:todayStr(),time:timeOpen?document.getElementById('task-time').value||null:null,duration:timeOpen?parseInt(document.getElementById('task-dur').value)||null:null,notes:document.getElementById('task-notes').value.trim()||null,subtasks:[...modalSubtasks],image:pendingTaskImg||null};
     const taskId=editTaskId||uid();
     if(editTaskId){const t=tasks.find(x=>x.id===editTaskId);if(t)Object.assign(t,d);}
     else{
@@ -3836,6 +4593,7 @@
             <div class="task-name" onclick="toggleLICardExpand(event,'${item.id}')">${item.emoji?`<span class="task-emoji">${item.emoji}</span>`:''}${item.name}</div>
             ${item.priority?`<div class="task-meta"><span class="p-badge">${pLabel(item.priority)}</span></div>`:''}
           </div>
+          ${item.image?`<img class="task-img-thumb" src="${item.image}" onclick="openImgViewer(event,'${item.id}',false)" alt="">`:''}
           <button class="del-btn" onclick="openEditLI('${item.id}')">✎</button>
           <button class="del-btn" onclick="confirmDelLI('${item.id}')">✕</button>
           ${hasExpand?`<div class="li-chevron" onclick="toggleLIExpand('${item.id}',event)">▾</div>`:''}
@@ -4188,6 +4946,7 @@
     document.getElementById('li-save').textContent='Add item';
     ['li-emoji','li-name','li-notes','li-tags'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('li-priority').value='';
+    pendingLIImg=null;refreshLIImgPreview();
     modalLISubitems=[];renderModalLISubitems();
     openModal('li-modal');
   }
@@ -4203,6 +4962,7 @@
     document.getElementById('li-priority').value=item.priority||'';
     document.getElementById('li-tags').value=(item.tags||[]).join(' ');
     document.getElementById('li-notes').value=item.notes||'';
+    pendingLIImg=item.image||null;refreshLIImgPreview();
     modalLISubitems=(item.subitems||[]).map(s=>({...s}));
     renderModalLISubitems();
     openModal('li-modal');
@@ -4213,10 +4973,10 @@
     const tags=addToTagGroup?[addToTagGroup]:parseTags(document.getElementById('li-tags').value);
     if(editLIId){
       const item=listItems[currentListId].find(x=>x.id===editLIId);
-      if(item){item.name=name;item.emoji=document.getElementById('li-emoji').value.trim()||null;item.priority=document.getElementById('li-priority').value||null;item.tags=tags;item.notes=document.getElementById('li-notes').value.trim()||null;item.subitems=[...modalLISubitems];}
+      if(item){item.name=name;item.emoji=document.getElementById('li-emoji').value.trim()||null;item.priority=document.getElementById('li-priority').value||null;item.tags=tags;item.notes=document.getElementById('li-notes').value.trim()||null;item.subitems=[...modalLISubitems];}if(item){item.name=name;item.emoji=document.getElementById('li-emoji').value.trim()||null;item.priority=document.getElementById('li-priority').value||null;item.tags=tags;item.notes=document.getElementById('li-notes').value.trim()||null;item.subitems=[...modalLISubitems];item.image=pendingLIImg||null;}
       restoreLITagField();saveAll();closeModal('li-modal');renderListItems();showToast('Item updated');editLIId=null;
     }else{
-      listItems[currentListId].push({id:uid(),name,emoji:document.getElementById('li-emoji').value.trim()||null,priority:document.getElementById('li-priority').value||null,tags,notes:document.getElementById('li-notes').value.trim()||null,checkState:'',done:false,subitems:[...modalLISubitems]});
+      listItems[currentListId].push({id:uid(),name,emoji:document.getElementById('li-emoji').value.trim()||null,priority:document.getElementById('li-priority').value||null,tags,notes:document.getElementById('li-notes').value.trim()||null,checkState:'',done:false,subitems:[...modalLISubitems],image:pendingLIImg||null});
       restoreLITagField();saveAll();closeModal('li-modal');renderListItems();showToast('Item added');
     }
   });
@@ -4233,8 +4993,11 @@
     for(let d=1;d<=dim;d++){
       const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
       const isT=d===tD&&calMonth===tM&&calYear===tY;const isSel=calSelected===ds;
-      const has=tasks.some(t=>t.date===ds)||reminders.some(r=>r.date===ds);
-      html+=`<div class="cal-day${isT?' today':''}${isSel?' selected':''}${has?' has-items':''}" onclick="selectDay('${ds}')">${d}</div>`;
+      const todayDs=`${tY}-${String(tM+1).padStart(2,'0')}-${String(tD).padStart(2,'0')}`;
+      const isPast=!isT&&ds<todayDs;
+      const hasPending=tasks.some(t=>t.date===ds&&!t.done)||reminders.some(r=>r.date===ds);
+      const hasDone=!hasPending&&tasks.some(t=>t.date===ds&&t.done);
+      html+=`<div class="cal-day${isT?' today':''}${isSel?' selected':''}${isPast?' past-date':''}${hasPending?' has-pending':''}${hasDone?' has-done':''}" onclick="selectDay('${ds}')">${d}</div>`;
     }
     const rem=42-(off+dim);for(let i=1;i<=rem;i++)html+=`<div class="cal-day other-month">${i}</div>`;
     document.getElementById('cal-grid').innerHTML=html;renderCalDay();
@@ -4275,6 +5038,204 @@
   document.getElementById('mp-prev').addEventListener('click',()=>{mpYear--;renderMP();});
   document.getElementById('mp-next').addEventListener('click',()=>{mpYear++;renderMP();});
   document.getElementById('mp-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('mp-overlay'))document.getElementById('mp-overlay').classList.remove('open');});
+
+  function renderWeatherPage(){
+    const div=document.getElementById('weather-page-content');if(!div)return;
+    if(!cfg.weatherApiKey||!cfg.weatherLocation){
+      div.innerHTML=`<div class="blank-page">
+        <div class="blank-title">Weather</div>
+        <div class="blank-sub">Set your API key and location in Settings to see the forecast.</div>
+        <button class="add-inline-btn" onclick="openSettings()" style="margin-top:1rem"><div class="add-inline-plus">⚙</div>Open Settings</button>
+      </div>`;
+      return;
+    }
+    if(!forecastData&&!currentWeatherData){
+      div.innerHTML='<div class="weather-loading">Loading forecast…</div>';
+      return;
+    }
+    const iconMap={'01d':'☀️','01n':'🌙','02d':'⛅','02n':'☁️','03d':'☁️','03n':'☁️','04d':'☁️','04n':'☁️','09d':'🌧️','09n':'🌧️','10d':'🌦️','10n':'🌧️','11d':'⛈️','11n':'⛈️','13d':'❄️','13n':'❄️','50d':'🌫️','50n':'🌫️'};
+    const today=todayStr();
+    const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const DAY=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+    function localDateStr(unixSec){
+      const d=new Date(unixSec*1000);
+      return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+    function pill(icon,label,value,color){
+      const style=color?` style="color:${color}"`:'';
+      return`<span class="weather-day-pill"${style} onclick="event.stopPropagation();showToast('${label}')">${icon} ${value}</span>`;
+    }
+    function pillsHTML(hum,wind,cloud,vis,rain,snow,pop){
+      let h=pill('💧','Humidity',hum+'%');
+      h+=pill('💨','Wind Speed',wind+'km/h');
+      if(cloud!==null&&cloud!==undefined)h+=pill('☁','Cloudiness',cloud+'%');
+      if(vis!==null&&vis!==undefined)h+=pill('👁','Visibility',vis+'km');
+      if(rain>0)h+=pill('🌧','Rain Volume',rain.toFixed(1)+'mm','#3b82f6');
+      if(snow>0)h+=pill('❄','Snow Volume',snow.toFixed(1)+'mm','#6b7280');
+      if(pop>10)h+=pill('🌂','Chance of Rain',pop+'%','#3b82f6');
+      return h;
+    }
+    function build3hRows(slots){
+      return[...slots].sort((a,b)=>a.dt-b.dt).map(slot=>{
+        const t=new Date(slot.dt*1000);
+        const timeStr=cfg.use24h
+          ?`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`
+          :t.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+        const icon=iconMap[slot.weather[0].icon]||'🌤️';
+        const temp=Math.round(slot.main.temp);
+        const feels=Math.round(slot.main.feels_like);
+        const hum=Math.round(slot.main.humidity);
+        const wind=Math.round(slot.wind.speed*3.6);
+        const cloud=slot.clouds?slot.clouds.all:0;
+        const vis=slot.visibility!==undefined?Math.round(slot.visibility/100)/10:null;
+        const rain=slot.rain?(slot.rain['3h']||0):0;
+        const snow=slot.snow?(slot.snow['3h']||0):0;
+        const pop=Math.round((slot.pop||0)*100);
+        return`<div class="weather-3h-row">
+          <div class="weather-3h-time">${timeStr}</div>
+          <div class="weather-3h-icon">${icon}</div>
+          <div style="flex-shrink:0;min-width:3rem">
+            <div class="weather-3h-temp">${temp}°</div>
+            <div class="weather-3h-feels">feels ${feels}°</div>
+          </div>
+          <div class="weather-3h-pills">${pillsHTML(hum,wind,cloud,vis,rain,snow,pop)}</div>
+        </div>`;
+      }).join('');
+    }
+
+    const dayMap={};
+    if(forecastData){
+      (forecastData.list||[]).forEach(item=>{
+        const date=localDateStr(item.dt);
+        if(!dayMap[date])dayMap[date]=[];
+        dayMap[date].push(item);
+      });
+    }
+
+    let heroHTML='';
+    if(currentWeatherData){
+      const icon=iconMap[currentWeatherData.weather[0].icon]||'🌤️';
+      const desc=currentWeatherData.weather[0].description;
+      const temp=Math.round(currentWeatherData.main.temp);
+      const feels=Math.round(currentWeatherData.main.feels_like);
+      const high=Math.round(currentWeatherData.main.temp_max);
+      const low=Math.round(currentWeatherData.main.temp_min);
+      heroHTML=`<div class="weather-hero">
+        <div class="weather-hero-icon">${icon}</div>
+        <div class="weather-hero-mid">
+          <div class="weather-hero-temp">${temp}°</div>
+          <div class="weather-hero-desc">${desc}</div>
+        </div>
+        <div class="weather-hero-range">
+          <div class="weather-hero-hl">H:${high}° L:${low}°</div>
+          <div class="weather-hero-feels">feels ${feels}°</div>
+        </div>
+      </div>`;
+    }
+
+    let todayHTML='';
+    if(currentWeatherData){
+      const icon=iconMap[currentWeatherData.weather[0].icon]||'🌤️';
+      const desc=currentWeatherData.weather[0].description;
+      const hum=Math.round(currentWeatherData.main.humidity);
+      const wind=Math.round(currentWeatherData.wind.speed*3.6);
+      const high=Math.round(currentWeatherData.main.temp_max);
+      const low=Math.round(currentWeatherData.main.temp_min);
+      const feels=Math.round(currentWeatherData.main.feels_like);
+      const cloud=currentWeatherData.clouds?currentWeatherData.clouds.all:null;
+      const vis=currentWeatherData.visibility!==undefined?Math.round(currentWeatherData.visibility/100)/10:null;
+      const rain=currentWeatherData.rain?(currentWeatherData.rain['1h']||currentWeatherData.rain['3h']||0):0;
+      const snow=currentWeatherData.snow?(currentWeatherData.snow['1h']||currentWeatherData.snow['3h']||0):0;
+      const tD=new Date(today+'T12:00:00');
+      const todaySlots=dayMap[today]||[];
+      const hasSlots=todaySlots.length>0;
+      const isExp=expandedForecastDay===today;
+      todayHTML=`<div class="weather-day-card is-today">
+        <div class="weather-card-strip" style="background:linear-gradient(to right,#2d5a3d,transparent)"></div>
+        <div class="weather-day-row" ${hasSlots?`onclick="toggleForecastDay('${today}')"`:'style="cursor:default"'}>
+          <div class="weather-day-left"><div class="weather-day-label">Today</div><div class="weather-day-date">${tD.getDate()} ${MON[tD.getMonth()]}</div></div>
+          <div class="weather-day-icon-wrap">${icon}</div>
+          <div class="weather-day-mid"><div class="weather-day-desc">${desc}</div><div class="weather-day-pills">${pillsHTML(hum,wind,cloud,vis,rain,snow,0)}</div></div>
+          <div class="weather-day-right">
+            <div class="weather-day-range"><span class="weather-day-high">${high}°</span><span class="weather-day-low">${low}°</span></div>
+            <span class="weather-day-feels">feels ${feels}°</span>
+            ${hasSlots?`<div class="forecast-day-chevron${isExp?' open':''}">▾</div>`:''}
+          </div>
+        </div>
+        ${hasSlots?`<div class="weather-3h-section${isExp?'':' hidden'}" id="forecast-3h-${today}">${build3hRows(todaySlots)}</div>`:''}
+      </div>`;
+    }
+
+    const FORECAST_TINTS=['#2563eb','#7c3aed','#b45309','#0891b2','#d97706'];
+    const days=Object.keys(dayMap).sort().filter(d=>d>today).slice(0,5);
+    const forecastHTML=days.map((date,i)=>{
+      const items=dayMap[date];
+      const high=Math.round(Math.max(...items.map(x=>x.main.temp_max)));
+      const low=Math.round(Math.min(...items.map(x=>x.main.temp_min)));
+      const rep=items.find(x=>{const h=new Date(x.dt*1000).getHours();return h>=11&&h<=13;})||items[Math.floor(items.length/2)];
+      const icon=iconMap[rep.weather[0].icon]||'🌤️';
+      const desc=rep.weather[0].description;
+      const hum=Math.round(rep.main.humidity);
+      const wind=Math.round(rep.wind.speed*3.6);
+      const feels=Math.round(rep.main.feels_like);
+      const cloud=rep.clouds?rep.clouds.all:null;
+      const vis=rep.visibility!==undefined?Math.round(rep.visibility/100)/10:null;
+      const rain=items.reduce((s,x)=>s+(x.rain?(x.rain['3h']||0):0),0);
+      const snow=items.reduce((s,x)=>s+(x.snow?(x.snow['3h']||0):0),0);
+      const pop=Math.round(Math.max(...items.map(x=>x.pop||0))*100);
+      const d=new Date(date+'T12:00:00');
+      const label=date===addDays(today,1)?'Tomorrow':DAY[d.getDay()];
+      const isExp=expandedForecastDay===date;
+      const tintColor=FORECAST_TINTS[i%FORECAST_TINTS.length];
+      return`<div class="weather-day-card">
+        <div class="weather-card-strip" style="background:linear-gradient(to right,${tintColor},transparent)"></div>
+        <div class="weather-day-row" onclick="toggleForecastDay('${date}')">
+          <div class="weather-day-left"><div class="weather-day-label">${label}</div><div class="weather-day-date">${d.getDate()} ${MON[d.getMonth()]}</div></div>
+          <div class="weather-day-icon-wrap">${icon}</div>
+          <div class="weather-day-mid"><div class="weather-day-desc">${desc}</div><div class="weather-day-pills">${pillsHTML(hum,wind,cloud,vis,rain,snow,pop)}</div></div>
+          <div class="weather-day-right">
+            <div class="weather-day-range"><span class="weather-day-high">${high}°</span><span class="weather-day-low">${low}°</span></div>
+            <span class="weather-day-feels">feels ${feels}°</span>
+            <div class="forecast-day-chevron${isExp?' open':''}">▾</div>
+          </div>
+        </div>
+        <div class="weather-3h-section${isExp?'':' hidden'}" id="forecast-3h-${date}">${build3hRows(items)}</div>
+      </div>`;
+    }).join('');
+
+    const city=forecastData&&forecastData.city?forecastData.city.name:cfg.weatherLocation;
+    const upd=forecastSlotTime?`Updated ${new Date(forecastSlotTime).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}`:'';
+    const nextUpd=forecastSlotTime?`Next update ${new Date(getNextForecastSlot(new Date(forecastSlotTime+1))).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}`:'';
+    div.innerHTML=`
+      <div class="weather-page-hdr">
+        <button class="notes-back-btn" onclick="setView('tasks')">← Back</button>
+        <div class="weather-page-city">${city}</div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.08rem">
+          <div class="weather-page-updated">${upd}</div>
+          ${nextUpd?`<div class="weather-page-next-update">${nextUpd}</div>`:''}
+        </div>
+      </div>
+      ${heroHTML}
+      <div class="section-title weather-section-title">Forecast</div>
+      ${todayHTML}${forecastHTML}`;
+  }
+
+  function toggleForecastDay(date){
+    expandedForecastDay=(expandedForecastDay===date)?null:date;
+    renderWeatherPage();
+    if(expandedForecastDay){
+      requestAnimationFrame(()=>{
+        const section=document.getElementById('forecast-3h-'+expandedForecastDay);
+        const scrollEl=document.getElementById('scroll-area');
+        if(section&&scrollEl){
+          const sr=scrollEl.getBoundingClientRect();
+          const sec=section.getBoundingClientRect();
+          scrollEl.scrollTo({top:scrollEl.scrollTop+(sec.top-sr.top)-8,behavior:'smooth'});
+        }
+      });
+    }
+  }
 
   function renderHashtags(){
     const tagMap={};tasks.forEach(t=>(t.tags||[]).forEach(tag=>{if(!tagMap[tag])tagMap[tag]=[];tagMap[tag].push(t);}));
@@ -4346,7 +5307,7 @@
     });
   });
 
-  const ALL_VIEWS=['tasks','reminders','calendar','list','lists','hashtags','analyze','notes','future'];
+  const ALL_VIEWS=['tasks','reminders','calendar','list','lists','hashtags','analyze','notes','future','weather'];
 
   function setView(v){
     if(currentNoteId)saveCurrentNote();
@@ -4368,13 +5329,14 @@
         b.classList.toggle('active',b.dataset.tab===v);
       });
     }
-    if(v==='tasks')render();
+    if(v==='tasks'){taskViewDate=todayStr();showingDone=false;const tz=document.getElementById('task-zone');if(tz)tz.scrollTop=0;render();}
     else if(v==='reminders')renderReminders();
     else if(v==='calendar')renderCalendar();
     else if(v==='hashtags')renderHashtags();
     else if(v==='lists')renderListsPage();
     else if(v==='notes'){renderNotes();}
-    else if(v==='future')renderFutureTasks();
+    else if(v==='future'){const fz=document.getElementById('future-zone');if(fz)fz.scrollTop=0;renderFutureTasks();}
+    else if(v==='weather'){const sa=document.getElementById('scroll-area');if(sa)sa.scrollTop=0;fetchForecast();renderWeatherPage();}
     ['mn-today','mn-future','mn-calendar','mn-hashtags','mn-analyze','mn-notes','mn-lists'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
     const mnMap={tasks:'mn-today',calendar:'mn-calendar',hashtags:'mn-hashtags',analyze:'mn-analyze',notes:'mn-notes',lists:'mn-lists',list:'mn-lists',future:'mn-future'};
     if(mnMap[v]){const el=document.getElementById(mnMap[v]);if(el)el.classList.add('active');}
@@ -4425,7 +5387,7 @@
     cfg.weatherLocation=document.getElementById('weather-location').value.trim();
     cfg.name=document.getElementById('user-name').value.trim();
     saveAll();
-    if(cfg.weatherApiKey!==prevKey||cfg.weatherLocation!==prevLoc)fetchWeather();
+    if(cfg.weatherApiKey!==prevKey||cfg.weatherLocation!==prevLoc){fetchWeather();fetchForecast(true);scheduleForecastFetch();}
     document.getElementById('settings-overlay').classList.remove('open');
   }
   document.getElementById('settings-btn').addEventListener('click',openSettings);
@@ -4477,8 +5439,7 @@
 
       sp.addEventListener('touchcancel',()=>snap(false),{passive:true});
   })();
-  document.getElementById('theme-toggle').addEventListener('click',()=>{cfg.manualOverride=true;cfg.dark=!cfg.dark;applyTheme();saveAll();});
-  document.getElementById('auto-dark-toggle').addEventListener('click',()=>{cfg.autoDark=!cfg.autoDark;if(cfg.autoDark)cfg.manualOverride=false;applyTheme();saveAll();});
+  document.getElementById('theme-toggle').addEventListener('click',()=>{cfg.themeMode=cfg.themeMode==='light'?'dark':cfg.themeMode==='dark'?'auto':'light';applyTheme();saveAll();});
   document.getElementById('clock24-toggle').addEventListener('click',()=>{cfg.use24h=!cfg.use24h;saveAll();updateClock();render();applyTheme();});
   document.getElementById('show-done-toggle').addEventListener('click',()=>{cfg.showDone=!cfg.showDone;saveAll();render();});
   document.getElementById('bg-file-input').addEventListener('change',e=>{
@@ -4507,8 +5468,11 @@
     const el=document.getElementById(id);
     el.classList.add('open');
     const body=el.querySelector('.modal-body');
-    if(body)body.scrollTop=0;
-    else{const m=el.querySelector('.modal');if(m)m.scrollTop=0;}
+    if(body){
+      body.scrollTop=0;
+      body.style.overflowY='hidden';
+      requestAnimationFrame(()=>{body.style.overflowY='';});
+    }else{const m=el.querySelector('.modal');if(m)m.scrollTop=0;}
   }
   function closeModal(id){document.getElementById(id).classList.remove('open');}
   document.querySelectorAll('.modal-overlay').forEach(el=>{el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');});});
@@ -4593,7 +5557,9 @@
           notes=data.notes.notes;noteGroups=data.notes.noteGroups||[];imported.push('Notes');
         }
         if(data.settings&&typeof data.settings==='object'){
-          Object.assign(cfg,data.settings);imported.push('Settings');
+          Object.assign(cfg,data.settings);
+          if(!cfg.themeMode){cfg.themeMode=cfg.autoDark?'auto':cfg.dark?'dark':'light';}
+          imported.push('Settings');
         }
         if(!imported.length){showToast('No recognisable data in file');e.target.value='';return;}
 
@@ -4616,7 +5582,7 @@
     reader.readAsText(file);
   });
 
-  loadAll();loadDragOrder();loadSortMode();loadListTagState();loadNotes();loadFutureState();loadTimer();loadStTimer();applyTheme();setDateUI();updateClock();setView('tasks');fetchWeather();rescheduleLocalNotifs();
+  loadAll();loadDragOrder();loadSortMode();loadListTagState();loadNotes();loadFutureState();loadTimer();loadStTimer();loadForecastCache();applyTheme();setDateUI();updateClock();setView('tasks');fetchWeather();fetchForecast();scheduleForecastFetch();rescheduleLocalNotifs();
   if(bgImage){const p=document.getElementById('bg-preview');p.src=bgImage;p.style.display='block';document.getElementById('clear-bg-row').style.display='flex';document.getElementById('bg-opacity-row').style.display='flex';const pct=Math.round((cfg.bgOpacity||0.4)*100);document.getElementById('bg-opacity-slider').value=pct;document.getElementById('bg-opacity-val').textContent=pct+'%';}
 
   /* ═══════════════════════════════════════════════════════
