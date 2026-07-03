@@ -616,7 +616,7 @@
     }
     body.has-bg.dark .hashtag-group-hdr{background:rgba(36,36,34,0.65);}
     body.has-bg #budget-zone .hashtag-group-hdr{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--surface2)}
-    .hashtag-group-hdr:hover{opacity:0.75}
+    @media (hover:hover){.hashtag-group-hdr:hover{opacity:0.75}}
     .hashtag-group-title{font-size:0.78rem;font-weight:500;color:var(--accent);font-family:var(--mono)}
     .hg-chevron{font-size:0.65rem;color:var(--text3);transition:transform var(--tr)}
     .hashtag-group.collapsed .hg-chevron{transform:rotate(-90deg)}
@@ -1061,8 +1061,7 @@
     .li-tag-count{font-size:0.62rem;color:var(--accent);font-family:var(--mono);background:rgba(0,0,0,0.06);padding:0.08rem 0.35rem;border-radius:2rem}
     .li-tag-chevron{font-size:0.65rem;color:var(--accent);transition:transform var(--tr);flex-shrink:0;cursor:pointer;padding:0.1rem}
     .li-tag-group.collapsed .li-tag-chevron{transform:rotate(-90deg)}
-    .li-tag-body{padding-bottom:0.15rem;max-height:55vh;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
-    .li-tag-body::-webkit-scrollbar{display:none}
+    .li-tag-body{padding-bottom:0.15rem}
     .li-tag-group.collapsed .li-tag-body{display:none}
     .li-tag-group.is-dragging{opacity:0.3}
     .li-tag-group.tag-drop-above{box-shadow:0 -3px 0 0 var(--accent);border-radius:var(--r)}
@@ -1091,8 +1090,8 @@
     .hashtag-suggestion-pill:active{background:var(--accent);color:#fff}
 
     .li-tag-hdr-wrap{position:relative;overflow:hidden;border-radius:var(--rs);margin-bottom:0.25rem;clip-path:inset(0 round var(--rs))}
-    .li-tag-hdr-wrap .li-tag-hdr{margin-bottom:0;border-radius:0;position:relative;z-index:1;will-change:transform}
-    .li-tag-hdr-wrap .hashtag-group-hdr{margin-bottom:0;border-radius:0;position:relative;z-index:1;will-change:transform}
+.li-tag-hdr-wrap .li-tag-hdr{margin-bottom:0;border-radius:0;position:relative;z-index:1;will-change:transform;touch-action:pan-y}
+.li-tag-hdr-wrap .hashtag-group-hdr{margin-bottom:0;border-radius:0;position:relative;z-index:1;will-change:transform;touch-action:pan-y}
     .li-tag-hdr-action{position:absolute;top:0;bottom:0;width:5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.2rem;color:#fff;font-size:0.65rem;font-family:var(--font);cursor:pointer;-webkit-user-select:none;user-select:none}
     .li-tag-hdr-action svg{width:1.1rem;height:1.1rem}
     .li-tag-hdr-action-left{left:0;background:var(--accent);border-radius:var(--rs) 0 0 var(--rs)}
@@ -1249,8 +1248,6 @@
     .budget-hero-lbl{font-size:0.62rem;text-transform:uppercase;letter-spacing:0.07em;opacity:0.85}
     .budget-hero-amt{font-size:1.9rem;font-weight:300;font-family:var(--mono);letter-spacing:-0.03em;line-height:1.15;margin-top:0.15rem}
     .budget-hero-sub{font-size:0.7rem;opacity:0.88;margin-top:0.3rem;font-family:var(--mono)}
-    .budget-hero-track{height:4px;background:rgba(255,255,255,0.25);border-radius:2px;overflow:hidden;margin-top:0.55rem}
-    .budget-hero-fill{height:100%;background:#fff;border-radius:2px;transition:width 0.4s ease}
     .expense-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:0.6rem 0.85rem;margin-bottom:0.5rem;display:flex;align-items:flex-start;gap:0.55rem;cursor:pointer}
     .expense-card .expense-emoji,.expense-card .expense-amt,.expense-card .del-btn,.expense-card>.task-img-thumb{margin-top:0.1rem}
     .expense-card.expanded .expense-name{white-space:normal;overflow:visible;text-overflow:clip;word-break:break-word;overflow-wrap:break-word}
@@ -1271,6 +1268,12 @@
     .budget-cat-nums{font-size:0.7rem;font-family:var(--mono);color:var(--text3);flex-shrink:0}
     .budget-cat-track{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:0.5rem}
     .budget-cat-fill{height:100%;border-radius:2px;transition:width 0.4s ease}
+    .budget-hero-swipe{overflow:hidden;position:relative}
+    .budget-hero-track{display:flex}
+    .budget-hero-page{flex:0 0 100%;min-width:100%}
+    .budget-hero-dots{display:flex;justify-content:center;gap:0.35rem;margin-top:0.5rem}
+    .bh-dot{width:0.4rem;height:0.4rem;border-radius:50%;background:rgba(255,255,255,0.3);cursor:pointer;transition:background var(--tr)}
+    .bh-dot.active{background:#fff}
     .split-bal-pos{color:var(--accent);font-weight:500;font-family:var(--mono)}
     .split-bal-neg{color:var(--ph);font-weight:500;font-family:var(--mono)}
     .split-bal-zero{color:var(--text3);font-family:var(--mono)}
@@ -1625,9 +1628,9 @@
   <div id="budget-header" style="display:none">
     <div class="tasks-header-inner" style="padding-bottom:0.3rem">
       <div class="tabs" style="margin:0 0 0.5rem;padding:0;max-width:none">
-        <button class="tab-btn active" id="budget-tab-expenses" onclick="setBudgetTab('expenses')">Expenses</button>
+        <button class="tab-btn active" id="budget-tab-budgets" onclick="setBudgetTab('budgets')">Budgets</button>
+        <button class="tab-btn" id="budget-tab-expenses" onclick="setBudgetTab('expenses')">Expenses</button>
         <button class="tab-btn" id="budget-tab-received" onclick="setBudgetTab('received')">Received</button>
-        <button class="tab-btn" id="budget-tab-budgets" onclick="setBudgetTab('budgets')">Budgets</button>
         <button class="tab-btn" id="budget-tab-split" onclick="setBudgetTab('split')">Split</button>
       </div>
     </div>
@@ -2394,6 +2397,7 @@
       <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="expense-date" type="date"></div>
     </div>
     <div class="form-group"><label class="form-label">Category <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label><select class="priority-select" id="expense-cat"></select></div>
+    <div class="form-group" id="expense-cardId-group"><label class="form-label">Paid with <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label><select class="priority-select" id="expense-cardId"></select></div>
     <div class="form-group">
       <label class="form-label">Receipt <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label>
       <button type="button" class="time-toggle-btn" id="expense-img-add-btn" onclick="document.getElementById('expense-img-input').click()">
@@ -2443,6 +2447,21 @@
       </div>
     </div>
     <div class="form-actions"><button class="btn btn-primary" id="person-save">Add person</button></div>
+  </div>
+</div>
+
+<!-- Budget: card modal -->
+<div class="modal-overlay" id="card-modal">
+  <div class="modal">
+    <div class="modal-title" id="card-modal-title">New card</div>
+    <div class="form-group">
+      <label class="form-label">Name & icon</label>
+      <div class="emoji-row">
+        <input class="form-input emoji-input" id="card-emoji" type="text" placeholder="💳" maxlength="2">
+        <input class="form-input" id="card-name" type="text" style="flex:1" placeholder="e.g. Chase Sapphire">
+      </div>
+    </div>
+    <div class="form-actions"><button class="btn btn-primary" id="card-save">Add card</button></div>
   </div>
 </div>
 
@@ -5618,7 +5637,19 @@
   }
   function toggleLI(id){
     const items=listItems[currentListId]||[];const it=items.find(x=>x.id===id);
-    if(it){const s=it.checkState||'';it.checkState=s===''?'checked':s==='checked'?'crossed':s==='crossed'?'flagged':'';it.done=it.checkState!=='';saveAll();renderListItems();}
+    if(it){
+      const s=it.checkState||'';it.checkState=s===''?'checked':s==='checked'?'crossed':s==='crossed'?'flagged':'';it.done=it.checkState!=='';saveAll();
+      const zone=document.getElementById('list-items-zone');
+      const prevScroll=zone?zone.scrollTop:0;
+      renderListItems();
+      if(zone){
+        zone.scrollTop=prevScroll;
+        requestAnimationFrame(()=>{
+          zone.scrollTop=prevScroll;
+          requestAnimationFrame(()=>{zone.scrollTop=prevScroll;});
+        });
+      }
+    }
   }
   function toggleLIExpand(id,e){
     if(e)e.stopPropagation();
@@ -6295,13 +6326,13 @@
     // Collapse name-expanded reminders on outside tap
     document.querySelectorAll('.rem-name.name-expanded, .meta-time.name-expanded').forEach(el=>{
       if(!el.contains(e.target))el.classList.remove('name-expanded');
-      if(budgetSearchOpen&&!e.target.closest('#budget-search-input')&&!e.target.closest('#budget-search-toggle-btn')&&!e.target.closest('#budget-search-clear-btn')){
+    });
+    if(budgetSearchOpen&&!e.target.closest('#budget-search-input')&&!e.target.closest('#budget-search-toggle-btn')&&!e.target.closest('#budget-search-clear-btn')){
       budgetSearchOpen=false;budgetSearchQuery='';renderBudget();
     }
     if(receivedSearchOpen&&!e.target.closest('#received-search-input')&&!e.target.closest('#received-search-toggle-btn')&&!e.target.closest('#received-search-clear-btn')){
       receivedSearchOpen=false;receivedSearchQuery='';renderBudget();
     }
-    });
     // Collapse any expanded task card on outside tap
     [...expandedCards].forEach(id=>{
       const card=getCard(id);if(!card||card.contains(e.target))return;
@@ -6360,7 +6391,7 @@
     else if(v==='exroutine'){renderRoutineHdr();renderRoutineItems();}
     else if(v==='exsession'){renderExerciseSession();}
     else if(v==='exhistory'){renderExerciseHistory();}
-    else if(v==='budget'){const bn=new Date();budgetYear=bn.getFullYear();budgetMonth=bn.getMonth();expandedSplitPersonId=null;budgetTab='expenses';expandedBudgetCatId=null;budgetSearchOpen=false;budgetSearchQuery='';const bz=document.getElementById('budget-zone');if(bz)bz.scrollTop=0;renderBudget();}
+    else if(v==='budget'){const bn=new Date();budgetYear=bn.getFullYear();budgetMonth=bn.getMonth();expandedSplitPersonId=null;budgetTab='budgets';expandedBudgetCatId=null;budgetSearchOpen=false;budgetSearchQuery='';budgetHeroPage=0;const bz=document.getElementById('budget-zone');if(bz)bz.scrollTop=0;renderBudget();}
     ['mn-today','mn-future','mn-calendar','mn-hashtags','mn-analyze','mn-notes','mn-lists','mn-exercise','mn-budget'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
     const mnMap={tasks:'mn-today',calendar:'mn-calendar',hashtags:'mn-hashtags',analyze:'mn-analyze',notes:'mn-notes',lists:'mn-lists',list:'mn-lists',future:'mn-future',exercise:'mn-exercise',exroutine:'mn-exercise',exsession:'mn-exercise',exhistory:'mn-exercise',budget:'mn-budget'};
     if(mnMap[v]){const el=document.getElementById(mnMap[v]);if(el)el.classList.add('active');}
@@ -6555,7 +6586,7 @@
       payload.hashtags=[...tagSet].sort();
     }
     if(get('exp-notes')) payload.notes={notes,noteGroups};
-    if(get('exp-budget')) payload.budget={expenses,budgetCats,splitPeople,splitTxns,settlements};
+    if(get('exp-budget')) payload.budget={expenses,budgetCats,splitPeople,splitTxns,settlements,receivedPayments,cards};
     payload.exercises=exercises;
     payload.routines=routines;
     payload.workoutSessions=workoutSessions;
@@ -6610,7 +6641,10 @@
         if(data.budget&&typeof data.budget==='object'){
           expenses=data.budget.expenses||[];budgetCats=data.budget.budgetCats||[];
           splitPeople=data.budget.splitPeople||[];splitTxns=data.budget.splitTxns||[];
-          settlements=data.budget.settlements||[];saveBudget();
+          settlements=data.budget.settlements||[];
+          receivedPayments=Array.isArray(data.budget.receivedPayments)?data.budget.receivedPayments:[];
+          cards=Array.isArray(data.budget.cards)?data.budget.cards:[];
+          saveBudget();
           if(currentView==='budget')renderBudget();
           imported.push('Budget');
         }
@@ -7215,8 +7249,8 @@
             <svg viewBox="0 0 18 18" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h10M5 6l1 9h6l1-9M7 9v4M11 9v4M7 6V4h4v2"/></svg>Delete
           </div>
           <div class="hashtag-group-hdr" id="extag-${safe}" style="margin-bottom:0" onclick="exTagHdrClick(event,'${tag}')" ontouchstart="exTagHdrTouchStart(event,'${tag}')" ontouchmove="exTagHdrTouchMove(event,'${tag}')" ontouchend="exTagHdrTouchEnd(event,'${tag}')">
-            <div class="hashtag-group-title" onclick="toggleExHG('${safe}')">${tag} <span style="color:var(--text3);font-weight:400">(${tagMap[tag].length})</span></div>
-            <span class="hg-chevron" onclick="toggleExHG('${safe}')">▾</span>
+            <div class="hashtag-group-title" onclick="toggleExHG(event,'${safe}')">${tag} <span style="color:var(--text3);font-weight:400">(${tagMap[tag].length})</span></div>
+            <span class="hg-chevron" onclick="toggleExHG(event,'${safe}')">▾</span>
           </div>
         </div>
         <div class="hashtag-group-body">${tagMap[tag].map(exerciseCardHTML).join('')}</div>
@@ -7224,7 +7258,7 @@
     });
     if(tagMap['__untagged__']){
       html+=`<div class="hashtag-group" id="exhg-untagged">
-        <div class="hashtag-group-hdr" onclick="toggleExHG('untagged')">
+        <div class="hashtag-group-hdr" onclick="toggleExHG(event,'untagged')">
           <div class="hashtag-group-title" style="color:var(--text3)">Other <span style="font-weight:400">(${tagMap['__untagged__'].length})</span></div>
           <span class="hg-chevron">▾</span>
         </div>
@@ -7233,9 +7267,9 @@
     }
     div.innerHTML=html;
   }
-  function toggleExHG(id){const g=document.getElementById('exhg-'+id);if(g)g.classList.toggle('collapsed');}
+  function toggleExHG(e,id){if(e)e.stopPropagation();const g=document.getElementById('exhg-'+id);if(g)g.classList.toggle('collapsed');}
 
-  let exTagSwipeTag=null,exTagSwipeX0=0,exTagSwipeDx=0,exTagOpenTag=null;
+  let exTagSwipeTag=null,exTagSwipeX0=0,exTagSwipeY0=0,exTagSwipeDx=0,exTagSwipeDir=0,exTagOpenTag=null;
   const EX_TAG_SNAP_W=()=>5*parseFloat(getComputedStyle(document.documentElement).fontSize);
   function closeExTagHdr(tag){
     if(!tag)return;
@@ -7249,18 +7283,25 @@
   function exTagActionDelete(tag){closeExTagHdr(tag);confirmDelExerciseTagGroup(tag);}
   function exTagHdrTouchStart(e,tag){
     if(exTagOpenTag&&exTagOpenTag!==tag)closeExTagHdr(exTagOpenTag);
-    exTagSwipeTag=tag;exTagSwipeX0=e.touches[0].clientX;exTagSwipeDx=0;
+    exTagSwipeTag=tag;exTagSwipeX0=e.touches[0].clientX;exTagSwipeY0=e.touches[0].clientY;exTagSwipeDx=0;exTagSwipeDir=0;
     const safe=tag.replace(/[^a-z0-9]/g,'_');const hdr=document.getElementById('extag-'+safe);if(hdr)hdr.style.transition='none';
   }
   function exTagHdrTouchMove(e,tag){
     if(exTagSwipeTag!==tag)return;
-    exTagSwipeDx=e.touches[0].clientX-exTagSwipeX0;
+    const dx=e.touches[0].clientX-exTagSwipeX0;
+    if(exTagSwipeDir===0){
+      if(Math.abs(dx)<=6)return;
+      const dy=e.touches[0].clientY-exTagSwipeY0;
+      if(Math.abs(dy)>Math.abs(dx)){exTagSwipeTag=null;return;}
+      exTagSwipeDir=1;
+    }
+    exTagSwipeDx=dx;
     if(Math.abs(exTagSwipeDx)>8)e.preventDefault();
     const safe=tag.replace(/[^a-z0-9]/g,'_');const hdr=document.getElementById('extag-'+safe);if(!hdr)return;
     const snap=EX_TAG_SNAP_W();hdr.style.transform=`translateX(${Math.max(-snap,Math.min(snap,exTagSwipeDx))}px)`;
   }
   function exTagHdrTouchEnd(e,tag){
-    if(exTagSwipeTag!==tag)return;const dx=exTagSwipeDx;exTagSwipeTag=null;exTagSwipeDx=0;
+    if(exTagSwipeTag!==tag)return;const dx=exTagSwipeDx;exTagSwipeTag=null;exTagSwipeDx=0;exTagSwipeDir=0;
     const safe=tag.replace(/[^a-z0-9]/g,'_');const hdr=document.getElementById('extag-'+safe);if(!hdr)return;
     const snap=EX_TAG_SNAP_W();hdr.style.transition='transform 0.25s cubic-bezier(0.4,0,0.2,1)';
     if(dx>snap/2){hdr.style.transform=`translateX(${snap}px)`;exTagOpenTag=tag;}
@@ -7725,7 +7766,7 @@ function setExerciseType(weighted){
     }
     html+=`<div style="display:flex;gap:0.5rem;margin-top:0.5rem">
       <button class="add-inline-btn" style="border-color:var(--border);background:var(--surface2);color:var(--text2);flex:1;margin-top:0" onclick="setExTab('routines')">
-        <div class="add-inline-plus" style="background:var(--text3)">+</div>Routines
+        <div class="add-inline-plus" style="background:#8a8a86">+</div>Routines
       </button>
       <button class="add-inline-btn" style="flex:1;margin-top:0" onclick="openAddExerciseToday()">
         <div class="add-inline-plus">+</div>Exercise
@@ -8273,27 +8314,28 @@ const SET_ARC=157; // path length of the semicircle below
   /* ═══════════════════════════════════════════════════════
      BUDGET TRACKER
      ═══════════════════════════════════════════════════════ */
-  let expenses=[],budgetCats=[],splitPeople=[],splitTxns=[],settlements=[],receivedPayments=[];
+  let expenses=[],budgetCats=[],splitPeople=[],splitTxns=[],settlements=[],receivedPayments=[],cards=[];
   let editReceivedId=null,pendingReceivedImg=null,receivedDayCollapsed={},receivedSearchOpen=false,receivedSearchQuery='';
-  let budgetTab='expenses';
+  let budgetTab='budgets';
   let expandedBudgetCatId=null;
   let budgetDayCollapsed={};
   let splitPeopleCollapsed=false;
   let budgetSearchOpen=false,budgetSearchQuery='';
   let budgetYear=new Date().getFullYear(),budgetMonth=new Date().getMonth();
-  let editExpenseId=null,editBudgetCatId=null,editPersonId=null,editSplitId=null;
+  let editExpenseId=null,editBudgetCatId=null,editPersonId=null,editSplitId=null,editCardId=null;
   let expandedSplitPersonId=null,settlePersonId=null;
   let splitParticipantSel=new Set();
+  let budgetHeroPage=0,bhSwipeX0=0,bhSwipeDx=0,bhSwiping=false;
   const BUDGET_COLORS=['#2d5a3d','#3a5a7a','#7a5c1e','#8b3a3a','#5a4a8a','#2a7a6a','#a3542a','#546a2a'];
   const MONTHS_FULL=['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-  function saveBudget(){try{localStorage.setItem(K.budget,JSON.stringify({expenses,budgetCats,splitPeople,splitTxns,settlements,receivedPayments}));}catch(e){showToast('Storage full — could not save budget data');}}
+  function saveBudget(){try{localStorage.setItem(K.budget,JSON.stringify({expenses,budgetCats,splitPeople,splitTxns,settlements,receivedPayments,cards}));}catch(e){showToast('Storage full — could not save budget data');}}
   function loadBudget(){
     try{
       const d=localStorage.getItem(K.budget);
       if(d){
         const p=JSON.parse(d);
-        expenses=p.expenses||[];budgetCats=p.budgetCats||[];splitPeople=p.splitPeople||[];splitTxns=p.splitTxns||[];settlements=p.settlements||[];receivedPayments=p.receivedPayments||[];
+        expenses=p.expenses||[];budgetCats=p.budgetCats||[];splitPeople=p.splitPeople||[];splitTxns=p.splitTxns||[];settlements=p.settlements||[];receivedPayments=p.receivedPayments||[];cards=p.cards||[];
         budgetCats.forEach(c=>{if(!c.budgetByMonth){c.budgetByMonth={};if(c.budget!=null)c.budgetByMonth[budgetMonthKey()]=c.budget;delete c.budget;}});
       }
     }catch(e){}
@@ -8306,14 +8348,17 @@ const SET_ARC=157; // path length of the semicircle below
   function budgetMonthNav(d){budgetMonth+=d;if(budgetMonth<0){budgetMonth=11;budgetYear--;}if(budgetMonth>11){budgetMonth=0;budgetYear++;}renderBudget();}
   function budgetMonthToday(){const n=new Date();budgetYear=n.getFullYear();budgetMonth=n.getMonth();renderBudget();}
   function isCurrentBudgetMonth(){const n=new Date();return budgetYear===n.getFullYear()&&budgetMonth===n.getMonth();}
-  function monthExpensesList(){
+  function rawMonthExpensesList(){
     const k=budgetMonthKey();
-    let list=expenses.filter(e=>e.date&&e.date.startsWith(k));
+    return expenses.filter(e=>e.date&&e.date.startsWith(k)).sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.created||0)-(a.created||0));
+  }
+  function monthExpensesList(){
+    let list=rawMonthExpensesList();
     if(budgetSearchQuery.trim()){
       const q=budgetSearchQuery.trim().toLowerCase();
       list=list.filter(e=>(e.name||'').toLowerCase().includes(q)||(e.notes||'').toLowerCase().includes(q)||String(e.amount||'').includes(q));
     }
-    return list.sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.created||0)-(a.created||0));
+    return list;
   }
   function catSpent(catId){const k=budgetMonthKey();return expenses.filter(e=>e.catId===catId&&e.date&&e.date.startsWith(k)).reduce((sum,e)=>sum+(e.amount||0),0);}
   function catBudgetForMonth(c){return(c.budgetByMonth&&c.budgetByMonth[budgetMonthKey()])||0;}
@@ -8337,12 +8382,10 @@ const SET_ARC=157; // path length of the semicircle below
   }
 
   function budgetMonthBarHTML(count){
-    const showSearch=budgetTab==='expenses';
     const monthClick=isCurrentBudgetMonth()?'openBudgetMonthPicker()':'budgetMonthToday()';
     return `<div class="day-nav-bar" style="margin-bottom:0.55rem">
       <div class="day-nav-left">
         <button class="day-nav-add" onclick="${budgetTab==='expenses'?'openAddExpense()':'openAddBudgetCat()'}"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg></button>
-        ${showSearch?`<button class="day-nav-btn" id="budget-search-toggle-btn" onclick="toggleBudgetSearch()"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="8" r="5.5"/><path d="M15 15l-3.5-3.5"/></svg></button>`:''}
       </div>
       <div class="day-nav-controls">
         <button class="day-nav-btn" onclick="budgetMonthNav(-1)">‹</button>
@@ -8350,54 +8393,64 @@ const SET_ARC=157; // path length of the semicircle below
         <button class="day-nav-btn" onclick="budgetMonthNav(1)">›</button>
       </div>
       <span class="day-nav-count">${count}</span>
-    </div>
-    ${(showSearch&&budgetSearchOpen)?`<div class="form-group" style="margin-bottom:0.55rem;position:relative" onclick="event.stopPropagation()">
-      <input class="form-input" id="budget-search-input" type="text" placeholder="Search amount, name, notes..." value="${budgetSearchQuery}" style="padding-right:2.2rem" oninput="budgetSearchInput(this)">
-      <button type="button" id="budget-search-clear-btn" onclick="event.stopPropagation();clearBudgetSearch()" style="position:absolute;right:0.5rem;top:50%;transform:translateY(-50%);width:1.4rem;height:1.4rem;border:none;background:var(--surface3);border-radius:50%;color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:0.75rem;cursor:pointer">✕</button>
-    </div>`:''}`;
+    </div>`;
   }
-  function toggleBudgetSearch(){budgetSearchOpen=!budgetSearchOpen;if(!budgetSearchOpen)budgetSearchQuery='';renderBudget();if(budgetSearchOpen)setTimeout(()=>document.getElementById('budget-search-input')?.focus(),50);}
+  function budgetSearchBarHTML(){
+    return `<div class="budget-search-bar" style="position:sticky;top:0;z-index:4;background:var(--bg);padding:0.4rem 0;margin-bottom:0.3rem">
+      <div class="form-group" style="margin-bottom:0;position:relative" onclick="event.stopPropagation()">
+        <input class="form-input" id="budget-search-input" type="text" placeholder="Search amount, name, notes..." value="${budgetSearchQuery}" style="padding-right:2.2rem" oninput="budgetSearchInput(this)">
+        <button type="button" id="budget-search-clear-btn" onclick="event.stopPropagation();clearBudgetSearch()" style="position:absolute;right:0.5rem;top:50%;transform:translateY(-50%);width:1.4rem;height:1.4rem;border:none;background:var(--surface3);border-radius:50%;color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:0.75rem;cursor:pointer">✕</button>
+      </div>
+    </div>`;
+  }
   function budgetSearchInput(el){
     const pos=el.selectionStart;
     budgetSearchQuery=el.value;
-    renderBudget();
+    renderBudgetExpensesList();
     const ni=document.getElementById('budget-search-input');
     if(ni){ni.focus();try{ni.setSelectionRange(pos,pos);}catch(e){}}
   }
   function clearBudgetSearch(){
-    budgetSearchQuery='';renderBudget();
+    budgetSearchQuery='';renderBudgetExpensesList();
     const ni=document.getElementById('budget-search-input');
     if(ni)ni.focus();
   }
 
   /* ── EXPENSES TAB ── */
   function renderBudgetExpensesTab(top,content){
-    const list=monthExpensesList();
-    const spent=list.reduce((sum,e)=>sum+(e.amount||0),0);
+    const rawList=rawMonthExpensesList();
+    const spent=rawList.reduce((sum,e)=>sum+(e.amount||0),0);
     const tb=totalMonthlyBudget();
     const left=tb-spent;
     const spentByCat=[...budgetCats.map(c=>({id:c.id,name:c.name,color:c.color||'var(--accent)',amt:catSpent(c.id)})),
-      {id:'__uncat__',name:'Other',color:'#888',amt:list.filter(e=>!e.catId).reduce((s,e)=>s+(e.amount||0),0)}].filter(c=>c.amt>0);
-    top.innerHTML=budgetMonthBarHTML(list.length)+`
-      <div class="budget-hero">
+      {id:'__uncat__',name:'Other',color:'#888',amt:rawList.filter(e=>!e.catId).reduce((s,e)=>s+(e.amount||0),0)}].filter(c=>c.amt>0);
+    const dashboardInner=`
         <div class="budget-hero-lbl">Spent in ${MONTHS_FULL[budgetMonth]}</div>
         <div class="budget-hero-amt">${fmtMoney(spent)}</div>
         ${tb>0?`<div class="budget-hero-sub">${left>=0?fmtMoney(left)+' left of '+fmtMoney(tb)+' budget':fmtMoney(left)+' over your '+fmtMoney(tb)+' budget'}</div>`
         :`<div class="budget-hero-sub">No monthly budget set — add limits in the Budgets tab</div>`}
-        ${budgetSemicircleHTML(spentByCat)}
-      </div>
+        ${budgetSemicircleHTML(spentByCat)}`;
+    top.innerHTML=budgetMonthBarHTML(rawList.length)+`
+      <div class="budget-hero">${budgetHeroSwipeWrapHTML(dashboardInner)}</div>
       ${expandedBudgetCatId?budgetCatFilterHTML():''}`;
+    renderBudgetExpensesList();
+  }
+  function renderBudgetExpensesList(){
+    const content=document.getElementById('budget-content');
+    if(!content)return;
+    const list=monthExpensesList();
+    let html=budgetSearchBarHTML();
     if(!list.length){
-      content.innerHTML=`<div class="empty-state" style="display:flex">
+      html+=`<div class="empty-state" style="display:flex">
         <div class="empty-icon"><svg width="2.2rem" height="2.2rem" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.35"><rect x="4" y="9" width="24" height="16" rx="3"/><path d="M4 14h24"/><circle cx="16" cy="20" r="2.5"/></svg></div>
-        <div class="empty-text">No expenses this month. Tap + to add one.</div>
+        <div class="empty-text">${budgetSearchQuery.trim()?'No expenses match your search.':'No expenses this month. Tap + to add one.'}</div>
       </div>`;
+      content.innerHTML=html;
       return;
     }
     const byDate={};
     list.forEach(e=>{if(!byDate[e.date])byDate[e.date]=[];byDate[e.date].push(e);});
     const DAY=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-    let html='';
     Object.keys(byDate).sort((a,b)=>b.localeCompare(a)).forEach(date=>{
       const dayTotal=byDate[date].reduce((sum,e)=>sum+(e.amount||0),0);
       const d=new Date(date+'T12:00:00');
@@ -8433,7 +8486,7 @@ const SET_ARC=157; // path length of the semicircle below
       legend+=`<span class="cat-pill" style="background:${segColor};cursor:pointer" onclick="openCatExpenseList('${c.id}')">${c.name} ${total>0?Math.round(c.amt/total*100):0}%</span>`;
       offset+=len;
     });
-    return `<svg viewBox="0 0 200 108" width="100%" height="100" style="margin-top:0.5rem">${segs}</svg>
+    return `<svg viewBox="0 0 200 108" width="100%" style="margin-top:0.5rem;height:auto;display:block">${segs}</svg>
       <div style="display:flex;flex-wrap:wrap;gap:0.3rem;margin-top:0.3rem">${legend}</div>`;
   }
   function budgetPageSemicircleHTML(spentByCat,tb){
@@ -8459,13 +8512,122 @@ const SET_ARC=157; // path length of the semicircle below
     });
     if(!over){
       const remLen=C-offset;
-      if(remLen>0.5)segs+=`<path d="M${CX-R},${CY} A${R},${R} 0 0 1 ${CX+R},${CY}" fill="none" stroke="var(--border)" stroke-width="18" stroke-dasharray="${remLen} ${C-remLen}" stroke-dashoffset="${-offset}" opacity="0.4"/>`;
+      if(remLen>0.5)segs+=`<path d="M${CX-R},${CY} A${R},${R} 0 0 1 ${CX+R},${CY}" fill="none" stroke="#ffffff" stroke-width="18" stroke-dasharray="${remLen} ${C-remLen}" stroke-dashoffset="${-offset}" opacity="0.55"/>`;
     }
     const badge=over?`<div style="text-align:center;font-size:0.7rem;color:var(--ph);font-family:var(--mono);margin-top:0.3rem">Over budget by ${fmtMoney(totalSpent-tb)}</div>`:'';
-    return `<svg viewBox="0 0 200 108" width="100%" height="100" style="margin-top:0.5rem">${segs}</svg>
+    return `<svg viewBox="0 0 200 108" width="100%" style="margin-top:0.5rem;height:auto;display:block">${segs}</svg>
       <div style="display:flex;flex-wrap:wrap;gap:0.3rem;margin-top:0.3rem">${legend}</div>${badge}`;
   }
   function openCatExpenseList(catId){expandedBudgetCatId=expandedBudgetCatId===catId?null:catId;renderBudget();}
+
+  /* ── CARDS ── */
+  function cardSpent(cardId){const k=budgetMonthKey();return expenses.filter(e=>e.cardId===cardId&&e.date&&e.date.startsWith(k)).reduce((sum,e)=>sum+(e.amount||0),0);}
+  function cashSpent(){const k=budgetMonthKey();return expenses.filter(e=>e.cardId==='cash'&&e.date&&e.date.startsWith(k)).reduce((sum,e)=>sum+(e.amount||0),0);}
+  function cardById(id){return cards.find(c=>c.id===id);}
+  function cardsHeroHTML(){
+    const rows=[{id:'cash',name:'Cash',emoji:'💵',amt:cashSpent(),isCash:true},...cards.map(c=>({id:c.id,name:c.name,emoji:c.emoji||'💳',amt:cardSpent(c.id)}))];
+    const max=Math.max(1,...rows.map(r=>r.amt));
+    return `<div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="budget-hero-lbl">Cards</div>
+        <button class="upload-btn" style="padding:0.15rem 0.5rem" onclick="event.stopPropagation();openAddCard()">+ Add card</button>
+      </div>
+      ${rows.map(r=>`
+        <div style="margin-top:0.55rem" onclick="event.stopPropagation()">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;margin-bottom:0.25rem">
+            <span>${r.emoji} ${r.name}</span>
+            <span style="display:flex;align-items:center;gap:0.35rem">
+              ${fmtMoney(r.amt)}
+              ${r.isCash?'':`<button class="del-btn" style="width:1.3rem;height:1.3rem" onclick="event.stopPropagation();openEditCard('${r.id}')">✎</button>
+              <button class="del-btn" style="width:1.3rem;height:1.3rem" onclick="event.stopPropagation();confirmDelCard('${r.id}')">✕</button>`}
+            </span>
+          </div>
+          <div class="budget-cat-track"><div class="budget-cat-fill" style="width:${Math.round(r.amt/max*100)}%;background:${r.isCash?'#888':'var(--accent)'}"></div></div>
+        </div>`).join('')}
+      ${!cards.length?`<div style="font-size:0.72rem;color:var(--text3);margin-top:0.6rem">No cards yet. Tap + Add card to start tracking spending per card.</div>`:''}`;
+  }
+  function openAddCard(){
+    editCardId=null;
+    document.getElementById('card-modal-title').textContent='New card';
+    document.getElementById('card-save').textContent='Add card';
+    document.getElementById('card-emoji').value='';
+    document.getElementById('card-name').value='';
+    openModal('card-modal');
+  }
+  function openEditCard(id){
+    const c=cardById(id);if(!c)return;
+    editCardId=id;
+    document.getElementById('card-modal-title').textContent='Edit card';
+    document.getElementById('card-save').textContent='Save changes';
+    document.getElementById('card-emoji').value=c.emoji||'';
+    document.getElementById('card-name').value=c.name;
+    openModal('card-modal');
+  }
+  function confirmDelCard(id){
+    const c=cardById(id);if(!c)return;
+    showConfirm(`Delete "${c.name}"?`,'Expenses paid with this card will keep their history but no longer be linked to it.',()=>{
+      cards=cards.filter(x=>x.id!==id);
+      expenses.forEach(e=>{if(e.cardId===id)e.cardId=null;});
+      saveBudget();renderBudget();showToast('Card deleted');
+    });
+  }
+  document.getElementById('card-save').addEventListener('click',()=>{
+    const name=document.getElementById('card-name').value.trim();
+    if(!name){document.getElementById('card-name').focus();return;}
+    const emoji=document.getElementById('card-emoji').value.trim()||null;
+    if(editCardId){
+      const c=cardById(editCardId);
+      if(c){c.name=name;c.emoji=emoji;}
+      showToast('Card updated');editCardId=null;
+    }else{
+      cards.push({id:uid(),name,emoji,created:Date.now()});
+      showToast('Card added');
+    }
+    saveBudget();closeModal('card-modal');renderBudget();
+  });
+  document.getElementById('card-name').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('card-save').click();});
+
+  /* ── BUDGET DASHBOARD HERO SWIPE (Dashboard ⇄ Cards) ── */
+  function budgetHeroSwipeWrapHTML(dashboardInnerHtml){
+    return `<div class="budget-hero-swipe" ontouchstart="budgetHeroTouchStart(event)" ontouchmove="budgetHeroTouchMove(event)" ontouchend="budgetHeroTouchEnd(event)">
+      <div class="budget-hero-track" id="bhtrack" style="transform:translateX(${-budgetHeroPage*100}%)">
+        <div class="budget-hero-page">${dashboardInnerHtml}</div>
+        <div class="budget-hero-page">${cardsHeroHTML()}</div>
+      </div>
+      <div class="budget-hero-dots">
+        <span class="bh-dot${budgetHeroPage===0?' active':''}" onclick="setBudgetHeroPage(0)"></span>
+        <span class="bh-dot${budgetHeroPage===1?' active':''}" onclick="setBudgetHeroPage(1)"></span>
+      </div>
+    </div>`;
+  }
+  function budgetHeroTouchStart(e){
+    bhSwipeX0=e.touches[0].clientX;bhSwipeDx=0;bhSwiping=true;
+    const t=document.getElementById('bhtrack');if(t)t.style.transition='none';
+  }
+  function budgetHeroTouchMove(e){
+    if(!bhSwiping)return;
+    bhSwipeDx=e.touches[0].clientX-bhSwipeX0;
+    if(Math.abs(bhSwipeDx)>8)e.preventDefault();
+    const t=document.getElementById('bhtrack');if(!t)return;
+    const w=t.parentElement.clientWidth||1;
+    t.style.transform=`translateX(${-budgetHeroPage*100+(bhSwipeDx/w*100)}%)`;
+  }
+  function budgetHeroTouchEnd(){
+    if(!bhSwiping)return;bhSwiping=false;
+    const t=document.getElementById('bhtrack');if(!t)return;
+    t.style.transition='transform 0.25s cubic-bezier(0.4,0,0.2,1)';
+    const w=t.parentElement.clientWidth||1;
+    if(bhSwipeDx<-w*0.18&&budgetHeroPage<1)budgetHeroPage=1;
+    else if(bhSwipeDx>w*0.18&&budgetHeroPage>0)budgetHeroPage=0;
+    t.style.transform=`translateX(${-budgetHeroPage*100}%)`;
+    bhSwipeDx=0;
+    document.querySelectorAll('.bh-dot').forEach((d,i)=>d.classList.toggle('active',i===budgetHeroPage));
+  }
+  function setBudgetHeroPage(p){
+    budgetHeroPage=p;
+    const t=document.getElementById('bhtrack');
+    if(t){t.style.transition='transform 0.25s cubic-bezier(0.4,0,0.2,1)';t.style.transform=`translateX(${-p*100}%)`;}
+    document.querySelectorAll('.bh-dot').forEach((d,i)=>d.classList.toggle('active',i===p));
+  }
   function budgetCatFilterHTML(){
     const catId=expandedBudgetCatId;
     const cat=catId==='__uncat__'?{name:'Other'}:budgetCatById(catId);
@@ -8498,18 +8660,21 @@ const SET_ARC=157; // path length of the semicircle below
     card.classList.toggle('expanded');
   }
 
-  function monthReceivedList(){
+  function rawMonthReceivedList(){
     const k=budgetMonthKey();
-    let list=receivedPayments.filter(r=>r.date&&r.date.startsWith(k));
+    return receivedPayments.filter(r=>r.date&&r.date.startsWith(k)).sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.created||0)-(a.created||0));
+  }
+  function monthReceivedList(){
+    let list=rawMonthReceivedList();
     if(receivedSearchQuery.trim()){
       const q=receivedSearchQuery.trim().toLowerCase();
       list=list.filter(r=>(r.name||'').toLowerCase().includes(q)||(r.notes||'').toLowerCase().includes(q)||String(r.amount||'').includes(q));
     }
-    return list.sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.created||0)-(a.created||0));
+    return list;
   }
   function renderBudgetReceivedTab(top,content){
     const list=monthReceivedList();
-    const total=list.reduce((sum,r)=>sum+(r.amount||0),0);
+    const total=rawMonthReceivedList().reduce((sum,r)=>sum+(r.amount||0),0);
     top.innerHTML=`<div class="day-nav-bar" style="margin-bottom:0.55rem">
       <div class="day-nav-left">
         <button class="day-nav-add" onclick="openAddReceived()"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg></button>
@@ -8587,10 +8752,11 @@ const SET_ARC=157; // path length of the semicircle below
     </div>`;
   }
   function openAddReceived(prefillDate){
-    editReceivedId=null;
+    editReceivedId=null;editExpenseId=null;
     document.getElementById('expense-modal-title').textContent='New received payment';
     document.getElementById('expense-save').textContent='Add payment';
     document.getElementById('expense-cat').closest('.form-group').style.display='none';
+    document.getElementById('expense-cardId-group').style.display='none';
     ['expense-emoji','expense-name','expense-amount','expense-notes'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('expense-date').value=prefillDate||(isCurrentBudgetMonth()?todayStr():budgetMonthKey()+'-01');
     pendingExpenseImg=null;refreshExpenseImgPreview();
@@ -8598,10 +8764,11 @@ const SET_ARC=157; // path length of the semicircle below
   }
   function openEditReceived(id){
     const r=receivedPayments.find(x=>x.id===id);if(!r)return;
-    editReceivedId=id;
+    editReceivedId=id;editExpenseId=null;
     document.getElementById('expense-modal-title').textContent='Edit received payment';
     document.getElementById('expense-save').textContent='Save changes';
     document.getElementById('expense-cat').closest('.form-group').style.display='none';
+    document.getElementById('expense-cardId-group').style.display='none';
     document.getElementById('expense-emoji').value=r.emoji||'';
     document.getElementById('expense-name').value=r.name;
     document.getElementById('expense-amount').value=r.amount!=null?r.amount:'';
@@ -8624,21 +8791,31 @@ const SET_ARC=157; // path length of the semicircle below
     const sel=document.getElementById('expense-cat');
     sel.innerHTML='<option value="">No category</option>'+budgetCats.map(c=>`<option value="${c.id}"${c.id===selId?' selected':''}>${c.emoji?c.emoji+' ':''}${c.name}</option>`).join('');
   }
+  function renderExpenseCardOptions(selId){
+    const sel=document.getElementById('expense-cardId');
+    sel.innerHTML='<option value="">Not specified</option><option value="cash"'+(selId==='cash'?' selected':'')+'>💵 Cash</option>'
+      +cards.map(c=>`<option value="${c.id}"${c.id===selId?' selected':''}>${c.emoji?c.emoji+' ':'💳 '}${c.name}</option>`).join('');
+  }
   function openAddExpense(prefillDate){
-    editExpenseId=null;
+    editExpenseId=null;editReceivedId=null;
     document.getElementById('expense-modal-title').textContent='New expense';
     document.getElementById('expense-save').textContent='Add expense';
+    document.getElementById('expense-cat').closest('.form-group').style.display='';
+    document.getElementById('expense-cardId-group').style.display='';
     ['expense-emoji','expense-name','expense-amount','expense-notes'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('expense-date').value=prefillDate||(isCurrentBudgetMonth()?todayStr():budgetMonthKey()+'-01');
     pendingExpenseImg=null;refreshExpenseImgPreview();
     renderExpenseCatOptions('');
+    renderExpenseCardOptions('');
     openModal('expense-modal');
   }
   function openEditExpense(id){
     const e=expenses.find(x=>x.id===id);if(!e)return;
-    editExpenseId=id;
+    editExpenseId=id;editReceivedId=null;
     document.getElementById('expense-modal-title').textContent='Edit expense';
     document.getElementById('expense-save').textContent='Save changes';
+    document.getElementById('expense-cat').closest('.form-group').style.display='';
+    document.getElementById('expense-cardId-group').style.display='';
     document.getElementById('expense-emoji').value=e.emoji||'';
     document.getElementById('expense-name').value=e.name;
     document.getElementById('expense-amount').value=e.amount!=null?e.amount:'';
@@ -8646,6 +8823,7 @@ const SET_ARC=157; // path length of the semicircle below
     document.getElementById('expense-notes').value=e.notes||'';
     pendingExpenseImg=e.image||null;refreshExpenseImgPreview();
     renderExpenseCatOptions(e.catId||'');
+    renderExpenseCardOptions(e.cardId||'');
     openModal('expense-modal');
   }
   function confirmDelExpense(id){
@@ -8672,6 +8850,7 @@ const SET_ARC=157; // path length of the semicircle below
       else receivedPayments.push({id:uid(),...d,created:Date.now()});
       editReceivedId=null;
       document.getElementById('expense-cat').closest('.form-group').style.display='';
+      document.getElementById('expense-cardId-group').style.display='';
       saveBudget();closeModal('expense-modal');
       const parts=d.date.split('-');budgetYear=parseInt(parts[0],10);budgetMonth=parseInt(parts[1],10)-1;
       renderBudget();showToast(wasEdit?'Payment updated':'Payment added');
@@ -8680,6 +8859,7 @@ const SET_ARC=157; // path length of the semicircle below
     const d={name,emoji:document.getElementById('expense-emoji').value.trim()||null,
       amount:Math.round(amount*1000)/1000,
       catId:document.getElementById('expense-cat').value||null,
+      cardId:document.getElementById('expense-cardId').value||null,
       date:(rawDate&&/^\d{4}-\d{2}-\d{2}$/.test(rawDate))?rawDate:todayStr(),
       notes:document.getElementById('expense-notes').value.trim()||null,
       image:pendingExpenseImg||null};
@@ -8698,21 +8878,21 @@ const SET_ARC=157; // path length of the semicircle below
   function renderBudgetCatsTab(top,content){
     const tb=totalMonthlyBudget();
     const k=budgetMonthKey();
-    const spentAll=expenses.filter(e=>e.date&&e.date.startsWith(k)).reduce((sum,e)=>sum+(e.amount||0),0);
-    const left=tb-spentAll;
+    const budgetedIds=new Set(budgetCats.filter(c=>catBudgetForMonth(c)>0).map(c=>c.id));
+    const spentAll=expenses.filter(e=>e.date&&e.date.startsWith(k)&&e.catId&&budgetedIds.has(e.catId)).reduce((sum,e)=>sum+(e.amount||0),0);
     const uncatSpent=expenses.filter(e=>!e.catId&&e.date&&e.date.startsWith(k)).reduce((s,e)=>s+(e.amount||0),0);
-    const spentByCatForChart=[...budgetCats.map(c=>({id:c.id,name:c.name,amt:catSpent(c.id)})),
-      {id:'__uncat__',name:'Uncategorized',amt:uncatSpent}].filter(c=>c.amt>0);
-    top.innerHTML=budgetMonthBarHTML(budgetCats.length+1)+`
-      <div class="budget-hero">
+    const left=tb-spentAll;
+    const spentByCatForChart=budgetCats.filter(c=>budgetedIds.has(c.id)).map(c=>({id:c.id,name:c.name,amt:catSpent(c.id)})).filter(c=>c.amt>0);
+    const dashboardInner=`
         <div class="budget-hero-lbl">Monthly budget left</div>
         <div class="budget-hero-amt" style="${left<0?'color:#ffb3b3':''}">${fmtMoneySigned(left)}
-          <button class="upload-btn" style="margin-left:0.5rem;padding:0.15rem 0.5rem;vertical-align:middle" onclick="openEditMonthBudgets()">✎</button>
-          <button class="upload-btn" style="padding:0.15rem 0.5rem;vertical-align:middle" onclick="openCopyMonthBudget()">⧉</button>
+          <button class="upload-btn" style="margin-left:0.5rem;padding:0.15rem 0.5rem;vertical-align:middle" onclick="event.stopPropagation();openEditMonthBudgets()">✎</button>
+          <button class="upload-btn" style="padding:0.15rem 0.5rem;vertical-align:middle" onclick="event.stopPropagation();openCopyMonthBudget()">⧉</button>
         </div>
-        <div class="budget-hero-sub">${fmtMoney(spentAll)} spent of ${fmtMoney(tb)} in ${MONTHS_FULL[budgetMonth]}</div>
-        ${budgetPageSemicircleHTML(spentByCatForChart,tb)}
-      </div>`;
+        <div class="budget-hero-sub">${fmtMoney(spentAll)} spent of ${fmtMoney(tb)} in ${MONTHS_FULL[budgetMonth]}${budgetCats.length>budgetedIds.size?' (budgeted categories only)':''}</div>
+        ${budgetPageSemicircleHTML(spentByCatForChart,tb)}`;
+    top.innerHTML=budgetMonthBarHTML(budgetCats.length+1)+`
+      <div class="budget-hero">${budgetHeroSwipeWrapHTML(dashboardInner)}</div>`;
     const allCats=[...budgetCats,{id:'__uncat__',name:'Uncategorized',emoji:'🏷️',color:'#888'}];
     content.innerHTML=allCats.map(c=>{
       const isUncat=c.id==='__uncat__';
