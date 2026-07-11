@@ -320,6 +320,7 @@
     .swipe-actions-left{position:absolute;left:0;top:0;bottom:0;display:flex;border-radius:var(--r) 0 0 var(--r);overflow:hidden}
     .task-card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--r);padding:0.7rem 0.85rem;cursor:pointer;position:relative;overflow:hidden;will-change:transform;z-index:2;transition:box-shadow var(--tr);height:3.8rem;touch-action:pan-y;}
     .task-card.active-timer{border-color:var(--accent);height:auto}
+    .task-card.multi-selected{border-color:var(--accent);background:var(--accent-l)}
     .task-card.expanded{height:auto}
     .task-card.done{opacity:0.42}
     .task-card.done .task-name{text-decoration:line-through}
@@ -576,8 +577,8 @@
     }
     body.has-bg.dark .cal-day{background:rgba(28,28,26,0);}
     .cal-day:hover{background:var(--surface3)}
-    .cal-day.today{background:var(--accent);color:#fff;font-weight:500}
-    .cal-day.selected{background:var(--accent-l);color:var(--accent);font-weight:500}
+    .cal-day.today{background:#69AD7A;color:#fff;font-weight:500}
+    .cal-day.selected{background:var(--accent);color:#fff;font-weight:500}
     .cal-day.other-month{opacity:0.3}
     .cal-day.past-date{opacity:0.45}
     .cal-day.has-pending::after{content:'';position:absolute;bottom:0.18rem;left:50%;transform:translateX(-50%);width:0.22rem;height:0.22rem;border-radius:50%;background:#f97316}
@@ -606,7 +607,7 @@
     .mp-months{display:grid;grid-template-columns:repeat(3,1fr);gap:0.35rem}
     .mp-month{padding:0.6rem 0.25rem;text-align:center;border-radius:var(--rs);cursor:pointer;font-size:0.78rem;color:var(--text2);background:var(--surface2);transition:all var(--tr)}
     .mp-month:hover{background:var(--surface3)}
-    .mp-month.active{background:var(--accent);color:#fff}
+    .mp-month.active{background:var(--accent);color:#fff;font-weight:600}
     .mp-month.today-month{border:1.5px solid var(--accent);color:var(--accent);font-weight:600}
 
     /* ── HASHTAGS ── */
@@ -789,6 +790,16 @@
     .settings-overlay.open{opacity:1;pointer-events:all}
     .settings-panel{width:100%;max-width:540px;background:var(--bg);overflow-y:auto;transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);position:relative;}
     .settings-overlay.open .settings-panel{transform:translateX(0)}
+
+    /* ── WEATHER PAGE (overlay, same pattern as settings) ── */
+    .weather-overlay{position:fixed;inset:0;background:linear-gradient(to bottom, transparent var(--sat),
+    rgba(0,0,0,0.45) var(--sat)
+    );
+    z-index:400;opacity:0;pointer-events:none;transition:opacity 0.25s;display:flex;align-items:stretch;justify-content:center}
+    .weather-overlay.open{opacity:1;pointer-events:all}
+    .weather-panel{width:100%;max-width:540px;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);position:relative;}
+    .weather-overlay.open .weather-panel{transform:translateX(0)}
+    .weather-panel-inner{padding:calc(1rem + var(--sat)) var(--px) calc(1rem + var(--sab));}
     .settings-inner{padding:calc(1rem + var(--sat)) var(--px) calc(1rem + var(--sab))}
     .settings-back{display:flex;align-items:center;gap:0.45rem;color:var(--text2);font-size:0.88rem;cursor:pointer;margin-bottom:1.3rem;background:none;border:none;font-family:var(--font);transition:color var(--tr)}
     .settings-back:hover{color:var(--text)}
@@ -820,8 +831,8 @@
     z-index:600;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity 0.2s}
     .confirm-overlay.open{opacity:1;pointer-events:all}
     .confirm-card{background:var(--surface);border-radius:var(--r);padding:1.3rem 1.1rem;width:100%;max-width:20rem;text-align:center}
-    .confirm-title{font-size:1rem;font-weight:500;color:var(--text);margin-bottom:0.45rem}
-    .confirm-text{font-size:0.85rem;color:var(--text2);margin-bottom:1.1rem;line-height:1.5}
+    .confirm-title{font-size:1rem;font-weight:500;color:var(--text);margin-bottom:0.45rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .confirm-text{font-size:0.85rem;color:var(--text2);margin-bottom:1.1rem;line-height:1.5;word-break:break-word;overflow-wrap:break-word}
     .confirm-btns{display:flex;gap:0.6rem}
 
     /* ── TOAST ── */
@@ -830,12 +841,14 @@
 
     /* ── Day nav bar ── */
     .day-nav-bar{
-      display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:0.1rem;
+      position:relative;
+      display:flex;align-items:center;justify-content:space-between;gap:0.1rem;
       background:var(--accent);border-radius:2rem;
       padding:0.25rem 0.35rem 0.25rem 0.45rem;
       margin-bottom:0.55rem;
+      min-height:2.25rem;
     }
-    .day-nav-left{display:flex;align-items:center;gap:0.3rem;justify-self:start;}
+    .day-nav-left{display:flex;align-items:center;gap:0.3rem;flex-shrink:0;position:relative;z-index:1;}
     .day-nav-btn{
       width:1.75rem;height:1.75rem;border-radius:50%;
       border:none;background:none;color:rgba(255,255,255,0.85);
@@ -853,10 +866,12 @@
       background:rgba(255,255,255,0.2);
       padding:0.12rem 0.5rem;border-radius:2rem;
       min-width:1.5rem;text-align:center;flex-shrink:0;color:#fff;
-      justify-self:end;
+      position:relative;z-index:1;
     }
     .day-nav-controls{
+      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
       display:flex;align-items:center;justify-content:center;
+      white-space:nowrap;
     }
 
     /* ── Day nav add button ── */
@@ -1300,7 +1315,7 @@
 <div class="side-menu" id="side-menu">
   <div class="menu-header">
     <div class="menu-logo">Rou<b>Tine</b></div>
-    <div class="menu-version">v2.7.1</div>
+    <div class="menu-version">v2.7.4</div>
   </div>
   <div class="menu-nav">
     <div class="menu-item active" id="mn-today" onclick="setView('tasks');closeMenu()">
@@ -1421,6 +1436,20 @@
   </div>
 
   <div id="view-tasks" style="display:none">
+    <div class="day-nav-bar" id="multi-select-bar" style="display:none">
+      <div class="day-nav-left">
+        <button class="day-nav-btn" id="ms-cancel-btn" title="Cancel"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4l10 10M14 4L4 14"/></svg></button>
+      </div>
+      <div class="day-nav-controls">
+        <span class="day-nav-label" id="ms-count-label">1 selected</span>
+      </div>
+      <div style="display:flex;gap:0.25rem;align-items:center;justify-content:flex-end;flex-shrink:0;position:relative;z-index:1">
+        <button class="day-nav-btn" id="ms-copy-btn" title="Copy"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="5" width="8" height="10" rx="1.5"/><path d="M4 13V3h8"/></svg></button>
+        <button class="day-nav-btn" id="ms-move-btn" title="Move"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9h12M11 5l4 4-4 4"/></svg></button>
+        <button class="day-nav-btn" id="ms-repeat-btn" title="Repeat"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9a6 6 0 1 0 1.5-4M3 5v4h4"/></svg></button>
+        <button class="day-nav-btn" id="ms-delete-btn" title="Delete"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h10M5 6l1 9h6l1-9M7 9v4M11 9v4M7 6V4h4v2"/></svg></button>
+      </div>
+    </div>
     <div class="day-nav-bar" id="section-nav-bar">
       <div class="day-nav-left"><button class="day-nav-btn" id="sort-cycle-btn" title="Cycle sort order"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 5h12M3 9h12M3 13h12"/></svg></button></div>
       <div class="day-nav-controls">
@@ -1671,10 +1700,6 @@
           <div class="blank-title">Analyze</div>
           <div class="blank-sub">Insights and statistics coming in a future update.</div>
         </div>
-      </div>
-
-      <div id="view-weather" style="display:none">
-        <div id="weather-page-content"></div>
       </div>
 
       <div id="view-notes" style="display:none">
@@ -1996,6 +2021,10 @@
       <label class="form-label">Time <span style="color:var(--text3);font-size:0.65rem">(optional — leave blank to keep original)</span></label>
       <input class="form-input" id="move-time-new" type="time">
     </div>
+    <div class="form-group" id="move-position-wrap" style="display:none">
+      <label class="form-label">Position <span style="color:var(--text3);font-size:0.65rem">(optional)</span></label>
+      <select class="priority-select" id="move-position-select"><option value="">Add to bottom of list</option></select>
+    </div>
     <div id="move-selected-info" style="font-size:0.72rem;color:var(--text3);margin-bottom:0.1rem;min-height:1.1rem">Tap a date to select</div>
     <div class="form-actions">
       <button class="btn btn-ghost" onclick="closeModal('move-modal')">Cancel</button>
@@ -2055,6 +2084,10 @@
     <div class="form-group">
       <label class="form-label">Time <span style="color:var(--text3);font-size:0.65rem">(optional — leave blank to keep original)</span></label>
       <input class="form-input" id="copy-time" type="time">
+    </div>
+    <div class="form-group" id="copy-position-wrap" style="display:none">
+      <label class="form-label">Position <span style="color:var(--text3);font-size:0.65rem">(optional, single date only)</span></label>
+      <select class="priority-select" id="copy-position-select"><option value="">Add to bottom of list</option></select>
     </div>
     <div id="copy-selected-info" style="font-size:0.72rem;color:var(--text3);margin-bottom:0.1rem;min-height:1.1rem">Tap dates to select</div>
     <div class="form-actions">
@@ -2216,6 +2249,12 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="weather-overlay" id="weather-overlay">
+  <div class="weather-panel" id="weather-panel">
+    <div class="weather-panel-inner" id="weather-page-content"></div>
   </div>
 </div>
 
@@ -2573,6 +2612,7 @@
   let settingsCloseTime=0;
   let weatherLastFetch=0,weatherHasError=false,weatherLastKey='',weatherLastLoc='';
   let forecastData=null,forecastSlotTime=0,currentWeatherData=null;
+  let weatherPageOpen=false;
   let expandedForecastDay=null;
   let forecastScheduleTimeout=null;
   let taskViewDate=todayStr();
@@ -2584,7 +2624,7 @@
   let editTaskId=null,editRemId=null,editListId=null,editLIId=null,moveTaskId=null;
   let copyTaskId=null,copyRemId=null,copyCalYear=new Date().getFullYear(),copyCalMonth=new Date().getMonth();
   let copySelectedDates=new Set();
-  let repeatTaskId=null,repeatRemId=null,addBelowTaskId=null;
+  let repeatTaskId=null,repeatRemId=null,addBelowTaskId=null,addAboveTaskId=null;
   let remSortMode='manual',remOrderIds=[];
   let remDragId=null,remDragGhost=null,remDragOffY=0,remDragScrollIv=null,remDragScrollDir=0;
   let moveRemId=null,addBelowRemId=null;
@@ -2598,6 +2638,11 @@
   let confirmFn=null,timeOpen=false;
   let swEl=null,swX0=0,swY0=0,swDx=0,swDir=0;
   let expandedCards=new Set();
+  let multiSelectMode=false,selectedTaskIds=new Set();
+  let longPressTimer=null,longPressTriggered=false;
+  let moveMultiIds=null,copyMultiIds=null,repeatMultiIds=null;
+  let groupDragIds=null,groupDragGhost=null,groupDragOffY=0;
+  let groupDragScrollIv=null,groupDragScrollDir=0;
   let notes=[],noteGroups=[],currentNoteId=null,noteAutoSaveTimer=null,editNoteGroupId=null,noteColorPickerMode=null;
   let captionTargetImg=null;
 
@@ -2622,7 +2667,7 @@
   let imgEdCanvasEl=null, imgEdCtx=null;
   let imgEdImgEl=new Image();
   let imgDrawRect={x:0,y:0,w:0,h:0};
-  let cropNorm={x:0.05,y:0.05,w:0.9,h:0.9};
+  let cropNorm={x:0,y:0,w:1,h:1};
   let cropHandle=null, cropDragPt=null, cropDragCrop=null;
   let sketchColor='#ff3b30', sketchSize=4, sketchEraser=false;
   let cropDirty=false;
@@ -2745,7 +2790,7 @@
   function openImgEditor(target, dataURL){
     imgEdTarget=target;
     imgEdBase=dataURL;
-    cropNorm={x:0.05,y:0.05,w:0.9,h:0.9};
+    cropNorm={x:0,y:0,w:1,h:1};
     sketchStrokes=[];sketchEraser=false;cropDirty=false;
     imgEdSetMode('crop',true);
     imgEdImgEl=new Image();
@@ -2917,12 +2962,12 @@
     const tmp=new Image();
     tmp.onload=()=>{imgEdImgEl=tmp;imgEdInitCanvas();};
     tmp.src=imgEdBase;
-    cropNorm={x:0.05,y:0.05,w:0.9,h:0.9};
+    cropNorm={x:0,y:0,w:1,h:1};
     cropDirty=false;imgEdUpdateCropBtn();
     showToast('Crop applied');
   }
 
-  function imgEdResetCrop(){cropNorm={x:0.05,y:0.05,w:0.9,h:0.9};cropDirty=false;imgEdUpdateCropBtn();imgEdDraw();}
+  function imgEdResetCrop(){cropNorm={x:0,y:0,w:1,h:1};cropDirty=false;imgEdUpdateCropBtn();imgEdDraw();}
 
   function imgEdToggleEraser(){
     sketchEraser=!sketchEraser;
@@ -4179,7 +4224,7 @@
       weatherLastLoc=cfg.weatherLocation;
       weatherHasError=false;
       currentWeatherData=data;
-      if(currentView==='weather')renderWeatherPage();
+      if(weatherPageOpen)renderWeatherPage();
     }catch(e){
       console.error('Weather fetch error:',e);
       document.getElementById('weather-icon').textContent='⚠️';
@@ -4190,7 +4235,7 @@
     }
   }
 
-  // Weather widget click opens settings
+  // Weather widget click opens weather page
   document.getElementById('weather-widget').addEventListener('click',()=>{
     if(!cfg.weatherApiKey||!cfg.weatherLocation){
       openSettings();
@@ -4198,7 +4243,7 @@
       return;
     }
     if(weatherHasError){showToast('Weather data unavailable — check settings');return;}
-    setView('weather');
+    openWeatherPage();
   });
 
   // Weather settings change handlers
@@ -4282,10 +4327,10 @@
       forecastData=await res.json();
       forecastSlotTime=getLastForecastSlot(new Date());
       try{localStorage.setItem(K.forecast,JSON.stringify({data:forecastData,slotTime:forecastSlotTime}));}catch(e){}
-      if(currentView==='weather')renderWeatherPage();
+      if(weatherPageOpen)renderWeatherPage();
     }catch(e){
       console.error('Forecast fetch error:',e);
-      if(currentView==='weather')renderWeatherPage();
+      if(weatherPageOpen)renderWeatherPage();
     }
   }
 
@@ -4350,14 +4395,26 @@
   function ordinal(n){if(n===11||n===12||n===13)return n+'th';const s=['th','st','nd','rd'];return n+(s[n%10]||'th');}
   const SW_W=()=>Math.min(12*parseFloat(getComputedStyle(document.documentElement).fontSize),260);
   function swTouchStart(e,id){
+    if(multiSelectMode){return;}
     if(swEl&&swEl!==id)closeSwipe(swEl);
     swEl=id;swX0=e.touches[0].clientX;swY0=e.touches[0].clientY;swDx=0;swDir=0;
     const card=getCard(id);
     if(card)card.style.transition='none';
+    if(currentView==='tasks'){
+      longPressTriggered=false;
+      clearTimeout(longPressTimer);
+      longPressTimer=setTimeout(()=>{
+        longPressTriggered=true;
+        enterMultiSelect(id);
+        if(navigator.vibrate)navigator.vibrate(15);
+      },500);
+    }
   }
   function swTouchMove(e,id){
+    if(multiSelectMode){return;}
     if(swEl!==id)return;
     const dx=e.touches[0].clientX-swX0;const card=getCard(id);if(!card)return;
+    if(Math.abs(dx)>6||Math.abs(e.touches[0].clientY-swY0)>6)clearTimeout(longPressTimer);
     if(swDir===0){
       if(Math.abs(dx)<=4)return;
       const dy=e.touches[0].clientY-swY0;
@@ -4386,6 +4443,9 @@
     if(Math.abs(dx)>6)e.preventDefault();
   }
   function swTouchEnd(e,id){
+    clearTimeout(longPressTimer);
+    if(longPressTriggered){longPressTriggered=false;swEl=null;return;}
+    if(multiSelectMode){return;}
     if(swEl!==id)return;const card=getCard(id);if(!card)return;
     if(swDir!==0&&e.cancelable)e.preventDefault();
     const tx=parseFloat(card.dataset.tx||0);card.style.transition='transform 0.25s cubic-bezier(0.4,0,0.2,1)';
@@ -4416,13 +4476,117 @@
       });
     });
   }
+  function enterMultiSelect(id){
+    multiSelectMode=true;
+    selectedTaskIds=new Set([id]);
+    closeSwipe(id);
+    render();
+  }
+  function toggleTaskSelection(id){
+    if(selectedTaskIds.has(id))selectedTaskIds.delete(id);
+    else selectedTaskIds.add(id);
+    if(selectedTaskIds.size===0){exitMultiSelect();return;}
+    render();
+  }
+  function exitMultiSelect(){
+    multiSelectMode=false;
+    selectedTaskIds=new Set();
+    moveMultiIds=null;copyMultiIds=null;repeatMultiIds=null;
+    render();
+  }
+  function isMultiSelectionContiguous(){
+    if(!multiSelectMode)return false;
+    if(selectedTaskIds.size<=1)return true;
+    const ordered=getOrderedPending();
+    const indices=ordered.map((t,i)=>selectedTaskIds.has(t.id)?i:-1).filter(i=>i!==-1);
+    if(indices.length!==selectedTaskIds.size)return false;
+    const min=Math.min(...indices),max=Math.max(...indices);
+    return(max-min+1)===indices.length;
+  }
+  function groupDragHandleTouch(e,id){
+    e.stopPropagation();e.preventDefault();
+    if(!isMultiSelectionContiguous())return;
+    groupDragIds=getOrderedPending().filter(t=>selectedTaskIds.has(t.id)).map(t=>t.id);
+    const wrap=document.getElementById('wrap-'+id);if(!wrap)return;
+    const rect=wrap.getBoundingClientRect(),touch=e.touches[0];
+    groupDragOffY=touch.clientY-rect.top;
+    const ghost=document.createElement('div');
+    ghost.id='drag-ghost';
+    ghost.textContent=groupDragIds.length+' tasks';
+    ghost.style.top=(touch.clientY-groupDragOffY)+'px';
+    ghost.style.left=rect.left+'px';
+    ghost.style.width=rect.width+'px';
+    document.body.appendChild(ghost);groupDragGhost=ghost;
+    groupDragIds.forEach(gid=>{const w=document.getElementById('wrap-'+gid);if(w)w.classList.add('is-dragging');});
+    document.addEventListener('touchmove',onGroupDragMove,{passive:false});
+    document.addEventListener('touchend',onGroupDragEnd,{once:true});
+    document.addEventListener('touchcancel',onGroupDragEnd,{once:true});
+  }
+  function onGroupDragMove(e){
+    if(!groupDragIds)return;
+    e.preventDefault();
+    const y=e.touches[0].clientY;
+    if(groupDragGhost)groupDragGhost.style.top=(y-groupDragOffY)+'px';
+
+    const scrollEl=document.getElementById('task-zone');
+    if(scrollEl){
+      const sr=scrollEl.getBoundingClientRect(),ZONE=80;
+      let dir=0;
+      if(y<sr.top+ZONE&&scrollEl.scrollTop>0)dir=-1;
+      else if(y>sr.bottom-ZONE&&scrollEl.scrollTop<scrollEl.scrollHeight-scrollEl.clientHeight)dir=1;
+      if(dir!==groupDragScrollDir){
+        if(groupDragScrollIv){clearInterval(groupDragScrollIv);groupDragScrollIv=null;}
+        groupDragScrollDir=dir;
+        if(dir!==0)groupDragScrollIv=setInterval(()=>{scrollEl.scrollTop+=dir*3;},16);
+      }
+    }
+
+    const listEl=document.getElementById('task-list');if(!listEl)return;
+    listEl.querySelectorAll('.task-card-wrap:not(.is-dragging)').forEach(w=>{
+      w.classList.remove('drop-above','drop-below');
+      const r=w.getBoundingClientRect();
+      if(y>=r.top-6&&y<=r.bottom+6)w.classList.add(y<(r.top+r.height/2)?'drop-above':'drop-below');
+    });
+  }
+  function onGroupDragEnd(){
+    document.removeEventListener('touchmove',onGroupDragMove);
+    if(groupDragScrollIv){clearInterval(groupDragScrollIv);groupDragScrollIv=null;}
+    groupDragScrollDir=0;
+    if(groupDragGhost){groupDragGhost.remove();groupDragGhost=null;}
+    const ids=groupDragIds||[];
+    ids.forEach(gid=>{const w=document.getElementById('wrap-'+gid);if(w)w.classList.remove('is-dragging');});
+    const listEl=document.getElementById('task-list');
+    if(listEl&&ids.length){
+      let targetId=null,targetPos=null;
+      listEl.querySelectorAll('.task-card-wrap').forEach(w=>{
+        if(w.classList.contains('drop-above')){targetId=w.id.replace('wrap-','');targetPos='above';}
+        if(w.classList.contains('drop-below')){targetId=w.id.replace('wrap-','');targetPos='below';}
+        w.classList.remove('drop-above','drop-below');
+      });
+      if(targetId&&!ids.includes(targetId)){
+        const ordered=getOrderedPending();
+        const group=ordered.filter(t=>ids.includes(t.id));
+        const rest=ordered.filter(t=>!ids.includes(t.id));
+        const targetIdxInRest=rest.findIndex(t=>t.id===targetId);
+        if(targetIdxInRest!==-1){
+          const insertAt=targetPos==='above'?targetIdxInRest:targetIdxInRest+1;
+          rest.splice(insertAt,0,...group);
+          taskOrderIds=rest.map(t=>t.id);
+          saveDragOrder();taskSortMode='manual';saveSortMode();
+          render();
+        }
+      }
+    }
+    groupDragIds=null;
+  }
   function cardClick(id,isDone){
+    if(multiSelectMode){toggleTaskSelection(id);return;}
     const card=getCard(id);
     if(card&&card.dataset.open){closeSwipe(id);return;}
     if(card&&card.classList.contains('expanded')){
       card.classList.remove('expanded');
       expandedCards.delete(id);
-      setTimeout(()=>{if(!card.classList.contains('expanded'))card.classList.toggle('clipped',card.scrollHeight>card.clientHeight+2);},300);
+      setTimeout(()=>{if(!card.classList.contains('expanded'))markClippedCards();},300);
       return;
     }
     const t=tasks.find(x=>x.id===id);
@@ -4441,7 +4605,7 @@
     }
   }
 
-  function taskCardHTML(t,isDone,hideTags,calView){
+  function taskCardHTML(t,isDone,hideTags,calView,isFirst){
     const isActive=t.id===activeTimerId;
     const pc=pClass(t.priority),pl=pLabel(t.priority);
     const tags=(t.tags||[]).filter(tag=>!hideTags||!hideTags.includes(tag));
@@ -4469,12 +4633,25 @@
     // Left panel — swipe right to reveal: (add below if manual), copy, move, repeat
     const showAddBelow=!isDone&&!calView&&taskSortMode==='manual';
     let leftBtns='';
-    if(showAddBelow){
+    if(showAddBelow&&isFirst){
+      const bw=swW/5;
+      leftBtns=`
+        <button class="sw-btn sw-add-below" style="width:${bw}px;border-radius:var(--r) 0 0 var(--r);border-right:1px solid rgba(255,255,255,0.35)" onclick="openAddAbove('${t.id}')"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 15V3M4 8l5-5 5 5"/></svg><span>Add Above</span></button>
+        <button class="sw-btn sw-add-below" style="width:${bw}px" onclick="openAddBelow('${t.id}')"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 3v12M4 9h10"/></svg><span>Add Below</span></button>
+        <button class="sw-btn sw-copy" style="width:${bw}px" onclick="openCopyTask('${t.id}')"><svg viewBox="0 0 18 18"><rect x="6" y="5" width="8" height="10" rx="1.5"/><path d="M4 13V3h8"/></svg><span>Copy</span></button>
+        <button class="sw-btn sw-move" style="width:${bw}px" onclick="openMoveTask('${t.id}')"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9h12M11 5l4 4-4 4"/></svg><span>Move</span></button>
+        <button class="sw-btn sw-repeat" style="width:${bw}px" onclick="openRepeatModal('${t.id}')"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9a6 6 0 1 0 1.5-4M3 5v4h4"/></svg><span>Repeat</span></button>`;
+    }else if(showAddBelow){
       const bw=swW/4;
       leftBtns=`
         <button class="sw-btn sw-add-below" style="width:${bw}px;border-radius:var(--r) 0 0 var(--r)" onclick="openAddBelow('${t.id}')"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 3v12M4 9h10"/></svg><span>Add Below</span></button>
         <button class="sw-btn sw-copy" style="width:${bw}px" onclick="openCopyTask('${t.id}')"><svg viewBox="0 0 18 18"><rect x="6" y="5" width="8" height="10" rx="1.5"/><path d="M4 13V3h8"/></svg><span>Copy</span></button>
         <button class="sw-btn sw-move" style="width:${bw}px" onclick="openMoveTask('${t.id}')"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9h12M11 5l4 4-4 4"/></svg><span>Move</span></button>
+        <button class="sw-btn sw-repeat" style="width:${bw}px" onclick="openRepeatModal('${t.id}')"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9a6 6 0 1 0 1.5-4M3 5v4h4"/></svg><span>Repeat</span></button>`;
+    }else if(isDone){
+      const bw=swW/2;
+      leftBtns=`
+        <button class="sw-btn sw-copy" style="width:${bw}px;border-radius:var(--r) 0 0 var(--r)" onclick="openCopyTask('${t.id}')"><svg viewBox="0 0 18 18"><rect x="6" y="5" width="8" height="10" rx="1.5"/><path d="M4 13V3h8"/></svg><span>Copy</span></button>
         <button class="sw-btn sw-repeat" style="width:${bw}px" onclick="openRepeatModal('${t.id}')"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9a6 6 0 1 0 1.5-4M3 5v4h4"/></svg><span>Repeat</span></button>`;
     }else{
       const bw=swW/3;
@@ -4484,17 +4661,18 @@
         <button class="sw-btn sw-repeat" style="width:${bw}px" onclick="openRepeatModal('${t.id}')"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9a6 6 0 1 0 1.5-4M3 5v4h4"/></svg><span>Repeat</span></button>`;
     }
     const leftPanel=`<div class="swipe-actions-left" id="swl-${t.id}" style="width:0;overflow:hidden;transition:width 0.25s cubic-bezier(0.4,0,0.2,1)">${leftBtns}</div>`;
+    const isMultiSel=multiSelectMode&&selectedTaskIds.has(t.id);
 
     return`<div class="task-card-wrap" id="wrap-${t.id}">
       ${leftPanel}
       ${rightPanel}
-      <div class="task-card${isActive?' active-timer':''}${isDone?' done':''}${pc?' '+pc:''}" id="card-${t.id}" data-tx="0"
+      <div class="task-card${isActive?' active-timer':''}${isDone?' done':''}${pc?' '+pc:''}${isMultiSel?' multi-selected':''}" id="card-${t.id}" data-tx="0"
         ontouchstart="swTouchStart(event,'${t.id}')" ontouchmove="swTouchMove(event,'${t.id}')" ontouchend="swTouchEnd(event,'${t.id}')"
         onclick="cardClick('${t.id}',${isDone})">
         <div class="priority-bar"></div>
         <div class="task-row">
-          ${!isDone?`<div class="drag-handle" ontouchstart="dragHandleTouch(event,'${t.id}')"><svg viewBox="0 0 12 22" fill="currentColor"><circle cx="3.5" cy="3" r="1.5"/><circle cx="8.5" cy="3" r="1.5"/><circle cx="3.5" cy="8" r="1.5"/><circle cx="8.5" cy="8" r="1.5"/><circle cx="3.5" cy="13" r="1.5"/><circle cx="8.5" cy="13" r="1.5"/><circle cx="3.5" cy="18" r="1.5"/><circle cx="8.5" cy="18" r="1.5"/></svg></div>`:'<div style="width:1.3rem;flex-shrink:0"></div>'}
-          <div class="task-check${t.done?' checked':''}" onclick="toggleDone('${t.id}',event)"></div>
+          ${multiSelectMode?((selectedTaskIds.has(t.id)&&isMultiSelectionContiguous())?`<div class="drag-handle" ontouchstart="groupDragHandleTouch(event,'${t.id}')"><svg viewBox="0 0 12 22" fill="currentColor"><circle cx="3.5" cy="3" r="1.5"/><circle cx="8.5" cy="3" r="1.5"/><circle cx="3.5" cy="8" r="1.5"/><circle cx="8.5" cy="8" r="1.5"/><circle cx="3.5" cy="13" r="1.5"/><circle cx="8.5" cy="13" r="1.5"/><circle cx="3.5" cy="18" r="1.5"/><circle cx="8.5" cy="18" r="1.5"/></svg></div>`:'<div style="width:1.3rem;flex-shrink:0"></div>'):(!isDone?`<div class="drag-handle" ontouchstart="dragHandleTouch(event,'${t.id}')"><svg viewBox="0 0 12 22" fill="currentColor"><circle cx="3.5" cy="3" r="1.5"/><circle cx="8.5" cy="3" r="1.5"/><circle cx="3.5" cy="8" r="1.5"/><circle cx="8.5" cy="8" r="1.5"/><circle cx="3.5" cy="13" r="1.5"/><circle cx="8.5" cy="13" r="1.5"/><circle cx="3.5" cy="18" r="1.5"/><circle cx="8.5" cy="18" r="1.5"/></svg></div>`:'<div style="width:1.3rem;flex-shrink:0"></div>')}
+          <div class="task-check${multiSelectMode?(isMultiSel?' checked':''):(t.done?' checked':'')}" onclick="${multiSelectMode?`event.stopPropagation();toggleTaskSelection('${t.id}')`:`toggleDone('${t.id}',event)`}"></div>
           <div class="task-body" style="min-width:0;flex:1">
             <div class="task-name">${t.emoji?`<span class="task-emoji">${t.emoji}</span>`:''}${t.name}</div>
             <div class="task-meta">
@@ -4522,7 +4700,7 @@
     if(card&&card.classList.contains('expanded')){
       card.classList.remove('expanded');
       expandedCards.delete(id);
-      setTimeout(()=>{if(!card.classList.contains('expanded'))card.classList.toggle('clipped',card.scrollHeight>card.clientHeight+2);},300);
+      setTimeout(()=>{if(!card.classList.contains('expanded'))markClippedCards();},300);
       return;
     }
     const ft=futureTasks.find(x=>x.id===id);
@@ -4579,11 +4757,20 @@
 
   function render(){
     const isToday=taskViewDate===todayStr();
+    const msBar=document.getElementById('multi-select-bar');
+    const snBar=document.getElementById('section-nav-bar');
+    if(msBar)msBar.style.display=multiSelectMode?'flex':'none';
+    if(snBar)snBar.style.display=multiSelectMode?'none':'flex';
+    if(multiSelectMode){
+      const cl=document.getElementById('ms-count-label');
+      if(cl)cl.textContent=selectedTaskIds.size+' selected';
+    }
     const lbl=document.getElementById('day-nav-label');
     lbl.textContent=dayNavLabel();
     lbl.classList.toggle('offday',!isToday);
     const sorted=getOrderedPending();
-    const done=tasks.filter(t=>t.done&&(t.date===taskViewDate||(isToday&&!t.date)));
+    const done=tasks.filter(t=>t.done&&(t.date===taskViewDate||(isToday&&!t.date)))
+      .sort((a,b)=>(b.completedAt||0)-(a.completedAt||0));
     const allForDay=tasks.filter(t=>t.date===taskViewDate||(isToday&&!t.date));
     document.getElementById('pending-count').textContent=allForDay.length;
     const doneT=allForDay.filter(t=>t.done).length;
@@ -4612,7 +4799,7 @@
     document.getElementById('task-list-section').style.display=showingDone?'none':'block';
     document.getElementById('done-list-section').style.display=showingDone?'block':'none';
     document.getElementById('empty-state').style.display=(!showingDone&&sorted.length===0)?'flex':'none';
-    document.getElementById('task-list').innerHTML=sorted.map(t=>taskCardHTML(t,false,null)).join('');
+    document.getElementById('task-list').innerHTML=sorted.map((t,i)=>taskCardHTML(t,false,null,false,i===0)).join('');
     document.getElementById('done-list').innerHTML=done.map(t=>taskCardHTML(t,true,null)).join('');
     document.getElementById('show-done-toggle').classList.toggle('on',cfg.showDone);
     renderMenuLists();renderReminders();
@@ -4726,12 +4913,14 @@
   }
   function openCopyTask(id){
       closeSwipe(id);
+      copyMultiIds=null;
       copyTaskId=id;
       copyRemId=null;
       copySelectedDates=new Set();
       copyCalYear=new Date().getFullYear();
       copyCalMonth=new Date().getMonth();
       document.getElementById('copy-time').value='';
+      document.getElementById('copy-position-wrap').style.display='none';
       const src=tasks.find(t=>t.id===id);
       if(src)document.getElementById('copy-modal-title').textContent=`Copy "${src.name}"`;
       renderCopyCalendar();
@@ -4739,10 +4928,11 @@
   }
 
   function openCopyReminder(id){
-    copyRemId=id;copyTaskId=null;
+    copyMultiIds=null;copyRemId=id;copyTaskId=null;
     copySelectedDates=new Set();
     copyCalYear=new Date().getFullYear();copyCalMonth=new Date().getMonth();
     document.getElementById('copy-time').value='';
+    document.getElementById('copy-position-wrap').style.display='none';
     const src=reminders.find(r=>r.id===id);
     if(src)document.getElementById('copy-modal-title').textContent=`Copy "${src.name}"`;
     renderCopyCalendar();openModal('copy-modal');
@@ -4774,7 +4964,23 @@
 
   function toggleCopyDate(ds){
       copySelectedDates.has(ds)?copySelectedDates.delete(ds):copySelectedDates.add(ds);
-      renderCopyCalendar();
+      renderCopyCalendar();renderCopyPositionOptions();
+  }
+  function renderCopyPositionOptions(){
+    const wrap=document.getElementById('copy-position-wrap');
+    const sel=document.getElementById('copy-position-select');
+    if(!wrap||!sel)return;
+    if(copySelectedDates.size!==1||copyRemId){wrap.style.display='none';return;}
+    const date=[...copySelectedDates][0];
+    const excludeIds=copyMultiIds?copyMultiIds:(copyTaskId?[copyTaskId]:[]);
+    const list=tasksOnDateOrdered(date).filter(t=>!excludeIds.includes(t.id));
+    let opts='<option value="">Add to bottom of list</option><option value="top">Add to top of list</option>';
+    list.forEach((t,i)=>{
+      if(i===list.length-1)return; // below last == bottom, already offered above
+      opts+=`<option value="below:${t.id}">Below "${t.name}"</option>`;
+    });
+    sel.innerHTML=opts;
+    wrap.style.display='block';
   }
 
   function updateCopySelectionInfo(){
@@ -4812,17 +5018,19 @@
   function stopTimer(){if(timerIv){clearInterval(timerIv);timerIv=null;}activeTimerId=null;timerSec=0;timerPaused=false;try{localStorage.removeItem(K.timer);}catch(e){}updateTimerDot();}
 
   function openMoveTask(id){
-    closeSwipe(id);moveTaskId=id;moveRemId=null;moveSelectedDate=null;
+    closeSwipe(id);moveMultiIds=null;moveTaskId=id;moveRemId=null;moveSelectedDate=null;
     moveCalYear=new Date().getFullYear();moveCalMonth=new Date().getMonth();
     document.getElementById('move-time-new').value='';
+    document.getElementById('move-position-wrap').style.display='none';
     const t=tasks.find(x=>x.id===id);
     document.getElementById('move-modal-title').textContent=t?`Move "${t.name}"`:'Move task';
     renderMoveCalendar();openModal('move-modal');
   }
   function openMoveReminder(id){
-    closeSwipe(id);moveRemId=id;moveTaskId=null;moveSelectedDate=null;
+    closeSwipe(id);moveMultiIds=null;moveRemId=id;moveTaskId=null;moveSelectedDate=null;
     moveCalYear=new Date().getFullYear();moveCalMonth=new Date().getMonth();
     document.getElementById('move-time-new').value='';
+    document.getElementById('move-position-wrap').style.display='none';
     const r=reminders.find(x=>x.id===id);
     document.getElementById('move-modal-title').textContent=r?`Move "${r.name}"`:'Move reminder';
     renderMoveCalendar();openModal('move-modal');
@@ -4848,10 +5056,42 @@
     const btn=document.getElementById('move-save-new');
     if(btn){btn.disabled=!moveSelectedDate;btn.style.opacity=moveSelectedDate?'':'0.45';}
   }
-  function selectMoveDate(ds){moveSelectedDate=ds;renderMoveCalendar();}
+  function selectMoveDate(ds){moveSelectedDate=ds;renderMoveCalendar();renderMovePositionOptions();}
+  function renderMovePositionOptions(){
+    const sel=document.getElementById('move-position-select');
+    const wrap=document.getElementById('move-position-wrap');
+    if(!sel||!wrap)return;
+    if(!moveSelectedDate||moveRemId){wrap.style.display='none';return;}
+    const excludeIds=moveMultiIds?moveMultiIds:(moveTaskId?[moveTaskId]:[]);
+    const list=tasksOnDateOrdered(moveSelectedDate).filter(t=>!excludeIds.includes(t.id));
+    let opts='<option value="">Add to bottom of list</option><option value="top">Add to top of list</option>';
+    list.forEach((t,i)=>{
+      if(i===list.length-1)return; // below last == bottom, already offered above
+      opts+=`<option value="below:${t.id}">Below "${t.name}"</option>`;
+    });
+    sel.innerHTML=opts;
+    wrap.style.display='block';
+  }
   document.getElementById('move-cal-prev').addEventListener('click',()=>{moveCalMonth--;if(moveCalMonth<0){moveCalMonth=11;moveCalYear--;}renderMoveCalendar();});
   document.getElementById('move-cal-next').addEventListener('click',()=>{moveCalMonth++;if(moveCalMonth>11){moveCalMonth=0;moveCalYear++;}renderMoveCalendar();});
   document.getElementById('move-save-new').addEventListener('click',()=>{
+    const posVal=document.getElementById('move-position-select')?document.getElementById('move-position-select').value:'';
+    if(moveMultiIds&&moveMultiIds.length){
+      if(!moveSelectedDate)return;
+      const timeOverride=document.getElementById('move-time-new').value;
+      moveMultiIds.forEach(id=>{
+        const t=tasks.find(x=>x.id===id);
+        if(t){
+          t.date=moveSelectedDate;
+          if(timeOverride)t.time=timeOverride;
+          if(t.date&&t.time){cancelNotif(t.id);scheduleNotif(t.id,t.name,t.date+'T'+t.time);}
+        }
+      });
+      applyTaskPosition(moveMultiIds,posVal,moveSelectedDate);
+      saveAll();closeModal('move-modal');moveMultiIds=null;exitMultiSelect();refreshCalIfActive();
+      showToast('Tasks moved');
+      return;
+    }
     if((!moveTaskId&&!moveRemId)||!moveSelectedDate)return;
     const timeOverride=document.getElementById('move-time-new').value;
     if(moveTaskId){
@@ -4861,6 +5101,7 @@
         if(timeOverride)t.time=timeOverride;
         if(t.date&&t.time){cancelNotif(t.id);scheduleNotif(t.id,t.name,t.date+'T'+t.time);}
       }
+      applyTaskPosition([moveTaskId],posVal,moveSelectedDate);
       saveAll();closeModal('move-modal');render();refreshCalIfActive();showToast('Task moved');
     }else if(moveRemId){
       const r=reminders.find(x=>x.id===moveRemId);
@@ -4935,13 +5176,36 @@
       if(copySelectedDates.size===0)return;
       const timeOverride=document.getElementById('copy-time').value||null;
       const n=copySelectedDates.size;
+      const posSel=document.getElementById('copy-position-select');
+      const posVal=(n===1&&posSel)?posSel.value:'';
+      if(copyMultiIds&&copyMultiIds.length){
+        let count=0;
+        const createdIdsByDate={};
+        copyMultiIds.forEach(id=>{
+          const src=tasks.find(t=>t.id===id);if(!src)return;
+          copySelectedDates.forEach(date=>{
+            const newTask={id:uid(),name:src.name,emoji:src.emoji||null,priority:src.priority||null,tags:[...(src.tags||[])],date,time:timeOverride!==null?timeOverride:(src.time||null),duration:src.duration||null,notes:src.notes||null,subtasks:(src.subtasks||[]).map(s=>({id:uid(),name:s.name,done:false})),done:false,created:Date.now(),completedAt:null};
+            tasks.push(newTask);count++;
+            if(!createdIdsByDate[date])createdIdsByDate[date]=[];
+            createdIdsByDate[date].push(newTask.id);
+            if(newTask.date&&newTask.time)scheduleNotif(newTask.id,newTask.name,newTask.date+'T'+newTask.time);
+          });
+        });
+        if(n===1)applyTaskPosition(createdIdsByDate[[...copySelectedDates][0]]||[],posVal,[...copySelectedDates][0]);
+        saveAll();closeModal('copy-modal');copyMultiIds=null;exitMultiSelect();refreshCalIfActive();
+        showToast(`${count} tasks created`);
+        copySelectedDates=new Set();
+        return;
+      }
       if(copyTaskId){
           const src=tasks.find(t=>t.id===copyTaskId);if(!src)return;
+          const newIds=[];
           copySelectedDates.forEach(date=>{
               const newTask={id:uid(),name:src.name,emoji:src.emoji||null,priority:src.priority||null,tags:[...(src.tags||[])],date,time:timeOverride!==null?timeOverride:(src.time||null),duration:src.duration||null,notes:src.notes||null,subtasks:(src.subtasks||[]).map(s=>({id:uid(),name:s.name,done:false})),done:false,created:Date.now(),completedAt:null};
-              tasks.push(newTask);
+              tasks.push(newTask);newIds.push(newTask.id);
               if(newTask.date&&newTask.time)scheduleNotif(newTask.id,newTask.name,newTask.date+'T'+newTask.time);
           });
+          if(n===1)applyTaskPosition(newIds,posVal,[...copySelectedDates][0]);
           saveAll();closeModal('copy-modal');render();refreshCalIfActive();
           showToast(`Copied to ${n} date${n>1?'s':''}`);
           copyTaskId=null;copySelectedDates=new Set();
@@ -4959,7 +5223,7 @@
   });
 
   function openAddTask(prefillDate){
-    addBelowTaskId=null;editTaskId=null;timeOpen=false;modalSubtasks=[];
+    addBelowTaskId=null;addAboveTaskId=null;editTaskId=null;timeOpen=false;modalSubtasks=[];
     document.getElementById('task-modal-title').textContent='New task';document.getElementById('task-save').textContent='Add task';
     pendingTaskImg=null;refreshTaskImgPreview();
     ['task-emoji','task-name','task-tags','task-notes'].forEach(id=>document.getElementById(id).value='');
@@ -4977,14 +5241,14 @@
     return null;
   }
   function openRepeatModal(id){
-    closeSwipe(id);repeatTaskId=id;repeatRemId=null;
+    closeSwipe(id);repeatMultiIds=null;repeatTaskId=id;repeatRemId=null;
     const t=tasks.find(x=>x.id===id);
     if(!t){showToast('Task not found');return;}
     if(!t.date){showToast('Task needs a date to repeat');return;}
     openRepeatModalCommon(t);
   }
   function openRepeatReminderModal(id){
-    closeSwipe(id);repeatRemId=id;repeatTaskId=null;
+    closeSwipe(id);repeatMultiIds=null;repeatRemId=id;repeatTaskId=null;
     const r=reminders.find(x=>x.id===id);
     if(!r){showToast('Reminder not found');return;}
     if(!r.date){showToast('Reminder needs a date to repeat');return;}
@@ -5076,7 +5340,76 @@
     document.getElementById('repeat-info').textContent=info;
   }
   document.getElementById('repeat-freq').addEventListener('change',updateRepeatInfo);
+  function computeRepeatDates(dateStr,freq){
+    const start=new Date(dateStr+'T12:00:00');
+    const toDS=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const dates=[];
+    if(freq==='daily'){
+      for(let i=1;i<=30;i++){const d=new Date(start);d.setDate(d.getDate()+i);dates.push(toDS(d));}
+    }else if(freq==='weekly'){
+      for(let i=1;i<=364;i++){
+        const d=new Date(start);d.setDate(d.getDate()+i);
+        if(repeatSelectedDays.has(d.getDay()))dates.push(toDS(d));
+      }
+    }else if(freq==='monthly'){
+      const day=start.getDate();
+      for(let i=1;i<=12;i++){
+        const d=new Date(start.getFullYear(),start.getMonth()+i,1);
+        if(!repeatSelectedMonths.has(d.getMonth()))continue;
+        const dim=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+        if(day<=dim){d.setDate(day);dates.push(toDS(d));}
+      }
+    }else if(freq==='custom'){
+      for(let i=0;i<=12;i++){
+        const d=new Date(start.getFullYear(),start.getMonth()+i,1);
+        const dim=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+        repeatSelectedCustomDays.forEach(day=>{
+          if(day>dim)return;
+          const candidate=new Date(d.getFullYear(),d.getMonth(),day);
+          if(candidate<=start)return;
+          dates.push(toDS(candidate));
+        });
+      }
+    }else if(freq==='yearly'){
+      const month=start.getMonth(),day=start.getDate();
+      for(let i=1;i<=5;i++){
+        const year=start.getFullYear()+i;
+        const dim=new Date(year,month+1,0).getDate();
+        if(day<=dim)dates.push(`${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`);
+      }
+    }
+    dates.sort();
+    return dates;
+  }
   document.getElementById('repeat-save').addEventListener('click',()=>{
+    if(repeatMultiIds&&repeatMultiIds.length){
+      const freq=document.getElementById('repeat-freq').value;
+      const repeatConfig={
+        freq,
+        days:freq==='weekly'?[...repeatSelectedDays]:null,
+        months:freq==='monthly'?[...repeatSelectedMonths]:null,
+        customDays:freq==='custom'?[...repeatSelectedCustomDays]:null
+      };
+      let totalCreated=0;
+      repeatMultiIds.forEach(id=>{
+        const src=tasks.find(x=>x.id===id);
+        if(!src||!src.date)return;
+        const dates=computeRepeatDates(src.date,freq);
+        const groupId=uid();
+        src.repeatGroupId=groupId;src.repeatConfig=repeatConfig;
+        dates.forEach((date,i)=>{
+          const newTask={id:uid(),name:src.name,emoji:src.emoji||null,priority:src.priority||null,
+            tags:[...(src.tags||[])],date,time:src.time||null,duration:src.duration||null,
+            notes:src.notes||null,subtasks:(src.subtasks||[]).map(s=>({id:uid(),name:s.name,done:false})),
+            done:false,created:Date.now()+i,completedAt:null,repeatGroupId:groupId,repeatConfig};
+          tasks.push(newTask);totalCreated++;
+          if(newTask.date&&newTask.time)scheduleNotif(newTask.id,newTask.name,newTask.date+'T'+newTask.time);
+        });
+      });
+      saveAll();closeModal('repeat-modal');repeatMultiIds=null;exitMultiSelect();refreshCalIfActive();
+      showToast(totalCreated?`${totalCreated} repeats created`:'No valid dates found');
+      return;
+    }
     const src=getRepeatSource();
     if(!src||!src.date){showToast((repeatRemId?'Reminder':'Task')+' needs a date to repeat');closeModal('repeat-modal');return;}
     const freq=document.getElementById('repeat-freq').value;
@@ -5207,6 +5540,11 @@
     openAddTask(taskViewDate);   // openAddTask resets addBelowTaskId first
     addBelowTaskId=id;           // then we set it after
   }
+  function openAddAbove(id){
+    closeSwipe(id);
+    openAddTask(taskViewDate);   // openAddTask resets addAboveTaskId first
+    addAboveTaskId=id;
+  }
 
   function updateTimeLbl(){
     const date=document.getElementById('task-date').value,time=document.getElementById('task-time').value,dur=document.getElementById('task-dur').value;
@@ -5229,6 +5567,12 @@
         const idx=taskOrderIds.indexOf(addBelowTaskId);
         if(idx!==-1)taskOrderIds.splice(idx+1,0,taskId);else taskOrderIds.push(taskId);
         taskSortMode='manual';saveSortMode();saveDragOrder();addBelowTaskId=null;
+      }else if(addAboveTaskId){
+        const currentOrdered=getOrderedPending().filter(t=>t.id!==taskId);
+        taskOrderIds=currentOrdered.map(t=>t.id);
+        const idx=taskOrderIds.indexOf(addAboveTaskId);
+        if(idx!==-1)taskOrderIds.splice(idx,0,taskId);else taskOrderIds.unshift(taskId);
+        taskSortMode='manual';saveSortMode();saveDragOrder();addAboveTaskId=null;
       }
     }
     if(d.date&&d.time){cancelNotif(taskId);scheduleNotif(taskId,d.name,d.date+'T'+d.time);}
@@ -5441,12 +5785,54 @@
     const dd=document.getElementById('day-add-dropdown');
     if(dd)dd.style.display=dd.style.display==='none'?'block':'none';
   });
-  document.getElementById('day-prev').addEventListener('click',()=>{taskViewDate=addDays(taskViewDate,-1);showingDone=false;render();});
-  document.getElementById('day-next').addEventListener('click',()=>{taskViewDate=addDays(taskViewDate,1);showingDone=false;render();});
-  document.getElementById('day-nav-label').addEventListener('click',()=>{if(taskViewDate!==todayStr()){taskViewDate=todayStr();showingDone=false;render();}});
+  document.getElementById('day-prev').addEventListener('click',()=>{taskViewDate=addDays(taskViewDate,-1);showingDone=false;multiSelectMode=false;selectedTaskIds=new Set();render();});
+  document.getElementById('day-next').addEventListener('click',()=>{taskViewDate=addDays(taskViewDate,1);showingDone=false;multiSelectMode=false;selectedTaskIds=new Set();render();});
+  document.getElementById('day-nav-label').addEventListener('click',()=>{if(taskViewDate!==todayStr()){taskViewDate=todayStr();showingDone=false;multiSelectMode=false;selectedTaskIds=new Set();render();}});
   document.getElementById('section-prev').addEventListener('click',switchSection);
   document.getElementById('section-next').addEventListener('click',switchSection);
   document.getElementById('sort-cycle-btn').addEventListener('click',cycleSortMode);
+  document.getElementById('ms-cancel-btn').addEventListener('click',exitMultiSelect);
+  document.getElementById('ms-delete-btn').addEventListener('click',()=>{
+    const ids=[...selectedTaskIds];
+    if(!ids.length)return;
+    showConfirm(`Delete ${ids.length} task${ids.length>1?'s':''}?`,'This cannot be undone.',()=>{
+      ids.forEach(id=>{if(activeTimerId===id)stopTimer();cancelNotif(id);});
+      tasks=tasks.filter(t=>!ids.includes(t.id));
+      saveAll();exitMultiSelect();showToast(ids.length+' tasks deleted');refreshCalIfActive();
+    });
+  });
+  document.getElementById('ms-move-btn').addEventListener('click',()=>{
+    const ids=[...selectedTaskIds];if(!ids.length)return;
+    moveTaskId=null;moveMultiIds=ids;moveRemId=null;moveSelectedDate=null;
+    moveCalYear=new Date().getFullYear();moveCalMonth=new Date().getMonth();
+    document.getElementById('move-time-new').value='';
+    document.getElementById('move-position-wrap').style.display='none';
+    document.getElementById('move-modal-title').textContent=`Move ${ids.length} tasks`;
+    renderMoveCalendar();openModal('move-modal');
+  });
+  document.getElementById('ms-copy-btn').addEventListener('click',()=>{
+    const ids=[...selectedTaskIds];if(!ids.length)return;
+    copyTaskId=null;copyMultiIds=ids;copyRemId=null;
+    copySelectedDates=new Set();
+    copyCalYear=new Date().getFullYear();copyCalMonth=new Date().getMonth();
+    document.getElementById('copy-time').value='';
+    document.getElementById('copy-position-wrap').style.display='none';
+    document.getElementById('copy-modal-title').textContent=`Copy ${ids.length} tasks`;
+    renderCopyCalendar();openModal('copy-modal');
+  });
+  document.getElementById('ms-repeat-btn').addEventListener('click',()=>{
+    const ids=[...selectedTaskIds].filter(id=>{const t=tasks.find(x=>x.id===id);return t&&t.date;});
+    if(!ids.length){showToast('Selected tasks need a date to repeat');return;}
+    repeatTaskId=null;repeatRemId=null;repeatMultiIds=ids;
+    const first=tasks.find(x=>x.id===ids[0]);
+    repeatEditMode=false;repeatGroupId=null;
+    initRepeatPickers(first.date);
+    document.getElementById('repeat-freq').value='daily';
+    document.getElementById('repeat-modal-title').textContent=`Repeat ${ids.length} tasks`;
+    document.getElementById('repeat-save').textContent='Create Repeats';
+    document.getElementById('repeat-clear-row').style.display='none';
+    updateRepeatInfo();openModal('repeat-modal');
+  });
   document.getElementById('subtask-add-btn').addEventListener('click',addModalSubtask);
   document.getElementById('subtask-input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addModalSubtask();}});
   document.getElementById('rem-add-btn').addEventListener('click',()=>openAddReminder(remSection==='upcoming'?addDays(todayStr(),1):null));
@@ -6061,7 +6447,8 @@
     closeCalDropdown();
 
     const dTPending=getOrderedPending(calSelected).filter(t=>t.date===calSelected);
-    const dTDone=tasks.filter(t=>t.done&&t.date===calSelected);
+    const dTDone=tasks.filter(t=>t.done&&t.date===calSelected)
+      .sort((a,b)=>(b.completedAt||0)-(a.completedAt||0));
     const dT=[...dTPending,...dTDone];
     const dR=reminders.filter(r=>r.date===calSelected);
 
@@ -6090,7 +6477,16 @@
   document.getElementById('cal-prev').addEventListener('click',()=>{calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();});
   document.getElementById('cal-next').addEventListener('click',()=>{calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();});
   document.getElementById('cal-month-btn').addEventListener('click',()=>{mpYear=calYear;renderMP();document.getElementById('mp-overlay').classList.add('open');});
-  function renderMP(){document.getElementById('mp-yr').textContent=mpYear;const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];document.getElementById('mp-months').innerHTML=months.map((m,i)=>`<div class="mp-month${i===calMonth&&mpYear===calYear?' active':''}" onclick="pickMonth(${i})">${m}</div>`).join('');}
+  function renderMP(){
+    document.getElementById('mp-yr').textContent=mpYear;
+    const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const now=new Date();
+    document.getElementById('mp-months').innerHTML=months.map((m,i)=>{
+      const isActive=i===calMonth&&mpYear===calYear;
+      const isToday=i===now.getMonth()&&mpYear===now.getFullYear();
+      return `<div class="mp-month${isActive?' active':''}${isToday&&!isActive?' today-month':''}" onclick="pickMonth(${i})">${m}</div>`;
+    }).join('');
+  }
   function pickMonth(m){calMonth=m;calYear=mpYear;document.getElementById('mp-overlay').classList.remove('open');renderCalendar();}
   document.getElementById('mp-prev').addEventListener('click',()=>{mpYear--;renderMP();});
   document.getElementById('mp-next').addEventListener('click',()=>{mpYear++;renderMP();});
@@ -6113,6 +6509,19 @@
   document.getElementById('budget-mp-next').addEventListener('click',()=>{budgetMpYear++;renderBudgetMP();});
   document.getElementById('budget-mp-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('budget-mp-overlay'))document.getElementById('budget-mp-overlay').classList.remove('open');});
 
+  function openWeatherPage(){
+    weatherPageOpen=true;
+    expandedForecastDay=null;
+    document.getElementById('weather-overlay').classList.add('open');
+    const wp=document.getElementById('weather-panel');
+    if(wp)wp.scrollTop=0;
+    fetchForecast();
+    renderWeatherPage();
+  }
+  function closeWeatherPage(){
+    weatherPageOpen=false;
+    document.getElementById('weather-overlay').classList.remove('open');
+  }
   function renderWeatherPage(){
     const div=document.getElementById('weather-page-content');if(!div)return;
     if(!cfg.weatherApiKey||!cfg.weatherLocation){
@@ -6281,7 +6690,7 @@
     const nextUpd=forecastSlotTime?`Next update ${new Date(getNextForecastSlot(new Date(forecastSlotTime+1))).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}`:'';
     div.innerHTML=`
       <div class="weather-page-hdr">
-        <button class="notes-back-btn" onclick="setView('tasks')">← Back</button>
+        <button class="notes-back-btn" onclick="closeWeatherPage()">← Back</button>
         <div class="weather-page-city">${city}</div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.08rem">
           <div class="weather-page-updated">${upd}</div>
@@ -6299,7 +6708,7 @@
     if(expandedForecastDay){
       requestAnimationFrame(()=>{
         const section=document.getElementById('forecast-3h-'+expandedForecastDay);
-        const scrollEl=document.getElementById('scroll-area');
+        const scrollEl=document.getElementById('weather-panel');
         if(section&&scrollEl){
           const sr=scrollEl.getBoundingClientRect();
           const sec=section.getBoundingClientRect();
@@ -6387,10 +6796,11 @@
     });
   });
 
-  const ALL_VIEWS=['tasks','reminders','calendar','list','lists','hashtags','analyze','notes','future','weather','exercise','exroutine','exsession','exhistory','budget'];
+  const ALL_VIEWS=['tasks','reminders','calendar','list','lists','hashtags','analyze','notes','future','exercise','exroutine','exsession','exhistory','budget'];
 
   function setView(v){
     expandedCards.clear();
+    if(v!=='tasks'&&multiSelectMode){multiSelectMode=false;selectedTaskIds=new Set();}
     if(currentNoteId)saveCurrentNote();
     if(v!=='notes')document.getElementById('note-toolbar').style.display='none';
     currentView=v;
@@ -6420,7 +6830,6 @@
     else if(v==='lists')renderListsPage();
     else if(v==='notes'){renderNotes();}
     else if(v==='future'){const fz=document.getElementById('future-zone');if(fz)fz.scrollTop=0;renderFutureTasks();}
-    else if(v==='weather'){expandedForecastDay=null;const sa=document.getElementById('scroll-area');if(sa)sa.scrollTop=0;fetchForecast();renderWeatherPage();}
     else if(v==='exercise'){setExTab(exTab);}
     else if(v==='exroutine'){renderRoutineHdr();renderRoutineItems();}
     else if(v==='exsession'){renderExerciseSession();}
@@ -6537,6 +6946,57 @@
 
       sp.addEventListener('touchcancel',()=>{ignoreSwipe=false;snap(false);},{passive:true});
   })();
+
+  /* ── WEATHER PAGE swipe-to-close (identical pattern to settings panel) ── */
+  (()=>{
+      const wp=document.getElementById('weather-panel');
+      let x0=0,y0=0,t0=0,dragging=false,dx=0,ignoreSwipe=false;
+
+      wp.addEventListener('touchstart',e=>{
+          ignoreSwipe=false;
+          x0=e.touches[0].clientX;
+          y0=e.touches[0].clientY;
+          t0=Date.now();
+          dragging=false;
+          dx=0;
+          wp.style.transition='none';
+      },{passive:true});
+
+      wp.addEventListener('touchmove',e=>{
+          if(ignoreSwipe)return;
+          const cx=e.touches[0].clientX-x0;
+          const cy=e.touches[0].clientY-y0;
+          if(!dragging){
+              if(Math.abs(cx)<8&&Math.abs(cy)<8)return;
+              if(Math.abs(cy)>=Math.abs(cx)||cx<0)return;
+              dragging=true;
+          }
+          dx=Math.max(0,cx);
+          wp.style.transform=`translateX(${dx}px)`;
+          e.preventDefault();
+      },{passive:false});
+
+      const snap=(close)=>{
+          wp.style.transition='transform 0.3s cubic-bezier(0.4,0,0.2,1)';
+          wp.style.transform=close?'translateX(100%)':'translateX(0)';
+          if(close)closeWeatherPage();
+          setTimeout(()=>{
+              wp.style.transform='';
+              wp.style.transition='';
+          },300);
+          dragging=false;dx=0;
+      };
+
+      wp.addEventListener('touchend',()=>{
+          if(ignoreSwipe){ignoreSwipe=false;return;}
+          if(!dragging){wp.style.transition='';return;}
+          const velocity=dx/(Date.now()-t0);
+          snap(dx>window.innerWidth*0.35||velocity>0.5);
+      },{passive:true});
+
+      wp.addEventListener('touchcancel',()=>{ignoreSwipe=false;snap(false);},{passive:true});
+  })();
+
   document.getElementById('theme-toggle').addEventListener('click',()=>{cfg.themeMode=cfg.themeMode==='light'?'dark':cfg.themeMode==='dark'?'auto':'light';applyTheme();saveAll();});
   document.getElementById('clock24-toggle').addEventListener('click',()=>{cfg.use24h=!cfg.use24h;saveAll();updateClock();render();applyTheme();});
   document.getElementById('show-done-toggle').addEventListener('click',()=>{cfg.showDone=!cfg.showDone;saveAll();render();});
@@ -6800,6 +7260,52 @@
     const valid=new Set(tasks.map(t=>t.id));
     taskOrderIds=taskOrderIds.filter(id=>valid.has(id));
     try{localStorage.setItem('rt_order_v1',JSON.stringify(taskOrderIds));}catch(e){}
+  }
+  function tasksOnDateOrdered(date){
+    const isT=date===todayStr();
+    const list=tasks.filter(t=>!t.done&&(t.date===date||(isT&&!t.date)));
+    if(taskSortMode==='manual'){
+      const ordered=[];
+      taskOrderIds.forEach(id=>{const t=list.find(x=>x.id===id);if(t)ordered.push(t);});
+      list.forEach(t=>{if(!taskOrderIds.includes(t.id))ordered.push(t);});
+      return ordered;
+    }
+    if(taskSortMode==='time'){
+      return [...list].sort((a,b)=>{
+        if(!a.time&&!b.time)return 0;if(!a.time)return 1;if(!b.time)return-1;
+        return a.time.localeCompare(b.time);
+      });
+    }
+    return [...list].sort((a,b)=>(a.created||0)-(b.created||0));
+  }
+  function applyTaskPosition(taskIds,positionValue,targetDate){
+    if(!positionValue||!taskIds||!taskIds.length)return;
+    // Capture the exact order currently shown for this date (whatever the
+    // active sort mode is) BEFORE switching to manual — this is the ground
+    // truth the person picked "above/below" against, regardless of whether
+    // those tasks were already tracked in taskOrderIds.
+    const fullDateList=tasksOnDateOrdered(targetDate).map(t=>t.id).filter(id=>!taskIds.includes(id));
+    let insertAt;
+    if(positionValue==='top'){
+      insertAt=0;
+    }else{
+      const[mode,refId]=positionValue.split(':');
+      const idx=fullDateList.indexOf(refId);
+      insertAt=idx===-1?fullDateList.length:(mode==='above'?idx:idx+1);
+    }
+    const newDateList=[...fullDateList];
+    newDateList.splice(insertAt,0,...taskIds);
+
+    taskSortMode='manual';saveSortMode();
+
+    // Replace this date's block wholesale in the global order; other dates'
+    // entries are untouched (their relative order doesn't matter across
+    // dates since rendering always filters by date first).
+    const dateIdSet=new Set(newDateList);
+    let order=taskOrderIds.filter(id=>!dateIdSet.has(id));
+    order=order.concat(newDateList);
+    taskOrderIds=order;
+    saveDragOrder();
   }
 
   function saveListTagState(){try{localStorage.setItem('rt_list_tag_v1',JSON.stringify({orders:listTagOrders,collapsed:listTagCollapsed}));}catch(e){}}
@@ -7214,6 +7720,7 @@
     if(tagsGroup)tagsGroup.style.display='none';
     const sugBox=document.getElementById('li-hashtag-suggestions');
     if(sugBox){sugBox.style.display='none';sugBox.innerHTML='';}
+    pendingLIImg=null;refreshLIImgPreview();
     modalLISubitems=[];renderModalLISubitems();
     openModal('li-modal');
   }
