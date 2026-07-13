@@ -1315,7 +1315,7 @@
 <div class="side-menu" id="side-menu">
   <div class="menu-header">
     <div class="menu-logo">Rou<b>Tine</b></div>
-    <div class="menu-version">v2.7.4</div>
+    <div class="menu-version">v2.7.5</div>
   </div>
   <div class="menu-nav">
     <div class="menu-item active" id="mn-today" onclick="setView('tasks');closeMenu()">
@@ -2041,6 +2041,7 @@
       <select class="priority-select" id="repeat-freq">
         <option value="daily">Every day (next 30 days)</option>
         <option value="weekly">Every week (next 52 weeks)</option>
+        <option value="thisweek">Custom days (this week only)</option>
         <option value="monthly">Every month (next 12 months)</option>
         <option value="custom">Custom day(s) each month (next 12 months)</option>
         <option value="yearly">Every year (next 5 years)</option>
@@ -3918,13 +3919,17 @@
   }
 
   const localTimeouts={};
+  const NOTIF_STALE_GRACE_MS=10*60*1000;     // if a timer fires >10min late, treat as backlog and skip
 
   function scheduleLocalTimeout(id,title,timestamp){
     const delay=timestamp-Date.now();
     if(delay<=0)return;
+    const endOfToday=new Date();endOfToday.setHours(23,59,59,999);
+    if(timestamp>endOfToday.getTime())return; // only arm items due later today
     if(localTimeouts[id])clearTimeout(localTimeouts[id]);
     localTimeouts[id]=setTimeout(async()=>{
       delete localTimeouts[id];
+      if(Date.now()-timestamp>NOTIF_STALE_GRACE_MS)return; // stale/backlogged fire — skip silently
       await notifyTimerDone(title);
       showToast(`Reminder: ${title}`);
     },delay);
@@ -3941,7 +3946,7 @@
         scheduleLocalTimeout(t.id,t.name,new Date(t.date+'T'+t.time).getTime());
     });
     reminders.forEach(r=>{
-      if(r.date&&r.time)
+      if(!r.done&&r.date&&r.time)
         scheduleLocalTimeout(r.id,r.name,new Date(r.date+'T'+r.time).getTime());
     });
   }
@@ -4013,6 +4018,7 @@
   }
   setInterval(updateClock,1000);
   setInterval(()=>{updateSalutation();if(cfg.themeMode==='auto')applyTheme();},60000);
+  setInterval(rescheduleLocalNotifs,15*60*1000);
 
   function toggleRemName(el){
     if(el.scrollWidth>el.clientWidth+2||el.classList.contains('name-expanded')){
@@ -5322,7 +5328,7 @@
     const d=new Date(t.date+'T12:00:00');
     const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
     const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
-    document.getElementById('repeat-days-group').style.display=freq==='weekly'?'block':'none';
+    document.getElementById('repeat-days-group').style.display=(freq==='weekly'||freq==='thisweek')?'block':'none';
     document.getElementById('repeat-months-group').style.display=freq==='monthly'?'block':'none';
     document.getElementById('repeat-customdays-group').style.display=freq==='custom'?'block':'none';
     let info='';
@@ -5330,6 +5336,9 @@
     else if(freq==='weekly'){
       const sel=[...repeatSelectedDays].sort().map(i=>dayNames[i]);
       info=`Creates copies on ${sel.join(', ')} for the next 52 weeks.`;
+    }else if(freq==='thisweek'){
+      const sel=[...repeatSelectedDays].sort().map(i=>dayNames[i]);
+      info=`Creates copies on ${sel.join(', ')} within this week only — no repeats into future weeks.`;
     }else if(freq==='monthly'){
       const sel=[...repeatSelectedMonths].sort((a,b)=>a-b).map(i=>monthNames[i]);
       info=`Creates copies on the ${ordinal(d.getDate())} of ${sel.length===12?'each month':sel.join(', ')} for the next 12 months. Months that don't have a ${ordinal(d.getDate())} are skipped.`;
@@ -5349,6 +5358,14 @@
     }else if(freq==='weekly'){
       for(let i=1;i<=364;i++){
         const d=new Date(start);d.setDate(d.getDate()+i);
+        if(repeatSelectedDays.has(d.getDay()))dates.push(toDS(d));
+      }
+    }else if(freq==='thisweek'){
+      const weekStart=new Date(start);
+      weekStart.setDate(weekStart.getDate()-weekStart.getDay());
+      for(let i=0;i<7;i++){
+        const d=new Date(weekStart);d.setDate(weekStart.getDate()+i);
+        if(d<=start)continue;
         if(repeatSelectedDays.has(d.getDay()))dates.push(toDS(d));
       }
     }else if(freq==='monthly'){
@@ -5386,7 +5403,7 @@
       const freq=document.getElementById('repeat-freq').value;
       const repeatConfig={
         freq,
-        days:freq==='weekly'?[...repeatSelectedDays]:null,
+        days:(freq==='weekly'||freq==='thisweek')?[...repeatSelectedDays]:null,
         months:freq==='monthly'?[...repeatSelectedMonths]:null,
         customDays:freq==='custom'?[...repeatSelectedCustomDays]:null
       };
@@ -5423,6 +5440,14 @@
         const d=new Date(start);d.setDate(d.getDate()+i);
         if(repeatSelectedDays.has(d.getDay()))dates.push(toDS(d));
       }
+    }else if(freq==='thisweek'){
+      const weekStart=new Date(start);
+      weekStart.setDate(weekStart.getDate()-weekStart.getDay());
+      for(let i=0;i<7;i++){
+        const d=new Date(weekStart);d.setDate(weekStart.getDate()+i);
+        if(d<=start)continue;
+        if(repeatSelectedDays.has(d.getDay()))dates.push(toDS(d));
+      }
     }else if(freq==='monthly'){
       const day=start.getDate();
       for(let i=1;i<=12;i++){
@@ -5456,7 +5481,7 @@
     const groupId=repeatEditMode?repeatGroupId:uid();
     const repeatConfig={
       freq,
-      days:freq==='weekly'?[...repeatSelectedDays]:null,
+      days:(freq==='weekly'||freq==='thisweek')?[...repeatSelectedDays]:null,
       months:freq==='monthly'?[...repeatSelectedMonths]:null,
       customDays:freq==='custom'?[...repeatSelectedCustomDays]:null
     };
