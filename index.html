@@ -958,6 +958,7 @@
     .list-view-top-inner{max-width:540px;margin:0 auto;padding:0.5rem var(--px) 0.3rem}
     #list-items-zone{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none}
     #list-items-zone::-webkit-scrollbar{display:none}
+    #list-items-zone.scroll-locked{overflow:hidden}
 
     /* ── ROUTINE DETAIL — same fixed layout as list detail ── */
     #view-exroutine{flex:1;flex-direction:column;overflow:hidden;min-height:0}
@@ -1082,6 +1083,7 @@
     .li-tag-group.collapsed .li-tag-chevron{transform:rotate(-90deg)}
     .li-tag-body{padding-bottom:0.15rem}
     .li-tag-group.collapsed .li-tag-body{display:none}
+    .li-tag-body.pinned-scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y}
     .li-tag-group.is-dragging{opacity:0.3}
     .li-tag-group.tag-drop-above{box-shadow:0 -3px 0 0 var(--accent);border-radius:var(--r)}
     .li-tag-group.tag-drop-below{box-shadow:0 3px 0 0 var(--accent);border-radius:var(--r)}
@@ -1315,7 +1317,7 @@
 <div class="side-menu" id="side-menu">
   <div class="menu-header">
     <div class="menu-logo">Rou<b>Tine</b></div>
-    <div class="menu-version">v2.7.5</div>
+    <div class="menu-version">v2.7.6</div>
   </div>
   <div class="menu-nav">
     <div class="menu-item active" id="mn-today" onclick="setView('tasks');closeMenu()">
@@ -2651,6 +2653,7 @@
   let listTagCollapsed={}; // {listId:{'#tag1':false}}
   let liTagDragGroup=null,liTagDragGhost=null,liTagDragOffY=0;
   let modalLISubitems=[];
+  let listScrollExpandedTag=null; // tag currently pinned/scroll-locked in the open list, or null
 
   let selectedImg=null;
   let dragId=null,dragGhost=null,dragOffY=0,dragListEl=null;
@@ -4577,7 +4580,8 @@
         if(targetIdxInRest!==-1){
           const insertAt=targetPos==='above'?targetIdxInRest:targetIdxInRest+1;
           rest.splice(insertAt,0,...group);
-          taskOrderIds=rest.map(t=>t.id);
+          const dateIdSet=new Set(rest.map(t=>t.id));
+          taskOrderIds=taskOrderIds.filter(id=>!dateIdSet.has(id)).concat(rest.map(t=>t.id));
           saveDragOrder();taskSortMode='manual';saveSortMode();
           render();
         }
@@ -5242,6 +5246,7 @@
   }
 
   function getRepeatSource(){
+    if(repeatMultiIds&&repeatMultiIds.length)return tasks.find(x=>x.id===repeatMultiIds[0]);
     if(repeatTaskId)return tasks.find(x=>x.id===repeatTaskId);
     if(repeatRemId)return reminders.find(x=>x.id===repeatRemId);
     return null;
@@ -5588,15 +5593,19 @@
       tasks.push({id:taskId,...d,done:false,created:Date.now(),completedAt:null});
       if(addBelowTaskId){
         const currentOrdered=getOrderedPending().filter(t=>t.id!==taskId);
-        taskOrderIds=currentOrdered.map(t=>t.id);
-        const idx=taskOrderIds.indexOf(addBelowTaskId);
-        if(idx!==-1)taskOrderIds.splice(idx+1,0,taskId);else taskOrderIds.push(taskId);
+        const dateIds=currentOrdered.map(t=>t.id);
+        const idx=dateIds.indexOf(addBelowTaskId);
+        if(idx!==-1)dateIds.splice(idx+1,0,taskId);else dateIds.push(taskId);
+        const dateIdSet=new Set(dateIds);
+        taskOrderIds=taskOrderIds.filter(id=>!dateIdSet.has(id)).concat(dateIds);
         taskSortMode='manual';saveSortMode();saveDragOrder();addBelowTaskId=null;
       }else if(addAboveTaskId){
         const currentOrdered=getOrderedPending().filter(t=>t.id!==taskId);
-        taskOrderIds=currentOrdered.map(t=>t.id);
-        const idx=taskOrderIds.indexOf(addAboveTaskId);
-        if(idx!==-1)taskOrderIds.splice(idx,0,taskId);else taskOrderIds.unshift(taskId);
+        const dateIds=currentOrdered.map(t=>t.id);
+        const idx=dateIds.indexOf(addAboveTaskId);
+        if(idx!==-1)dateIds.splice(idx,0,taskId);else dateIds.unshift(taskId);
+        const dateIdSet=new Set(dateIds);
+        taskOrderIds=taskOrderIds.filter(id=>!dateIdSet.has(id)).concat(dateIds);
         taskSortMode='manual';saveSortMode();saveDragOrder();addAboveTaskId=null;
       }
     }
@@ -5971,6 +5980,7 @@
   });
   function openListView(id){
     currentListId=id;
+    unlockListScroll();
     // Collapse all tag groups whenever the list is opened
     const items=listItems[id]||[];
     const tagSet=new Set();
@@ -6026,10 +6036,10 @@
     if(!currentListId)return;
     const items=listItems[currentListId]||[];
     document.getElementById('list-empty').style.display=items.length===0?'flex':'none';
-    if(!items.length){document.getElementById('list-items-wrap').innerHTML='';return;}
+    if(!items.length){document.getElementById('list-items-wrap').innerHTML='';unlockListScroll();return;}
     const tagSet=new Set();
     items.forEach(item=>{if(item.tags&&item.tags.length)tagSet.add(item.tags[0]);});
-    if(!tagSet.size){document.getElementById('list-items-wrap').innerHTML=items.map(renderLICard).join('');return;}
+    if(!tagSet.size){document.getElementById('list-items-wrap').innerHTML=items.map(renderLICard).join('');unlockListScroll();return;}
     const saved=listTagOrders[currentListId]||[];
     const ordered=saved.filter(t=>tagSet.has(t));
     tagSet.forEach(t=>{if(!ordered.includes(t))ordered.push(t);});
@@ -6079,6 +6089,7 @@
       </div>`;
     }
     document.getElementById('list-items-wrap').innerHTML=html;
+    reapplyListScrollLock();
   }
   function toggleLI(id){
     const items=listItems[currentListId]||[];const it=items.find(x=>x.id===id);
@@ -6108,6 +6119,67 @@
       if(c.id!=='licard-'+exceptId)c.classList.remove('expanded');
     });
   }
+  function unlockListScroll(){
+    const zone=document.getElementById('list-items-zone');
+    if(zone)zone.classList.remove('scroll-locked');
+    if(listScrollExpandedTag){
+      const safe=listScrollExpandedTag==='__untagged__'?'untagged':listScrollExpandedTag.replace(/[^a-z0-9]/g,'_');
+      const body=document.querySelector('#ligrp-'+safe+' .li-tag-body');
+      if(body){body.style.maxHeight='';body.classList.remove('pinned-scroll');}
+    }
+    listScrollExpandedTag=null;
+  }
+
+  function reapplyListScrollLock(){
+    if(!listScrollExpandedTag)return;
+    const tag=listScrollExpandedTag;
+    const zone=document.getElementById('list-items-zone');
+    const safe=tag==='__untagged__'?'untagged':tag.replace(/[^a-z0-9]/g,'_');
+    const grp=document.getElementById('ligrp-'+safe);
+    if(!zone||!grp){
+      if(zone)zone.classList.remove('scroll-locked');
+      listScrollExpandedTag=null;
+      return;
+    }
+    const hdrWrap=grp.querySelector('.li-tag-hdr-wrap')||grp.querySelector('.li-tag-hdr');
+    const body=grp.querySelector('.li-tag-body');
+    if(!body)return;
+    zone.classList.add('scroll-locked');
+    const hdrRect=hdrWrap?hdrWrap.getBoundingClientRect():{height:0};
+    const hdrStyle=hdrWrap?getComputedStyle(hdrWrap):null;
+    const hdrTotal=hdrRect.height+(hdrStyle?(parseFloat(hdrStyle.marginBottom)||0):0);
+    const avail=Math.max(80,zone.clientHeight-hdrTotal);
+    body.style.maxHeight=avail+'px';
+    body.classList.add('pinned-scroll');
+  }
+
+  function lockListScrollToGroup(tag){
+    unlockListScroll();
+    const zone=document.getElementById('list-items-zone');
+    const safe=tag==='__untagged__'?'untagged':tag.replace(/[^a-z0-9]/g,'_');
+    const grp=document.getElementById('ligrp-'+safe);
+    if(!zone||!grp)return;
+    const hdrWrap=grp.querySelector('.li-tag-hdr-wrap')||grp.querySelector('.li-tag-hdr');
+    const body=grp.querySelector('.li-tag-body');
+    if(!body)return;
+    listScrollExpandedTag=tag;
+    requestAnimationFrame(()=>{
+      const zr=zone.getBoundingClientRect();
+      const gr=grp.getBoundingClientRect();
+      zone.scrollTo({top:zone.scrollTop+(gr.top-zr.top)-6,behavior:'smooth'});
+      setTimeout(()=>{
+        if(listScrollExpandedTag!==tag)return;
+        zone.classList.add('scroll-locked');
+        const hdrRect=hdrWrap.getBoundingClientRect();
+        const hdrStyle=getComputedStyle(hdrWrap);
+        const hdrTotal=hdrRect.height+(parseFloat(hdrStyle.marginBottom)||0);
+        const avail=Math.max(80,zone.clientHeight-hdrTotal);
+        body.style.maxHeight=avail+'px';
+        body.classList.add('pinned-scroll');
+      },340);
+    });
+  }
+
   function toggleLITagGroup(e,tag){
     if(e)e.stopPropagation();
     if(tagHdrOpenTag)closeLITagHdr(tagHdrOpenTag);
@@ -6143,6 +6215,12 @@
     const safe=tag==='__untagged__'?'untagged':tag.replace(/[^a-z0-9]/g,'_');
     const grp=document.getElementById('ligrp-'+safe);
     if(grp)grp.classList.toggle('collapsed',!!listTagCollapsed[currentListId][tag]);
+
+    if(isCurrentlyCollapsed){
+      lockListScrollToGroup(tag);
+    }else{
+      unlockListScroll();
+    }
   }
   function toggleLISubitem(itemId,subId,e){
     if(e)e.stopPropagation();
@@ -6659,7 +6737,7 @@
       const todaySlots=dayMap[today]||[];
       const hasSlots=todaySlots.length>0;
       const isExp=expandedForecastDay===today;
-      todayHTML=`<div class="weather-day-card is-today">
+      todayHTML=`<div class="weather-day-card is-today" id="weather-daycard-${today}">
         <div class="weather-card-strip" style="background:linear-gradient(to right,var(--accent),transparent)"></div>
         <div class="weather-day-row" ${hasSlots?`onclick="toggleForecastDay('${today}')"`:'style="cursor:default"'}>
           <div class="weather-day-left"><div class="weather-day-label">Today</div><div class="weather-day-date">${tD.getDate()} ${MON[tD.getMonth()]}</div></div>
@@ -6694,7 +6772,7 @@
       const d=new Date(date+'T12:00:00');
       const label=date===addDays(today,1)?'Tomorrow':DAY[d.getDay()];
       const isExp=expandedForecastDay===date;
-      return`<div class="weather-day-card">
+      return`<div class="weather-day-card" id="weather-daycard-${date}">
         <div class="weather-card-strip" style="background:linear-gradient(to right,var(--accent),transparent)"></div>
         <div class="weather-day-row" onclick="toggleForecastDay('${date}')">
           <div class="weather-day-left"><div class="weather-day-label">${label}</div><div class="weather-day-date">${d.getDate()} ${MON[d.getMonth()]}</div></div>
@@ -6711,12 +6789,13 @@
     }).join('');
 
     const city=forecastData&&forecastData.city?forecastData.city.name:cfg.weatherLocation;
+    const country=(forecastData&&forecastData.city&&forecastData.city.country)?forecastData.city.country:((currentWeatherData&&currentWeatherData.sys&&currentWeatherData.sys.country)?currentWeatherData.sys.country:'');
     const upd=forecastSlotTime?`Updated ${new Date(forecastSlotTime).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}`:'';
     const nextUpd=forecastSlotTime?`Next update ${new Date(getNextForecastSlot(new Date(forecastSlotTime+1))).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}`:'';
     div.innerHTML=`
       <div class="weather-page-hdr">
         <button class="notes-back-btn" onclick="closeWeatherPage()">← Back</button>
-        <div class="weather-page-city">${city}</div>
+        <div class="weather-page-city">${city}${country?', '+country:''}</div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.08rem">
           <div class="weather-page-updated">${upd}</div>
           ${nextUpd?`<div class="weather-page-next-update">${nextUpd}</div>`:''}
@@ -6732,12 +6811,14 @@
     renderWeatherPage();
     if(expandedForecastDay){
       requestAnimationFrame(()=>{
-        const section=document.getElementById('forecast-3h-'+expandedForecastDay);
+        const card=document.getElementById('weather-daycard-'+expandedForecastDay);
         const scrollEl=document.getElementById('weather-panel');
-        if(section&&scrollEl){
+        if(card&&scrollEl){
           const sr=scrollEl.getBoundingClientRect();
-          const sec=section.getBoundingClientRect();
-          scrollEl.scrollTo({top:scrollEl.scrollTop+(sec.top-sr.top)-8,behavior:'smooth'});
+          const cr=card.getBoundingClientRect();
+          const safeCover=document.getElementById('safe-area-cover');
+          const safeTop=safeCover?(parseFloat(getComputedStyle(safeCover).height)||0):0;
+          scrollEl.scrollTo({top:scrollEl.scrollTop+(cr.top-sr.top)-(safeTop+8),behavior:'smooth'});
         }
       });
     }
@@ -6825,6 +6906,7 @@
 
   function setView(v){
     expandedCards.clear();
+    if(v!=='list')unlockListScroll();
     if(v!=='tasks'&&multiSelectMode){multiSelectMode=false;selectedTaskIds=new Set();}
     if(currentNoteId)saveCurrentNote();
     if(v!=='notes')document.getElementById('note-toolbar').style.display='none';
@@ -7478,7 +7560,8 @@
           if(newToIdx!==-1){
             if(targetPos==='above')ordered.splice(newToIdx,0,moved);
             else ordered.splice(newToIdx+1,0,moved);
-            taskOrderIds=ordered.map(t=>t.id);
+            const dateIdSet=new Set(ordered.map(t=>t.id));
+            taskOrderIds=taskOrderIds.filter(id=>!dateIdSet.has(id)).concat(ordered.map(t=>t.id));
             saveDragOrder();
             taskSortMode='manual';
             saveSortMode();
