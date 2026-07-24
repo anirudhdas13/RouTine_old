@@ -180,16 +180,20 @@
       background:var(--surface2);
       border-radius:var(--r);
       padding:0.4rem 0.75rem;
+      cursor:pointer;
     }
+    .date-strip-box:active{background:var(--surface3)}
     body.has-bg .date-strip-box{
       background:rgba(240,239,233,0);
       backdrop-filter:blur(10px);
       -webkit-backdrop-filter:blur(10px);
       box-shadow:0 1px 8px rgba(0,0,0,0.08);
     }
+    body.has-bg .date-strip-box:active{background:rgba(240,239,233,0.25)}
     body.has-bg.dark .date-strip-box{
       background:rgba(36,36,34,0);
     }
+    body.has-bg.dark .date-strip-box:active{background:rgba(36,36,34,0.25)}
     .date-day{font-size:0.7rem;color:var(--text3);letter-spacing:0.03em}
     .date-main-row{display:flex;align-items:baseline;gap:0.4rem}
     .date-big{font-size:1.55rem;font-weight:300;color:var(--text);letter-spacing:-0.04em;line-height:1.15}
@@ -518,6 +522,12 @@
     .menu-icon svg{width:0.95rem;height:0.95rem;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
     .menu-sep{height:0.5px;background:var(--border2);margin:0.4rem var(--px)}
     .menu-section-lbl{font-size:0.62rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);padding:0.5rem var(--px) 0.25rem;font-weight:500}
+    .menu-group-hdr{display:flex;align-items:center;justify-content:space-between;padding:0.5rem var(--px) 0.3rem;cursor:pointer;-webkit-user-select:none;user-select:none;transition:opacity var(--tr)}
+    .menu-group-hdr:active{opacity:0.65}
+    .menu-group-title{font-size:0.62rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--text3);font-weight:500}
+    .menu-group-chevron{font-size:0.62rem;color:var(--text3);transition:transform var(--tr)}
+    .menu-group.collapsed .menu-group-chevron{transform:rotate(-90deg)}
+    .menu-group.collapsed .menu-group-body{display:none}
     .list-menu-row{display:flex;align-items:center;padding:0.65rem var(--px);gap:0.5rem;cursor:pointer;transition:background var(--tr);color:var(--text2);font-size:0.82rem}
     .list-menu-row:hover{background:var(--surface2)}
     .lmr-name{flex:1}
@@ -1353,11 +1363,14 @@
 <div class="side-menu" id="side-menu">
   <div class="menu-header">
     <div class="menu-logo">Rou<b>Tine</b></div>
-    <div class="menu-version">v2.8.1</div>
+    <div class="menu-version">v2.8.2</div>
   </div>
   <div class="menu-nav">
     <div class="menu-item active" id="mn-today" onclick="setView('tasks');closeMenu()">
       <span class="menu-icon"><svg viewBox="0 0 18 18"><rect x="2" y="3" width="14" height="13" rx="2"/><path d="M2 7h14M6 3V1M12 3V1"/></svg></span>Today
+    </div>
+    <div class="menu-item" id="mn-quick" onclick="setView('quick');closeMenu()">
+      <span class="menu-icon"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 3h10v9l-3 3H4V3z"/><path d="M7 7h4M7 10h4"/></svg></span>Quick Notes
     </div>
     <div class="menu-item" id="mn-future" onclick="setView('future');closeMenu()">
       <span class="menu-icon"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="9" r="6"/><path d="M9 6v3l2 2"/></svg></span>Future Tasks
@@ -1366,38 +1379,50 @@
       <span class="menu-icon"><svg viewBox="0 0 18 18"><rect x="2" y="3" width="14" height="13" rx="2"/><path d="M2 7h14M6 3V1M12 3V1"/><circle cx="9" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></span>Calendar
     </div>
     <div class="menu-sep"></div>
-    <div class="menu-item" id="mn-focus" onclick="setView('focus');closeMenu()">
-      <span class="menu-icon"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="9" r="7"/><path d="M9 5v4l3 2"/></svg></span>Focus
+
+    <div class="menu-group collapsed" id="mg-track">
+      <div class="menu-group-hdr" onclick="toggleMenuGroup('track')">
+        <span class="menu-group-title">Track</span>
+        <span class="menu-group-chevron">▾</span>
+      </div>
+      <div class="menu-group-body">
+        <div class="menu-item" id="mn-focus" onclick="setView('focus');closeMenu()">
+          <span class="menu-icon"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="9" r="7"/><path d="M9 5v4l3 2"/></svg></span>Focus
+        </div>
+        <div class="menu-item" id="mn-exercise" onclick="exTab='today';setView('exercise');closeMenu()">
+          <span class="menu-icon"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 9h2M14 9h2M4 9h10M5 6v6M13 6v6"/></svg></span>Exercise
+        </div>
+        <div class="menu-item" id="mn-budget" onclick="setView('budget');closeMenu()">
+          <span class="menu-icon"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="5" width="14" height="9" rx="2"/><circle cx="9" cy="9.5" r="2"/><path d="M4.5 7.5v.01M13.5 11.5v.01"/></svg></span>Budget
+        </div>
+      </div>
     </div>
     <div class="menu-sep"></div>
-    <div class="menu-item" id="mn-exercise" onclick="exTab='today';setView('exercise');closeMenu()">
-      <span class="menu-icon"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 9h2M14 9h2M4 9h10M5 6v6M13 6v6"/></svg></span>Exercise
-    </div>
-    <div class="menu-sep"></div>
-    <div class="menu-item" id="mn-budget" onclick="setView('budget');closeMenu()">
-      <span class="menu-icon"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="5" width="14" height="9" rx="2"/><circle cx="9" cy="9.5" r="2"/><path d="M4.5 7.5v.01M13.5 11.5v.01"/></svg></span>Budget
-    </div>
-    <div class="menu-sep"></div>
-    <div class="menu-item" id="mn-lists" onclick="setView('lists');closeMenu()">
-      <span class="menu-icon"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="2" width="14" height="4" rx="1"/><rect x="2" y="9" width="14" height="4" rx="1"/><path d="M2 16h8"/></svg></span>Lists
-    </div>
-    <div class="menu-section-lbl" id="pinned-lists-lbl" style="display:none">Pinned</div>
-    <div id="menu-lists-wrap"></div>
-    <div class="menu-sep"></div>
-    <div class="menu-item" id="mn-hashtags" onclick="setView('hashtags');renderHashtags();closeMenu()">
-      <span class="menu-icon" style="font-size:1rem;font-weight:600;font-family:var(--mono)">#</span>Hashtags
-    </div>
-    <div class="menu-sep"></div>
-    <div class="menu-item" id="mn-analyze" onclick="setView('analyze');closeMenu()">
-      <span class="menu-icon"><svg viewBox="0 0 18 18"><path d="M2 14V9M5 14V5M8 14V7M11 14V3M14 14V6"/></svg></span>Analyze
-    </div>
-    <div class="menu-sep"></div>
-    <div class="menu-item" id="mn-notes" onclick="setView('notes');closeMenu()">
-      <span class="menu-icon"><svg viewBox="0 0 18 18"><rect x="3" y="2" width="12" height="14" rx="2"/><path d="M6 6h6M6 9h6M6 12h4"/></svg></span>Notes
-    </div>
-    <div class="menu-sep"></div>
-    <div class="menu-item" id="mn-files" onclick="setView('files');closeMenu()">
-      <span class="menu-icon"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 4h4l2 2h6v8H3V4z"/></svg></span>Files
+
+    <div class="menu-group collapsed" id="mg-organize">
+      <div class="menu-group-hdr" onclick="toggleMenuGroup('organize')">
+        <span class="menu-group-title">Organize</span>
+        <span class="menu-group-chevron">▾</span>
+      </div>
+      <div class="menu-group-body">
+        <div class="menu-item" id="mn-lists" onclick="setView('lists');closeMenu()">
+          <span class="menu-icon"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="2" width="14" height="4" rx="1"/><rect x="2" y="9" width="14" height="4" rx="1"/><path d="M2 16h8"/></svg></span>Lists
+        </div>
+        <div class="menu-section-lbl" id="pinned-lists-lbl" style="display:none">Pinned</div>
+        <div id="menu-lists-wrap"></div>
+        <div class="menu-item" id="mn-hashtags" onclick="setView('hashtags');renderHashtags();closeMenu()">
+          <span class="menu-icon" style="font-size:1rem;font-weight:600;font-family:var(--mono)">#</span>Hashtags
+        </div>
+        <div class="menu-item" id="mn-notes" onclick="setView('notes');closeMenu()">
+          <span class="menu-icon"><svg viewBox="0 0 18 18"><rect x="3" y="2" width="12" height="14" rx="2"/><path d="M6 6h6M6 9h6M6 12h4"/></svg></span>Notes
+        </div>
+        <div class="menu-item" id="mn-files" onclick="setView('files');closeMenu()">
+          <span class="menu-icon"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 4h4l2 2h6v8H3V4z"/></svg></span>Files
+        </div>
+        <div class="menu-item" id="mn-analyze" onclick="setView('analyze');closeMenu()">
+          <span class="menu-icon"><svg viewBox="0 0 18 18"><path d="M2 14V9M5 14V5M8 14V7M11 14V3M14 14V6"/></svg></span>Analyze
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1431,7 +1456,7 @@
 
   <!-- Date strip + Weather widget -->
   <div class="date-widget-row" id="date-strip">
-    <div class="date-strip-box">
+    <div class="date-strip-box" onclick="setView('calendar')">
       <div class="date-day" id="date-day"></div>
       <div class="date-main-row">
         <div class="date-big" id="date-big"></div>
@@ -1718,6 +1743,28 @@
         <div class="empty-state" id="future-empty" style="display:none">
           <div class="empty-icon"><svg width="2.2rem" height="2.2rem" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.35"><circle cx="16" cy="16" r="12"/><path d="M16 10v6l3.5 3.5"/></svg></div>
           <div class="empty-text">No future tasks. Tap above to add one.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="quick-header" style="display:none;">
+    <div class="tasks-header-inner">
+      <div class="form-group" style="margin-bottom:0.5rem">
+        <div style="display:flex;gap:0.5rem">
+          <input class="form-input" id="quick-input" type="text" placeholder="Jot something down..." style="flex:1">
+          <button class="btn btn-primary" id="quick-add-btn" style="flex:none;padding:0.6rem 1rem">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="view-quick" style="display:none">
+    <div id="quick-zone" style="flex:1;overflow-y:auto;overflow-x:hidden;min-height:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none">
+      <div class="zone-inner">
+        <div id="quick-list-wrap"></div>
+        <div class="empty-state" id="quick-empty" style="display:none">
+          <div class="empty-icon"><svg width="2.2rem" height="2.2rem" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.35"><path d="M4 3h10v9l-3 3H4V3z"/><path d="M7 7h4M7 10h4"/></svg></div>
+          <div class="empty-text">Nothing jotted down yet. Type above and hit +.</div>
         </div>
       </div>
     </div>
@@ -2340,9 +2387,9 @@
     <div class="confirm-title">Repeating item edited</div>
     <div class="confirm-text" id="repeat-scope-text">Apply this change to other occurrences too?</div>
     <div class="repeat-scope-btns">
+      <button class="btn btn-ghost" id="repeat-scope-just">Just this one</button>
       <button class="btn btn-primary" id="repeat-scope-future">This and future</button>
       <button class="btn" id="repeat-scope-all" style="background:var(--pm-l);color:var(--pm)">All occurrences</button>
-      <button class="btn btn-ghost" id="repeat-scope-just">Just this one</button>
     </div>
   </div>
 </div>
@@ -2810,7 +2857,7 @@
   /* ═══════════════════════════════════════════════════════
      STORAGE KEYS & GLOBAL STATE
      ═══════════════════════════════════════════════════════ */
-  const K={tasks:'rt_tasks_v5',rems:'rt_rems_v3',lists:'rt_lists_v4',cfg:'rt_cfg_v6',bg:'rt_bg_v1',timer:'rt_timer_v1',st:'rt_st_v1',notes:'rt_notes_v1',future:'rt_future_v1',forecast:'rt_forecast_v1',exercises:'rt_exercises_v1',routines:'rt_routines_v1',sessions:'rt_worksessions_v1',budget:'rt_budget_v1',files:'rt_files_meta_v1',focusTpl:'rt_focus_templates_v1',focusSess:'rt_focus_session_v1'};
+  const K={tasks:'rt_tasks_v5',rems:'rt_rems_v3',lists:'rt_lists_v4',cfg:'rt_cfg_v6',bg:'rt_bg_v1',timer:'rt_timer_v1',st:'rt_st_v1',notes:'rt_notes_v1',future:'rt_future_v1',forecast:'rt_forecast_v1',exercises:'rt_exercises_v1',routines:'rt_routines_v1',sessions:'rt_worksessions_v1',budget:'rt_budget_v1',files:'rt_files_meta_v1',focusTpl:'rt_focus_templates_v1',focusSess:'rt_focus_session_v1',quick:'rt_quick_v1'};
   const IDB_NAME='routine_files_db',IDB_STORE='blobs';
   let idbPromise=null;
   function idbOpen(){
@@ -2930,6 +2977,7 @@
   let taskOrderIds=[];
   let taskSortMode='added'; // 'added' | 'time' | 'manual'
   let futureTasks=[];
+  let quickItems=[];
   let futureTagOrder=[],futureTagCollapsed={};
   let editFutureId=null,moveFutureId=null,addToFutureTagGroup=null;
   let exercises=[],routines=[],workoutSessions=[];
@@ -4275,6 +4323,21 @@
       el.classList.toggle('name-expanded');
     }
   }
+  function scrollLICardIntoView(id){
+    requestAnimationFrame(()=>{
+      const card=document.getElementById('licard-'+id);
+      if(!card)return;
+      const zone=listScrollExpandedTag?card.closest('.li-tag-body'):document.getElementById('list-items-zone');
+      if(!zone)return;
+      const zr=zone.getBoundingClientRect();
+      const cr=card.getBoundingClientRect();
+      if(cr.bottom>zr.bottom){
+        zone.scrollTo({top:zone.scrollTop+(cr.bottom-zr.bottom)+12,behavior:'smooth'});
+      }else if(cr.top<zr.top){
+        zone.scrollTo({top:zone.scrollTop+(cr.top-zr.top)-12,behavior:'smooth'});
+      }
+    });
+  }
   function toggleLICardExpand(e,id){
     e.stopPropagation();
     const card=document.getElementById('licard-'+id);if(!card)return;
@@ -4283,7 +4346,7 @@
     const item=(listItems[currentListId]||[]).find(x=>x.id===id);
     const hasExpand=!!(item&&(item.notes||(item.subitems&&item.subitems.length)));
     const nameOverflows=nameEl&&nameEl.scrollWidth>nameEl.clientWidth+2;
-    if(nameOverflows||hasExpand){collapseOtherLICards(id);card.classList.add('expanded');}
+    if(nameOverflows||hasExpand){collapseOtherLICards(id);card.classList.add('expanded');scrollLICardIntoView(id);}
   }
 
   function fmtDur(min){if(!min)return'';if(min<60)return`${min}m`;const h=Math.floor(min/60),m=min%60;return m?`${h}h ${m}m`:`${h}h`}
@@ -5120,6 +5183,67 @@
     markClippedCards();
   }
 
+  function saveQuick(){try{localStorage.setItem(K.quick,JSON.stringify(quickItems));}catch(e){}}
+  function loadQuick(){try{const d=localStorage.getItem(K.quick);if(d)quickItems=JSON.parse(d);}catch(e){}}
+  function quickTimeLabel(ts){
+    const d=new Date(ts),now=new Date();
+    const diff=Math.floor((now-d)/86400000);
+    if(diff===0)return d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+    if(diff===1)return'Yesterday';
+    if(diff<7)return d.toLocaleDateString([],{weekday:'short'});
+    return fmtDate(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`);
+  }
+  function quickCardHTML(item){
+    const swW=SW_W();
+    const rightPanel=`<div class="swipe-actions" id="sw-${item.id}" style="width:0;overflow:hidden;transition:width 0.25s cubic-bezier(0.4,0,0.2,1)">
+      <button class="sw-btn sw-move" style="width:${swW/2}px" onclick="convertQuickToTask('${item.id}')"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="14" height="13" rx="2"/><path d="M2 7h14M6 3V1M12 3V1"/></svg><span>To Task</span></button>
+      <button class="sw-btn sw-delete" style="width:${swW/2}px;border-radius:0 var(--r) var(--r) 0" onclick="confirmDelQuick('${item.id}')"><svg viewBox="0 0 18 18"><path d="M4 6h10M5 6l1 9h6l1-9M7 9v4M11 9v4M7 6V4h4v2"/></svg><span>Delete</span></button>
+    </div>`;
+    return`<div class="task-card-wrap" id="wrap-${item.id}">
+      ${rightPanel}
+      <div class="task-card" id="card-${item.id}" data-tx="0" style="height:auto"
+        ontouchstart="swTouchStart(event,'${item.id}')" ontouchmove="swTouchMove(event,'${item.id}')" ontouchend="swTouchEnd(event,'${item.id}')">
+        <div class="task-row">
+          <div class="task-body">
+            <div class="task-name" style="white-space:normal;overflow:visible;text-overflow:clip;word-break:break-word">${item.text}</div>
+            <div class="task-meta"><span class="meta-time">${quickTimeLabel(item.created)}</span></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+  function renderQuickItems(){
+    const wrap=document.getElementById('quick-list-wrap');
+    const empty=document.getElementById('quick-empty');
+    if(!wrap)return;
+    if(!quickItems.length){wrap.innerHTML='';if(empty)empty.style.display='flex';return;}
+    if(empty)empty.style.display='none';
+    const sorted=[...quickItems].sort((a,b)=>b.created-a.created);
+    wrap.innerHTML=sorted.map(quickCardHTML).join('');
+  }
+  function addQuickItem(){
+    const inp=document.getElementById('quick-input');
+    const text=inp.value.trim();if(!text)return;
+    quickItems.push({id:uid(),text,created:Date.now()});
+    inp.value='';saveQuick();renderQuickItems();
+  }
+  function confirmDelQuick(id){
+    closeSwipe(id);
+    showConfirm('Delete this note?','This cannot be undone.',()=>{
+      quickItems=quickItems.filter(x=>x.id!==id);saveQuick();renderQuickItems();showToast('Deleted');
+    });
+  }
+  function convertQuickToTask(id){
+    closeSwipe(id);
+    const item=quickItems.find(x=>x.id===id);if(!item)return;
+    tasks.push({id:uid(),name:item.text,emoji:null,priority:null,tags:[],date:todayStr(),
+      time:null,duration:null,notes:null,subtasks:[],done:false,created:Date.now(),completedAt:null});
+    quickItems=quickItems.filter(x=>x.id!==id);
+    saveAll();saveQuick();
+    renderQuickItems();
+    showToast('Added to today\'s tasks');
+  }
+
   function switchSection(){
       const isToday=taskViewDate===todayStr();
       const done=tasks.filter(t=>t.done&&(t.date===taskViewDate||(isToday&&!t.date)));
@@ -5168,6 +5292,7 @@
   }
   function confirmDelTask(id){
     closeSwipe(id);const t=tasks.find(x=>x.id===id);if(!t)return;
+    if(t.repeatGroupId){promptRepeatDelete('task',t);return;}
     showConfirm(`Delete "${t.name}"?`,'This cannot be undone.',()=>{if(activeTimerId===id)stopTimer();cancelNotif(id);tasks=tasks.filter(x=>x.id!==id);saveAll();render();showToast('Task deleted');refreshCalIfActive();});
   }
   function openCopyTask(id){
@@ -5528,9 +5653,15 @@
       return Object.keys(changed).some(k=>JSON.stringify(xf[k])!==JSON.stringify(changed[k]));
     });
   }
+  function hasFutureRepeatSibling(kind,groupId,excludeId,srcDate){
+    const list=kind==='task'?tasks:reminders;
+    return list.some(x=>x.repeatGroupId===groupId&&x.id!==excludeId&&x.date&&srcDate&&x.date>srcDate);
+  }
   function promptRepeatPropagation(kind,groupId,id,srcDate,changedFields,subtaskDelta,snapshotFull){
+    repeatScopeMode='edit';
     pendingRepeatEdit={kind,groupId,id,srcDate,changedFields,subtaskDelta,snapshotFull};
     document.getElementById('repeat-scope-text').textContent=kind==='task'?'You edited a repeating task. Apply this change to other occurrences too?':'You edited a repeating reminder. Apply this change to other occurrences too?';
+    document.getElementById('repeat-scope-future').style.display=hasFutureRepeatSibling(kind,groupId,id,srcDate)?'':'none';
     document.getElementById('repeat-scope-overlay').classList.add('open');
   }
   function keepJustThisOne(){
@@ -5579,11 +5710,59 @@
     document.getElementById('repeat-scope-overlay').classList.remove('open');
     showToast('Applied to repeats');
   }
-  document.getElementById('repeat-scope-just').addEventListener('click',keepJustThisOne);
-  document.getElementById('repeat-scope-future').addEventListener('click',()=>applyRepeatPropagation(false));
-  document.getElementById('repeat-scope-all').addEventListener('click',()=>applyRepeatPropagation(true));
+  let repeatScopeMode='edit'; // 'edit' | 'delete'
+  let pendingRepeatDelete=null;
+  function closeRepeatScopeOverlay(){
+    pendingRepeatDelete=null;repeatScopeMode='edit';
+    document.getElementById('repeat-scope-overlay').classList.remove('open');
+  }
+  function cancelRepeatDelete(){closeRepeatScopeOverlay();}
+  function promptRepeatDelete(kind,obj){
+    repeatScopeMode='delete';
+    pendingRepeatDelete={kind,groupId:obj.repeatGroupId,id:obj.id,srcDate:obj.date};
+    document.getElementById('repeat-scope-text').textContent=(kind==='task'?'This task repeats.':'This reminder repeats.')+' What would you like to delete?';
+    document.getElementById('repeat-scope-future').style.display=hasFutureRepeatSibling(kind,obj.repeatGroupId,obj.id,obj.date)?'':'none';
+    document.getElementById('repeat-scope-overlay').classList.add('open');
+  }
+  function deleteRepeatScope(scope){
+    if(!pendingRepeatDelete)return;
+    const{kind,groupId,id,srcDate}=pendingRepeatDelete;
+    const isTask=kind==='task';
+    const list=isTask?tasks:reminders;
+    const obj=list.find(x=>x.id===id);
+    if(!obj){closeRepeatScopeOverlay();return;}
+    if(scope==='just'){
+      if(isTask){if(activeTimerId===id)stopTimer();cancelNotif(id);tasks=tasks.filter(x=>x.id!==id);}
+      else{cancelNotif(id);reminders=reminders.filter(x=>x.id!==id);}
+    }else if(scope==='future'){
+      const toDelete=list.filter(x=>x.repeatGroupId===groupId&&x.date>=srcDate);
+      toDelete.forEach(x=>{cancelNotif(x.id);if(isTask&&activeTimerId===x.id)stopTimer();});
+      const keepIds=new Set(list.filter(x=>x.repeatGroupId!==groupId||x.date<srcDate).map(x=>x.id));
+      if(isTask)tasks=tasks.filter(x=>keepIds.has(x.id));else reminders=reminders.filter(x=>keepIds.has(x.id));
+    }else if(scope==='all'){
+      const toDelete=list.filter(x=>x.repeatGroupId===groupId);
+      toDelete.forEach(x=>{cancelNotif(x.id);if(isTask&&activeTimerId===x.id)stopTimer();});
+      const keepIds=new Set(list.filter(x=>x.repeatGroupId!==groupId).map(x=>x.id));
+      if(isTask)tasks=tasks.filter(x=>keepIds.has(x.id));else reminders=reminders.filter(x=>keepIds.has(x.id));
+    }
+    saveAll();
+    if(isTask){render();}else{renderReminders();}
+    refreshCalIfActive();
+    showToast(scope==='just'?(isTask?'Task deleted':'Reminder deleted'):'Repeats deleted');
+    closeRepeatScopeOverlay();
+  }
+  document.getElementById('repeat-scope-just').addEventListener('click',()=>{
+    if(repeatScopeMode==='delete')deleteRepeatScope('just');else keepJustThisOne();
+  });
+  document.getElementById('repeat-scope-future').addEventListener('click',()=>{
+    if(repeatScopeMode==='delete')deleteRepeatScope('future');else applyRepeatPropagation(false);
+  });
+  document.getElementById('repeat-scope-all').addEventListener('click',()=>{
+    if(repeatScopeMode==='delete')deleteRepeatScope('all');else applyRepeatPropagation(true);
+  });
   document.getElementById('repeat-scope-overlay').addEventListener('click',e=>{
-    if(e.target===e.currentTarget)cancelRepeatEdit();
+    if(e.target!==e.currentTarget)return;
+    if(repeatScopeMode==='delete')cancelRepeatDelete();else cancelRepeatEdit();
   });
   function openRepeatModal(id){
     closeSwipe(id);repeatMultiIds=null;repeatTaskId=id;repeatRemId=null;
@@ -6113,6 +6292,7 @@
   }
   function delReminder(id){
     const r=reminders.find(x=>x.id===id);if(!r)return;
+    if(r.repeatGroupId){promptRepeatDelete('rem',r);return;}
     showConfirm(`Delete "${r.name}"?`,'This cannot be undone.',()=>{
       cancelNotif(id);reminders=reminders.filter(x=>x.id!==id);saveAll();renderReminders();refreshCalIfActive();showToast('Reminder deleted');
     });
@@ -6258,6 +6438,8 @@
   });
   document.getElementById('add-li-inline-btn').addEventListener('click',()=>openAddLI());
   document.getElementById('add-future-btn').addEventListener('click',()=>openAddFutureTask());
+  document.getElementById('quick-add-btn').addEventListener('click',addQuickItem);
+  document.getElementById('quick-input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addQuickItem();}});
   document.getElementById('future-name').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('future-save').click();});
   document.getElementById('future-subtask-add-btn').addEventListener('click',addFutureModalSubtask);
   document.getElementById('future-subtask-input').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addFutureModalSubtask();}});
@@ -6532,6 +6714,7 @@
     if(card.classList.contains('expanded')){card.classList.remove('expanded');return;}
     collapseOtherLICards(id);
     card.classList.add('expanded');
+    scrollLICardIntoView(id);
   }
   function collapseOtherLICards(exceptId){
     document.querySelectorAll('#list-items-wrap .list-item-card.expanded').forEach(c=>{
@@ -7375,7 +7558,7 @@
     });
   });
 
-  const ALL_VIEWS=['tasks','reminders','calendar','list','lists','hashtags','analyze','notes','future','exercise','exroutine','exsession','exhistory','budget','files','focus'];
+  const ALL_VIEWS=['tasks','reminders','calendar','list','lists','hashtags','analyze','notes','future','exercise','exroutine','exsession','exhistory','budget','files','focus','quick'];
 
   function setView(v){
     expandedCards.clear();
@@ -7385,7 +7568,7 @@
     if(v!=='notes')document.getElementById('note-toolbar').style.display='none';
     currentView=v;
     ALL_VIEWS.forEach(x=>document.getElementById('view-'+x).style.display='none');
-    const isFlexView=v==='tasks'||v==='list'||v==='reminders'||v==='calendar'||v==='future'||v==='exroutine'||v==='exsession'||v==='exhistory'||v==='budget';
+    const isFlexView=v==='tasks'||v==='list'||v==='reminders'||v==='calendar'||v==='future'||v==='exroutine'||v==='exsession'||v==='exhistory'||v==='budget'||v==='quick';
     document.getElementById('view-'+v).style.display=isFlexView?'flex':'block';
     document.getElementById('scroll-area').style.display=isFlexView?'none':'block';
     const isHome=v==='tasks'||v==='reminders';
@@ -7395,6 +7578,7 @@
     document.getElementById('lists-header').style.display=(v==='lists')?'block':'none';
     document.getElementById('rem-header').style.display=(v==='reminders')?'block':'none';
     document.getElementById('future-header').style.display=(v==='future')?'block':'none';
+    document.getElementById('quick-header').style.display=(v==='quick')?'block':'none';
     document.getElementById('exercise-header').style.display=(v==='exercise')?'block':'none';
     document.getElementById('budget-header').style.display=(v==='budget')?'block':'none';
     document.getElementById('files-header').style.display=(v==='files')?'block':'none';
@@ -7412,6 +7596,7 @@
     else if(v==='lists')renderListsPage();
     else if(v==='notes'){renderNotes();}
     else if(v==='future'){const fz=document.getElementById('future-zone');if(fz)fz.scrollTop=0;renderFutureTasks();}
+    else if(v==='quick'){const qz=document.getElementById('quick-zone');if(qz)qz.scrollTop=0;renderQuickItems();}
     else if(v==='exercise'){setExTab(exTab);}
     else if(v==='exroutine'){renderRoutineHdr();renderRoutineItems();}
     else if(v==='exsession'){renderExerciseSession();}
@@ -7419,14 +7604,39 @@
     else if(v==='budget'){const bn=new Date();budgetYear=bn.getFullYear();budgetMonth=bn.getMonth();expandedSplitPersonId=null;budgetTab='budgets';expandedBudgetCatId=null;budgetSearchOpen=false;budgetSearchQuery='';budgetHeroPage=0;const bz=document.getElementById('budget-zone');if(bz)bz.scrollTop=0;renderBudget();}
     else if(v==='files')renderFiles();
     else if(v==='focus')renderFocusTemplates();
-    ['mn-today','mn-focus','mn-future','mn-calendar','mn-hashtags','mn-analyze','mn-notes','mn-lists','mn-files','mn-exercise','mn-budget'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
-    const mnMap={tasks:'mn-today',focus:'mn-focus',calendar:'mn-calendar',hashtags:'mn-hashtags',analyze:'mn-analyze',notes:'mn-notes',lists:'mn-lists',list:'mn-lists',files:'mn-files',future:'mn-future',exercise:'mn-exercise',exroutine:'mn-exercise',exsession:'mn-exercise',exhistory:'mn-exercise',budget:'mn-budget'};
+    ['mn-today','mn-quick','mn-focus','mn-future','mn-calendar','mn-hashtags','mn-analyze','mn-notes','mn-lists','mn-files','mn-exercise','mn-budget'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active');});
+    const mnMap={tasks:'mn-today',quick:'mn-quick',focus:'mn-focus',calendar:'mn-calendar',hashtags:'mn-hashtags',analyze:'mn-analyze',notes:'mn-notes',lists:'mn-lists',list:'mn-lists',files:'mn-files',future:'mn-future',exercise:'mn-exercise',exroutine:'mn-exercise',exsession:'mn-exercise',exhistory:'mn-exercise',budget:'mn-budget'};
     if(mnMap[v]){const el=document.getElementById(mnMap[v]);if(el)el.classList.add('active');}
     updateTabBadges();
   }
   document.querySelectorAll('#tabs-wrap .tab-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('#tabs-wrap .tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');setView(btn.dataset.tab);});});
 
-  function openMenu(){document.getElementById('side-menu').classList.add('open');document.getElementById('menu-overlay').classList.add('open');}
+  let menuGroupCollapsed={track:true,organize:true};
+  function saveMenuGroupState(){try{localStorage.setItem('rt_menu_collapse_v1',JSON.stringify(menuGroupCollapsed));}catch(e){}}
+  function loadMenuGroupState(){try{const d=localStorage.getItem('rt_menu_collapse_v1');if(d)Object.assign(menuGroupCollapsed,JSON.parse(d));}catch(e){}}
+  function toggleMenuGroup(key){
+    menuGroupCollapsed[key]=!menuGroupCollapsed[key];
+    const g=document.getElementById('mg-'+key);
+    if(g)g.classList.toggle('collapsed',!!menuGroupCollapsed[key]);
+    saveMenuGroupState();
+  }
+  function applyMenuGroupState(){
+    Object.keys(menuGroupCollapsed).forEach(key=>{
+      const g=document.getElementById('mg-'+key);
+      if(g)g.classList.toggle('collapsed',!!menuGroupCollapsed[key]);
+    });
+  }
+  const MENU_GROUP_OF={'mn-focus':'track','mn-exercise':'track','mn-budget':'track','mn-lists':'organize','mn-hashtags':'organize','mn-notes':'organize','mn-files':'organize','mn-analyze':'organize'};
+  function openMenu(){
+    const activeId=document.querySelector('.menu-item.active')?.id;
+    const key=activeId&&MENU_GROUP_OF[activeId];
+    if(key&&menuGroupCollapsed[key]){
+      menuGroupCollapsed[key]=false;
+      const g=document.getElementById('mg-'+key);if(g)g.classList.remove('collapsed');
+      saveMenuGroupState();
+    }
+    document.getElementById('side-menu').classList.add('open');document.getElementById('menu-overlay').classList.add('open');
+  }
   function closeMenu(){document.getElementById('side-menu').classList.remove('open');document.getElementById('menu-overlay').classList.remove('open');}
   document.getElementById('menu-btn').addEventListener('click',openMenu);
   document.getElementById('menu-overlay').addEventListener('click',closeMenu);
@@ -7891,7 +8101,7 @@
   window.addEventListener('orientationchange',()=>setTimeout(fixSafeAreaCover,50));
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)fixSafeAreaCover();});
 
-  loadAll();loadDragOrder();loadSortMode();loadRemOrder();loadRemSortMode();loadListTagState();loadNotes();loadFutureState();loadTimer();loadStTimer();loadForecastCache();loadFilesMeta();loadFocus();seedFocusTemplatesIfEmpty();applyTheme();setDateUI();updateClock();setView('tasks');fetchWeather();fetchForecast();scheduleForecastFetch();rescheduleLocalNotifs();loadFocusSessionIfAny();
+  loadAll();loadDragOrder();loadSortMode();loadRemOrder();loadRemSortMode();loadListTagState();loadNotes();loadFutureState();loadTimer();loadStTimer();loadForecastCache();loadFilesMeta();loadFocus();seedFocusTemplatesIfEmpty();loadQuick();loadMenuGroupState();applyMenuGroupState();applyTheme();setDateUI();updateClock();setView('tasks');fetchWeather();fetchForecast();scheduleForecastFetch();rescheduleLocalNotifs();loadFocusSessionIfAny();
   fixSafeAreaCover();
   setTimeout(fixSafeAreaCover,300);
   if(bgImage){const p=document.getElementById('bg-preview');p.src=bgImage;p.style.display='block';document.getElementById('clear-bg-row').style.display='flex';document.getElementById('bg-opacity-row').style.display='flex';const pct=Math.round((cfg.bgOpacity||0.4)*100);document.getElementById('bg-opacity-slider').value=pct;document.getElementById('bg-opacity-val').textContent=pct+'%';}
